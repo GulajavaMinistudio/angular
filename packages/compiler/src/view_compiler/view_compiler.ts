@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingType as BindingType, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
+import {ChangeDetectionStrategy, ViewEncapsulation, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵLifecycleHooks as LifecycleHooks, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
 
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, identifierModuleUrl, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {BuiltinConverter, BuiltinConverterFactory, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
@@ -108,6 +108,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private nodes: (() => {
     sourceSpan: ParseSourceSpan,
     nodeDef: o.Expression,
+    directive?: CompileTypeMetadata,
     updateDirectives?: UpdateExpression[],
     updateRenderer?: UpdateExpression[]
   })[] = [];
@@ -166,10 +167,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       });
     }
     templateVisitAll(this, astNodes);
-    if (astNodes.length === 0 ||
-        (this.parent && needsAdditionalRootNode(astNodes[astNodes.length - 1]))) {
-      // if the view is empty, or an embedded view has a view container as last root nde,
-      // create an additional root node.
+    if (this.parent && (astNodes.length === 0 || needsAdditionalRootNode(astNodes))) {
+      // if the view is an embedded view, then we need to add an additional root node in some cases
       this.nodes.push(() => ({
                         sourceSpan: null,
                         nodeDef: o.importExpr(createIdentifier(Identifiers.anchorDef)).callFn([
@@ -355,10 +354,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     //   flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
     //   ngContentIndex: number, childCount: number, namespaceAndName: string,
     //   fixedAttrs: [string, string][] = [],
-    //   bindings?:
-    //       ([BindingType.ElementClass, string] | [BindingType.ElementStyle, string, string] |
-    //        [BindingType.ElementAttribute | BindingType.ElementProperty |
-    //        BindingType.DirectiveHostProperty, string, SecurityContext])[],
+    //   bindings?: [BindingFlags, string, string | SecurityContext][],
     //   outputs?: ([OutputType.ElementOutput | OutputType.DirectiveHostOutput, string, string])[],
     //   handleEvent?: ElementHandleEventFn,
     //   componentView?: () => ViewDefinition, componentRendererType?: RendererType2): NodeDef;
@@ -587,6 +583,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR
       ]),
       updateDirectives: updateDirectiveExpressions,
+      directive: dirAst.directive.type,
     });
 
     return {hostBindings, hostEvents};
@@ -795,13 +792,14 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     const updateRendererStmts: o.Statement[] = [];
     const updateDirectivesStmts: o.Statement[] = [];
     const nodeDefExprs = this.nodes.map((factory, nodeIndex) => {
-      const {nodeDef, updateDirectives, updateRenderer, sourceSpan} = factory();
+      const {nodeDef, directive, updateDirectives, updateRenderer, sourceSpan} = factory();
       if (updateRenderer) {
-        updateRendererStmts.push(...createUpdateStatements(nodeIndex, sourceSpan, updateRenderer));
+        updateRendererStmts.push(
+            ...createUpdateStatements(nodeIndex, sourceSpan, updateRenderer, null));
       }
       if (updateDirectives) {
         updateDirectivesStmts.push(
-            ...createUpdateStatements(nodeIndex, sourceSpan, updateDirectives));
+            ...createUpdateStatements(nodeIndex, sourceSpan, updateDirectives, directive));
       }
       // We use a comma expression to call the log function before
       // the nodeDef function, but still use the result of the nodeDef function
@@ -812,8 +810,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return {updateRendererStmts, updateDirectivesStmts, nodeDefExprs};
 
     function createUpdateStatements(
-        nodeIndex: number, sourceSpan: ParseSourceSpan,
-        expressions: UpdateExpression[]): o.Statement[] {
+        nodeIndex: number, sourceSpan: ParseSourceSpan, expressions: UpdateExpression[],
+        directive: CompileTypeMetadata): o.Statement[] {
       const updateStmts: o.Statement[] = [];
       const exprs = expressions.map(({sourceSpan, context, value}) => {
         const bindingId = `${updateBindingCount++}`;
@@ -824,8 +822,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
             ...stmts.map(stmt => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
         return o.applySourceSpanToExpressionIfNeeded(currValExpr, sourceSpan);
       });
-      updateStmts.push(o.applySourceSpanToStatementIfNeeded(
-          callCheckStmt(nodeIndex, exprs).toStmt(), sourceSpan));
+      if (expressions.length ||
+          (directive && (directive.lifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1 ||
+                         directive.lifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1))) {
+        updateStmts.push(o.applySourceSpanToStatementIfNeeded(
+            callCheckStmt(nodeIndex, exprs).toStmt(), sourceSpan));
+      }
       return updateStmts;
     }
   }
@@ -974,19 +976,20 @@ function depDef(dep: CompileDiDependencyMetadata): o.Expression {
   return flags === DepFlags.None ? expr : o.literalArr([o.literal(flags), expr]);
 }
 
-function needsAdditionalRootNode(ast: TemplateAst): boolean {
-  if (ast instanceof EmbeddedTemplateAst) {
-    return ast.hasViewContainer;
+function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
+  const lastAstNode = astNodes[astNodes.length - 1];
+  if (lastAstNode instanceof EmbeddedTemplateAst) {
+    return lastAstNode.hasViewContainer;
   }
 
-  if (ast instanceof ElementAst) {
-    if (ast.name === NG_CONTAINER_TAG && ast.children.length) {
-      return needsAdditionalRootNode(ast.children[ast.children.length - 1]);
+  if (lastAstNode instanceof ElementAst) {
+    if (lastAstNode.name === NG_CONTAINER_TAG && lastAstNode.children.length) {
+      return needsAdditionalRootNode(lastAstNode.children);
     }
-    return ast.hasViewContainer;
+    return lastAstNode.hasViewContainer;
   }
 
-  return ast instanceof NgContentAst;
+  return lastAstNode instanceof NgContentAst;
 }
 
 function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlags {
@@ -1024,26 +1027,27 @@ function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveA
   switch (inputAst.type) {
     case PropertyBindingType.Attribute:
       return o.literalArr([
-        o.literal(BindingType.ElementAttribute), o.literal(inputAst.name),
+        o.literal(BindingFlags.TypeElementAttribute), o.literal(inputAst.name),
         o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Property:
       return o.literalArr([
-        o.literal(BindingType.ElementProperty), o.literal(inputAst.name),
+        o.literal(BindingFlags.TypeProperty), o.literal(inputAst.name),
         o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Animation:
-      const bindingType = dirAst && dirAst.directive.isComponent ?
-          BindingType.ComponentHostProperty :
-          BindingType.ElementProperty;
+      const bindingType = BindingFlags.TypeProperty |
+          (dirAst && dirAst.directive.isComponent ? BindingFlags.SyntheticHostProperty :
+                                                    BindingFlags.SyntheticProperty);
       return o.literalArr([
         o.literal(bindingType), o.literal('@' + inputAst.name), o.literal(inputAst.securityContext)
       ]);
     case PropertyBindingType.Class:
-      return o.literalArr([o.literal(BindingType.ElementClass), o.literal(inputAst.name)]);
+      return o.literalArr(
+          [o.literal(BindingFlags.TypeElementClass), o.literal(inputAst.name), o.NULL_EXPR]);
     case PropertyBindingType.Style:
       return o.literalArr([
-        o.literal(BindingType.ElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
+        o.literal(BindingFlags.TypeElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
       ]);
   }
 }

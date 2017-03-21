@@ -31,6 +31,7 @@ export interface TriggerListenerTuple {
 const MARKED_FOR_ANIMATION_CLASSNAME = 'ng-animating';
 const MARKED_FOR_ANIMATION_SELECTOR = '.ng-animating';
 const MARKED_FOR_REMOVAL = '$$ngRemove';
+const VOID_STATE = 'void';
 
 export class DomAnimationEngine {
   private _flaggedInserts = new Set<any>();
@@ -67,17 +68,24 @@ export class DomAnimationEngine {
   }
 
   onInsert(element: any, domFn: () => any): void {
-    this._flaggedInserts.add(element);
+    if (element['nodeType'] == 1) {
+      this._flaggedInserts.add(element);
+    }
     domFn();
   }
 
   onRemove(element: any, domFn: () => any): void {
+    if (element['nodeType'] != 1) {
+      domFn();
+      return;
+    }
+
     let lookupRef = this._elementTriggerStates.get(element);
     if (lookupRef) {
       const possibleTriggers = Object.keys(lookupRef);
       const hasRemoval = possibleTriggers.some(triggerName => {
         const oldValue = lookupRef[triggerName];
-        const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+        const instruction = this._triggers[triggerName].matchTransition(oldValue, VOID_STATE);
         return !!instruction;
       });
       if (hasRemoval) {
@@ -108,8 +116,9 @@ export class DomAnimationEngine {
       this._elementTriggerStates.set(element, lookupRef = {});
     }
 
-    let oldValue = lookupRef.hasOwnProperty(property) ? lookupRef[property] : 'void';
+    let oldValue = lookupRef.hasOwnProperty(property) ? lookupRef[property] : VOID_STATE;
     if (oldValue !== value) {
+      value = normalizeTriggerValue(value);
       let instruction = trigger.matchTransition(oldValue, value);
       if (!instruction) {
         // we do this to make sure we always have an animation player so
@@ -210,9 +219,9 @@ export class DomAnimationEngine {
     // we first run this so that the previous animation player
     // data can be passed into the successive animation players
     let totalTime = 0;
-    const players = instruction.timelines.map(timelineInstruction => {
+    const players = instruction.timelines.map((timelineInstruction, i) => {
       totalTime = Math.max(totalTime, timelineInstruction.totalTime);
-      return this._buildPlayer(element, timelineInstruction, previousPlayers);
+      return this._buildPlayer(element, timelineInstruction, previousPlayers, i);
     });
 
     previousPlayers.forEach(previousPlayer => previousPlayer.destroy());
@@ -246,8 +255,8 @@ export class DomAnimationEngine {
   public animateTimeline(
       element: any, instructions: AnimationTimelineInstruction[],
       previousPlayers: AnimationPlayer[] = []): AnimationPlayer {
-    const players = instructions.map(instruction => {
-      const player = this._buildPlayer(element, instruction, previousPlayers);
+    const players = instructions.map((instruction, i) => {
+      const player = this._buildPlayer(element, instruction, previousPlayers, i);
       player.onDestroy(
           () => { deleteFromArrayMap(this._activeElementAnimations, element, player); });
       player.init();
@@ -259,8 +268,14 @@ export class DomAnimationEngine {
   }
 
   private _buildPlayer(
-      element: any, instruction: AnimationTimelineInstruction,
-      previousPlayers: AnimationPlayer[]): AnimationPlayer {
+      element: any, instruction: AnimationTimelineInstruction, previousPlayers: AnimationPlayer[],
+      index: number = 0): AnimationPlayer {
+    // only the very first animation can absorb the previous styles. This
+    // is here to prevent the an overlap situation where a group animation
+    // absorbs previous styles multiple times for the same element.
+    if (index && previousPlayers.length) {
+      previousPlayers = [];
+    }
     return this._driver.animate(
         element, this._normalizeKeyframes(instruction.keyframes), instruction.duration,
         instruction.delay, instruction.easing, previousPlayers);
@@ -394,11 +409,11 @@ export class DomAnimationEngine {
           Object.keys(stateDetails).forEach(triggerName => {
             flushAgain = true;
             const oldValue = stateDetails[triggerName];
-            const instruction = this._triggers[triggerName].matchTransition(oldValue, 'void');
+            const instruction = this._triggers[triggerName].matchTransition(oldValue, VOID_STATE);
             if (instruction) {
               players.push(this.animateTransition(element, instruction));
             } else {
-              const event = makeAnimationEvent(element, triggerName, oldValue, 'void', '', 0);
+              const event = makeAnimationEvent(element, triggerName, oldValue, VOID_STATE, '', 0);
               const player = new NoopAnimationPlayer();
               this._queuePlayer(element, triggerName, player, event);
             }
@@ -501,4 +516,13 @@ function makeAnimationEvent(
     element: any, triggerName: string, fromState: string, toState: string, phaseName: string,
     totalTime: number): AnimationEvent {
   return <AnimationEvent>{element, triggerName, fromState, toState, phaseName, totalTime};
+}
+
+function normalizeTriggerValue(value: any): string {
+  switch (typeof value) {
+    case 'boolean':
+      return value ? '1' : '0';
+    default:
+      return value ? value.toString() : null;
+  }
 }
