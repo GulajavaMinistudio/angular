@@ -11,14 +11,14 @@ import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, re
 import {Injector} from '../di';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer, SecurityContext} from '../security';
+import {Sanitizer} from '../security';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector} from './refs';
-import {ArgumentType, BindingFlags, CheckType, DebugContext, DepFlags, ElementData, NodeCheckFn, NodeData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asPureExpressionData} from './types';
-import {NOOP, checkBinding, isComponentView, renderNode, viewParentEl} from './util';
+import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NodeDef, NodeFlags, NodeLogger, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
+import {NOOP, isComponentView, renderNode, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createEmbeddedView, createRootView, destroyView} from './view';
 
 
@@ -193,7 +193,7 @@ function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
     return (nodeDef.flags & NodeFlags.CatPureExpression) ?
         asPureExpressionData(view, nodeDef.index).value :
         undefined;
-  };
+  }
 }
 
 function debugUpdateRenderer(view: ViewData, checkType: CheckType) {
@@ -368,30 +368,44 @@ class DebugContext_ implements DebugContext {
                                                      renderNode(this.elView, this.elDef);
   }
   logError(console: Console, ...values: any[]) {
-    let logViewFactory: ViewDefinitionFactory;
+    let logViewDef: ViewDefinition;
     let logNodeIndex: number;
     if (this.nodeDef.flags & NodeFlags.TypeText) {
-      logViewFactory = this.view.def.factory;
+      logViewDef = this.view.def;
       logNodeIndex = this.nodeDef.index;
     } else {
-      logViewFactory = this.elView.def.factory;
+      logViewDef = this.elView.def;
       logNodeIndex = this.elDef.index;
     }
-    let currNodeIndex = -1;
+    // Note: we only generate a log function for text and element nodes
+    // to make the generated code as small as possible.
+    const renderNodeIndex = getRenderNodeIndex(logViewDef, logNodeIndex);
+    let currRenderNodeIndex = -1;
     let nodeLogger: NodeLogger = () => {
-      currNodeIndex++;
-      if (currNodeIndex === logNodeIndex) {
+      currRenderNodeIndex++;
+      if (currRenderNodeIndex === renderNodeIndex) {
         return console.error.bind(console, ...values);
       } else {
         return NOOP;
       }
     };
-    logViewFactory(nodeLogger);
-    if (currNodeIndex < logNodeIndex) {
+    logViewDef.factory(nodeLogger);
+    if (currRenderNodeIndex < renderNodeIndex) {
       console.error('Illegal state: the ViewDefinitionFactory did not call the logger!');
       (<any>console.error)(...values);
     }
   }
+}
+
+function getRenderNodeIndex(viewDef: ViewDefinition, nodeIndex: number): number {
+  let renderNodeIndex = -1;
+  for (let i = 0; i <= nodeIndex; i++) {
+    const nodeDef = viewDef.nodes[i];
+    if (nodeDef.flags & NodeFlags.CatRenderNode) {
+      renderNodeIndex++;
+    }
+  }
+  return renderNodeIndex;
 }
 
 function findHostElement(view: ViewData): ElementData {
