@@ -17,7 +17,7 @@ import {Renderer, RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
 
 import {expressionChangedAfterItHasBeenCheckedError, isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
-import {DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeLogger, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {BindingDef, BindingFlags, DebugContext, ElementData, NodeData, NodeDef, NodeFlags, NodeLogger, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asProviderData, asTextData} from './types';
 
 export const NOOP: any = () => {};
 
@@ -32,12 +32,15 @@ export function tokenKey(token: any): string {
   return key;
 }
 
-let unwrapCounter = 0;
-
-export function unwrapValue(value: any): any {
+export function unwrapValue(view: ViewData, nodeIdx: number, bindingIdx: number, value: any): any {
   if (value instanceof WrappedValue) {
     value = value.wrapped;
-    unwrapCounter++;
+    let globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
+    let oldValue = view.oldValues[globalBindingIdx];
+    if (oldValue instanceof WrappedValue) {
+      oldValue = oldValue.wrapped;
+    }
+    view.oldValues[globalBindingIdx] = new WrappedValue(oldValue);
   }
   return value;
 }
@@ -83,9 +86,8 @@ export function resolveRendererType2(type: RendererType2): RendererType2 {
 export function checkBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValues = view.oldValues;
-  if (unwrapCounter > 0 || !!(view.state & ViewState.FirstCheck) ||
+  if ((view.state & ViewState.FirstCheck) ||
       !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
-    unwrapCounter = 0;
     return true;
   }
   return false;
@@ -103,8 +105,7 @@ export function checkAndUpdateBinding(
 export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if (unwrapCounter || (view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
-    unwrapCounter = 0;
+  if ((view.state & ViewState.FirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, def.index), oldValue, value,
         (view.state & ViewState.FirstCheck) !== 0);
@@ -229,12 +230,7 @@ export function rootRenderNodes(view: ViewData): any[] {
   return renderNodes;
 }
 
-export enum RenderNodeAction {
-  Collect,
-  AppendChild,
-  InsertBefore,
-  RemoveChild
-}
+export const enum RenderNodeAction {Collect, AppendChild, InsertBefore, RemoveChild}
 
 export function visitRootRenderNodes(
     view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target: any[]) {
@@ -297,7 +293,19 @@ function visitRenderNode(
         view, nodeDef.ngContent.index, action, parentNode, nextSibling, target);
   } else {
     const rn = renderNode(view, nodeDef);
-    execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
+    if (action === RenderNodeAction.RemoveChild && (nodeDef.flags & NodeFlags.ComponentView) &&
+        (nodeDef.bindingFlags & BindingFlags.CatSyntheticProperty)) {
+      // Note: we might need to do both actions.
+      if (nodeDef.bindingFlags & (BindingFlags.SyntheticProperty)) {
+        execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
+      }
+      if (nodeDef.bindingFlags & (BindingFlags.SyntheticHostProperty)) {
+        const compView = asElementData(view, nodeDef.index).componentView;
+        execRenderNodeAction(compView, rn, action, parentNode, nextSibling, target);
+      }
+    } else {
+      execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
+    }
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
       const embeddedViews = asElementData(view, nodeDef.index).viewContainer._embeddedViews;
       for (let k = 0; k < embeddedViews.length; k++) {
@@ -340,6 +348,14 @@ export function splitNamespace(name: string): string[] {
     return [match[1], match[2]];
   }
   return ['', name];
+}
+
+export function calcBindingFlags(bindings: BindingDef[]): BindingFlags {
+  let flags = 0;
+  for (let i = 0; i < bindings.length; i++) {
+    flags |= bindings[i].flags;
+  }
+  return flags;
 }
 
 export function interpolate(valueCount: number, constAndInterp: string[]): string {

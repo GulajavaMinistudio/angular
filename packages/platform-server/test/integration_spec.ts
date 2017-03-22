@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {ApplicationRef, CompilerFactory, Component, HostListener, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
@@ -85,6 +86,25 @@ class SVGComponent {
 class SVGServerModule {
 }
 
+@Component({
+  selector: 'app',
+  template: '<div @myAnimation>{{text}}</div>',
+  animations: [trigger(
+      'myAnimation',
+      [transition('void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+})
+class MyAnimationApp {
+  text = 'Works!';
+}
+
+@NgModule({
+  declarations: [MyAnimationApp],
+  imports: [BrowserModule.withServerTransition({appId: 'anim-server'}), ServerModule],
+  bootstrap: [MyAnimationApp]
+})
+class AnimationServerModule {
+}
+
 @Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
 class MyStylesApp {
 }
@@ -127,6 +147,23 @@ class ImageApp {
 
 @NgModule({declarations: [ImageApp], imports: [ServerModule], bootstrap: [ImageApp]})
 class ImageExampleModule {
+}
+
+@Component({
+  selector: 'app',
+  template: 'Native works',
+  encapsulation: ViewEncapsulation.Native,
+  styles: [':host { color: red; }']
+})
+class NativeEncapsulationApp {
+}
+
+@NgModule({
+  declarations: [NativeEncapsulationApp],
+  imports: [BrowserModule.withServerTransition({appId: 'test'}), ServerModule],
+  bootstrap: [NativeEncapsulationApp]
+})
+class NativeExampleModule {
 }
 
 export function main() {
@@ -349,6 +386,23 @@ export function main() {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('works with animation', async(() => {
+           renderModule(AnimationServerModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<div>Works!</div></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should handle ViewEncapsulation.Native', async(() => {
+           renderModule(NativeExampleModule, {document: doc}).then(output => {
+             expect(output).not.toBe('');
+             expect(output).toContain('color: red');
              called = true;
            });
          }));
