@@ -293,16 +293,18 @@ class ApplyRedirects {
     }
 
     if (route.loadChildren) {
-      return mergeMap.call(runGuards(ngModule.injector, route), (shouldLoad: any) => {
+      if ((<any>route)._loadedConfig !== void 0) {
+        return of ((<any>route)._loadedConfig);
+      }
+
+      return mergeMap.call(runCanLoadGuard(ngModule.injector, route), (shouldLoad: boolean) => {
 
         if (shouldLoad) {
-          return (<any>route)._loadedConfig ?
-              of ((<any>route)._loadedConfig) :
-              map.call(
-                  this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
-                    (<any>route)._loadedConfig = cfg;
-                    return cfg;
-                  });
+          return map.call(
+              this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
+                (<any>route)._loadedConfig = cfg;
+                return cfg;
+              });
         }
 
         return canLoadFails(route);
@@ -396,12 +398,12 @@ class ApplyRedirects {
   }
 }
 
-function runGuards(moduleInjector: Injector, route: Route): Observable<boolean> {
+function runCanLoadGuard(moduleInjector: Injector, route: Route): Observable<boolean> {
   const canLoad = route.canLoad;
   if (!canLoad || canLoad.length === 0) return of (true);
 
-  const obs = map.call(from(canLoad), (c: any) => {
-    const guard = moduleInjector.get(c);
+  const obs = map.call(from(canLoad), (injectionToken: any) => {
+    const guard = moduleInjector.get(injectionToken);
     return wrapIntoObservable(guard.canLoad ? guard.canLoad(route) : guard(route));
   });
 
