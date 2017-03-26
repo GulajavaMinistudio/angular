@@ -1,14 +1,24 @@
-.code-example {
-    background-color: $backgroundgray;
-    border-radius: 5px;
+code-example code {
+    @include codeblock($backgroundgray);
     color: $darkgray;
-    padding: 20px;
-    margin: 24px auto;
-    border: 0.5px solid $lightgray;
+    width: 100%;
 }
 
-.code-example pre {
-    margin: 0px;
+code-example[language=bash] code {
+    width: 100%;
+}
+
+.prettyprint {
+    margin: 24px auto;
+    display: flex;
+}
+
+.prettyprint.lang-bash code {
+    @include codeblock($darkgray);
+    color: $codegreen;
+}
+
+.code-example pre, code-example pre {
     padding: 0px;
     white-space: pre-wrap;
 }
