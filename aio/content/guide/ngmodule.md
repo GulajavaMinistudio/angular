@@ -24,12 +24,14 @@ of creating and maintaining a single root `AppModule` for the entire application
 This page covers NgModules in greater depth.
 
 ## Table of Contents
-<!-- CF: The titling for tables of contents in the advanced chapters is inconsistent: 
+
+<!-- CF: The titling for tables of contents in the advanced chapters is inconsistent:
 - some are titled "Contents" while others are titled "Table of Contents" (should probably be sentence case as it's an H2
 - some headings are H2, some are H3
 - some pages don't have tables of contents
-I didn't make changes here as I'm not sure what the correct style is. 
---> 
+I didn't make changes here as I'm not sure what the correct style is.
+-->
+
 * [Angular modularity](guide/ngmodule#angular-modularity "Add structure to the app with NgModule")
 * [The application root module](guide/ngmodule#root-module "The startup module that every app requires")
 * [Bootstrap](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point") the root module
@@ -37,7 +39,7 @@ I didn't make changes here as I'm not sure what the correct style is.
 * [Providers](guide/ngmodule#providers "Extend the app with additional services")
 * [Imports](guide/ngmodule#imports "Import components, directives, and pipes for use in component templates")
 * [Resolve conflicts](guide/ngmodule#resolve-conflicts "When two directives have the same selector")
-<!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. --> 
+<!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. -->
 * [Feature modules](guide/ngmodule#feature-modules "Partition the app into feature modules")
 * [Lazy loaded modules](guide/ngmodule#lazy-load "Load modules asynchronously") with the router
 * [Shared modules](guide/ngmodule#shared-module "Create modules for commonly used components, directives, and pipes")
@@ -65,6 +67,7 @@ This page covers NgModule concepts in a tutorial fashion.
 The companion [NgModule FAQs](cookbook/ngmodule-faq) cookbook
 offers answers to specific design and implementation questions.
 Read this page before reading those FAQs.
+
 
 <div class='l-hr'>
 
@@ -204,6 +207,7 @@ In general, the `AppModule` should neither know nor care how it is bootstrapped.
 
 Although the `AppModule` evolves as the app grows, the bootstrap code in `main.ts` doesn't change.
 This is the last time you'll look at `main.ts`.
+
 
 <div class='l-hr'>
 
@@ -371,7 +375,7 @@ implemented with Angular forms in the [template-driven form](guide/forms) style.
 You can write Angular form components in
 template-driven or
 [reactive](cookbook/dynamic-form) style.
-<!-- CF: this link goes to a page titled "Dynamic Forms". Should the link text be "dynamic" instead of "reactive"? --> 
+<!-- CF: this link goes to a page titled "Dynamic Forms". Should the link text be "dynamic" instead of "reactive"? -->
 
 The following sample imports the `FormsModule` from `@angular/forms` because
 the `ContactComponent` is written in _template-driven_ style.
@@ -401,31 +405,25 @@ and break the component into three constituent HTML, TypeScript, and css files:
 
   </code-pane>
 
-
   <code-pane title="src/app/contact/contact.component.ts" path="ngmodule/src/app/contact/contact.component.3.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/contact/contact.component.css" path="ngmodule/src/app/contact/contact.component.css">
 
   </code-pane>
 
-
   <code-pane title="src/app/contact/contact.service.ts" path="ngmodule/src/app/contact/contact.service.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/contact/awesome.pipe.ts" path="ngmodule/src/app/contact/awesome.pipe.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/contact/highlight.directive.ts" path="ngmodule/src/app/contact/highlight.directive.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -455,7 +453,7 @@ once you declare the new component, pipe, and directive.
 
 ~~~ {.alert.is-critical}
 
-*Do not* add `NgModel`&mdash;or the `FORMS_DIRECTIVES`&mdash;to 
+*Do not* add `NgModel`&mdash;or the `FORMS_DIRECTIVES`&mdash;to
 the `AppModule` metadata's declarations.
 These directives belong to the `FormsModule`.
 
@@ -494,7 +492,7 @@ To work around this, create an alias for the contact version using the `as` Java
 </code-example>
 
 This solves the immediate issue of referencing both directive _types_ in the same file but
-leaves another issue unresolved. 
+leaves another issue unresolved.
 You'll learn more about that issue later in this page, in [Resolve directive conflicts](guide/ngmodule#resolve-conflicts).
 
 
@@ -553,6 +551,7 @@ Now you can inject `ContactService` (like `UserService`) into any component in t
 Everything is in place to run the application with its contact editor.
 
 The app file structure looks like this:
+
 <aio-filetree>
 
   <aio-folder>
@@ -561,26 +560,21 @@ The app file structure looks like this:
       app.component.ts
     </aio-file>
 
-
     <aio-file>
       app.module.ts
     </aio-file>
-
 
     <aio-file>
       highlight.directive.ts
     </aio-file>
 
-
     <aio-file>
       title.component.(html|ts)
     </aio-file>
 
-
     <aio-file>
       user.service.ts
     </aio-file>
-
 
     <aio-folder>
       contact
@@ -588,27 +582,21 @@ The app file structure looks like this:
         awesome.pipe.ts
       </aio-file>
 
-
       <aio-file>
         contact.component.(css|html|ts)
       </aio-file>
-
 
       <aio-file>
         contact.service.ts
       </aio-file>
 
-
       <aio-file>
         highlight.directive.ts
       </aio-file>
 
-
     </aio-folder>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -620,7 +608,7 @@ Try the example:
 
 ## Resolve directive conflicts
 <!-- CF: This section describes directive conflicts in detail, but doesn't describe how to resolve them.
- This section seems like more of an introduction to the next section, "Feature modules". 
+ This section seems like more of an introduction to the next section, "Feature modules".
  Consider moving this section to be a child section of "Feature modules", or striking "Resolve" from this title. -->
 
 An issue arose [earlier](guide/ngmodule#import-name-conflict) when you declared the contact's `HighlightDirective` because
@@ -634,11 +622,9 @@ The selectors of the two directives both highlight the attached element with a d
 
   </code-pane>
 
-
   <code-pane title="src/app/contact/highlight.directive.ts" path="ngmodule/src/app/contact/highlight.directive.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -709,7 +695,7 @@ or collection of related utilities.
 
 While you can do everything within the root module,
 feature modules help you partition the app into areas of specific interest and purpose.
-<!-- CF: Is this paragraph just restating the previous paragraph? 
+<!-- CF: Is this paragraph just restating the previous paragraph?
 If so, I recommend removing it or merging the two -->
 
 A feature module collaborates with the root module and with other modules
@@ -754,7 +740,7 @@ Before `ContactComponent` can bind with `[(ngModel)]`, its `ContactModule` must 
 ~~~
 
 You also replaced `BrowserModule` by `CommonModule`, for reasons explained in the
-[Should I import BrowserModule or CommonModule?](cookbook/ngmodule-faq) 
+[Should I import BrowserModule or CommonModule?](cookbook/ngmodule-faq)
 section of the [NgModule FAQs](cookbook/ngmodule-faq) page.
 
 You _declare_ the contact component, directive, and pipe in the module `declarations`.
@@ -784,11 +770,9 @@ Here's the refactored version of the `AppModule` along with the previous version
 
   </code-pane>
 
-
   <code-pane title="src/app/app.module.ts (v1)" path="ngmodule/src/app/app.module.1b.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -818,7 +802,7 @@ Their specifics aren't important to the story and this page doesn't discuss ever
 
 ~~~ {.l-sub-section}
 
-Examine and download the complete source for this version from 
+Examine and download the complete source for this version from
 the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
 
 ~~~
@@ -854,7 +838,7 @@ The `AppModule` has changed modestly:
 Some file names bear a `.3` extension that indicates
 a difference with prior or future versions.
 The significant differences will be explained in due course.
-<!-- CF: Can you be more specific here? Are the differences explained later in this page or in another page? --> 
+<!-- CF: Can you be more specific here? Are the differences explained later in this page or in another page? -->
 
 
 ~~~
@@ -973,11 +957,9 @@ that has both shared [declarables](cookbook/ngmodule-faq) and services.
 
   </code-pane>
 
-
   <code-pane title="src/app/contact/contact.module.2.ts" path="ngmodule/src/app/contact/contact.module.2.ts" region="class">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -999,6 +981,7 @@ They don't look different from the eagerly loaded `ContactModule`.
 The `HeroModule` is a bit more complex than the `CrisisModule`, which makes it
 a more interesting and useful example. Its file structure is as follows:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -1007,43 +990,35 @@ a more interesting and useful example. Its file structure is as follows:
       hero-detail.component.ts
     </aio-file>
 
-
     <aio-file>
       hero-list.component.ts
     </aio-file>
-
 
     <aio-file>
       hero.component.ts
     </aio-file>
 
-
     <aio-file>
       hero.module.ts
     </aio-file>
-
 
     <aio-file>
       hero-routing.module.ts
     </aio-file>
 
-
     <aio-file>
       hero.service.ts
     </aio-file>
-
 
     <aio-file>
       highlight.directive.ts
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
-This is the child routing scenario familiar to readers of the 
+This is the child routing scenario familiar to readers of the
 [Child routing component](guide/router) section of the
 [Routing & Navigation](guide/router) page.
 The `HeroComponent` is the feature's top component and routing host.
@@ -1132,7 +1107,7 @@ and only one provider of it.
 `UserService` is an application-wide singleton.
 You don't want each module to have its own separate instance.
 Yet there is [a real danger](cookbook/ngmodule-faq) of that happening
-<!-- CF: This link goes to the top of the NgModule FAQs page. 
+<!-- CF: This link goes to the top of the NgModule FAQs page.
 It looks like it is supposed to go to a specific question/section within the page. -->
 if the `SharedModule` provides the `UserService`.
 
@@ -1155,7 +1130,7 @@ and `TitleComponent` that only appear in the root `AppComponent`.
 You didn't include them in the `SharedModule` for reasons just explained.
 
 Instead, gather them in a single `CoreModule` that you import once when the app starts
-and never import anywhere else. 
+and never import anywhere else.
 
 Perform the following steps:
 
@@ -1208,8 +1183,8 @@ Yet they're too big and messy to leave loose in the root folder.
 Apps often have many singleton services like this sample's `UserService`.
 Each must be registered exactly once, in the app root injector, when the application starts.
 
-While many components inject such services in their constructors&mdash;and 
-therefore require JavaScript `import` statements to import their symbols&mdash;no 
+While many components inject such services in their constructors&mdash;and
+therefore require JavaScript `import` statements to import their symbols&mdash;no
 other component or module should define or re-create the services themselves.
 Their _providers_ aren't shared.
 
@@ -1233,11 +1208,9 @@ Here is the updated `AppModule` paired with version 3 for comparison:
 
   </code-pane>
 
-
   <code-pane title="src/app/app.module.ts (v3)" path="ngmodule/src/app/app.module.3.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -1256,11 +1229,9 @@ Here is the new `ContactModule` paired with the prior version:
 
   </code-pane>
 
-
   <code-pane title="src/app/contact/contact.module.ts (v3)" path="ngmodule/src/app/contact/contact.module.3.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -1268,6 +1239,7 @@ Notice the following:
 * The `AwesomePipe` and `HighlightDirective` are gone.
 * The imports include `SharedModule` instead of `CommonModule` and `FormsModule`.
 * The new version is leaner and cleaner.
+
 
 <div class='l-hr'>
 
@@ -1334,6 +1306,7 @@ Remember to _import_ the result; don't add it to any other `@NgModule` list.
 ~~~
 
 
+
 <div class='l-hr'>
 
 </div>
@@ -1346,7 +1319,7 @@ Remember to _import_ the result; don't add it to any other `@NgModule` list.
 
 Only the root `AppModule` should import the `CoreModule`.
 [Bad things happen](cookbook/ngmodule-faq) if a lazy-loaded module imports it.
-<!-- CF: Again, this link goes to the top of the NgModule FAQs page. 
+<!-- CF: Again, this link goes to the top of the NgModule FAQs page.
 It looks like it is supposed to go to a specific question/section within the page. -->
 
 You could hope that no developer makes that mistake.

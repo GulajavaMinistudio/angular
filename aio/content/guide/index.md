@@ -15,17 +15,16 @@ The documentation is divided into major thematic sections, each
 a collection of pages devoted to that theme.
 
 
+
 <table width="100%">
 
   <col width="15%">
 
   </col>
 
-
   <col>
 
   </col>
-
 
   <tr style=top>
 
@@ -33,15 +32,12 @@ a collection of pages devoted to that theme.
       <b><a href="../quickstart.html">QuickStart</a></b>
     </td>
 
-
     <td>
       A first taste of Angular<span if-docs="ts"> with zero installation.       
             Run "Hello World" in an online code editor and start playing with live code</span>.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -49,16 +45,13 @@ a collection of pages devoted to that theme.
       <b>Guide</b>
     </td>
 
-
     <td>
       Learn the Angular basics (you're already here!) like the setup for local development,      
             displaying data and accepting user input, injecting application services into components,      
             and building simple forms.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -66,14 +59,11 @@ a collection of pages devoted to that theme.
       <b><a href="../api/">API Reference</a></b>
     </td>
 
-
     <td>
       Authoritative details about each of the Angular libraries.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -81,15 +71,12 @@ a collection of pages devoted to that theme.
       <b><a href="../tutorial/">Tutorial</a></b>
     </td>
 
-
     <td>
       A step-by-step, immersive approach to learning Angular that      
             introduces the major features of Angular in an application context.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -97,14 +84,11 @@ a collection of pages devoted to that theme.
       <b><a href="      ">Advanced</a></b>
     </td>
 
-
     <td>
       In-depth analysis of Angular features and development practices.
     </td>
 
-
   </tr>
-
 
   <tr style=top if-docs="ts">
 
@@ -112,15 +96,12 @@ a collection of pages devoted to that theme.
       <b><a href="../cookbook/">Cookbook</a></b>
     </td>
 
-
     <td>
       Recipes for specific application challenges, mostly code snippets with a minimum of exposition.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 

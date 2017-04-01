@@ -50,6 +50,7 @@ otherwise wrestle with yourself.
 
 You'll learn to build a template-driven form that looks like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/hero-form-1.png" width="400px" alt="Clean Form">  </img>
 </figure>
@@ -60,6 +61,7 @@ Every hero needs a job. It's the company mission to match the right hero with th
 Two of the three fields on this form are required. Required fields have a green bar on the left to make them easy to spot.
 
 If you delete the hero name, the form displays a validation error in an attention-grabbing style:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/hero-form-2.png" width="400px" alt="Invalid, Name Required">  </img>
@@ -89,7 +91,7 @@ You'll build this form in small steps:
 ## Setup
 
 Follow the [setup](guide/setup) instructions for creating a new project
-named <span ngio-ex>angular-forms</span>.
+named angular-forms.
 
 ## Create the Hero model class
 
@@ -100,7 +102,7 @@ A model can be as simple as a "property bag" that holds facts about a thing of a
 That describes well the `Hero` class with its three required fields (`id`, `name`, `power`)
 and one optional field (`alterEgo`).
 
-In the `!{_appDir}` directory, create the following file with the given content:
+In the `app` directory, create the following file with the given content:
 
 
 <code-example path="forms/src/app/hero.ts">
@@ -258,6 +260,7 @@ Bootstrap gives the form a little style.
 ~~~ {.callout.is-important}
 
 
+
 <header>
   Angular forms don't require a style library
 </header>
@@ -300,6 +303,7 @@ you display its name using the interpolation syntax.
 
 Running the app right now would be disappointing.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/hero-form-3.png" width="400px" alt="Early form with no binding">  </img>
 </figure>
@@ -340,6 +344,7 @@ If you ran the app now and started typing in the *Name* input box,
 adding and deleting characters, you'd see them appear and disappear
 from the interpolated text.
 At some point it might look like this:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/ng-model-in-action.png" width="400px" alt="ngModel in action">  </img>
@@ -399,6 +404,7 @@ to match the label to its input control.
 
 If you run the app now and change every hero model property, the form might display like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/ng-model-in-action-2.png" width="400px" alt="ngModel in action">  </img>
 </figure>
@@ -416,6 +422,7 @@ you if the user touched the control, if the value changed, or if the value becam
 The *NgModel* directive doesn't just track state; it updates the control with special Angular CSS classes that reflect the state.
 You can leverage those class names to change the appearance of the control.
 
+
 <table>
 
   <tr>
@@ -424,19 +431,15 @@ You can leverage those class names to change the appearance of the control.
       State
     </th>
 
-
     <th>
       Class if true
     </th>
-
 
     <th>
       Class if false
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -444,19 +447,15 @@ You can leverage those class names to change the appearance of the control.
       The control has been visited.
     </td>
 
-
     <td>
       <code>ng-touched</code>
     </td>
-
 
     <td>
       <code>ng-untouched</code>
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -464,19 +463,15 @@ You can leverage those class names to change the appearance of the control.
       The control's value has changed.
     </td>
 
-
     <td>
       <code>ng-dirty</code>
     </td>
-
 
     <td>
       <code>ng-pristine</code>
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -484,19 +479,15 @@ You can leverage those class names to change the appearance of the control.
       The control's value is valid.
     </td>
 
-
     <td>
       <code>ng-valid</code>
     </td>
-
 
     <td>
       <code>ng-invalid</code>
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -518,11 +509,13 @@ Follow these steps *precisely*:
 
 The actions and effects are as follows:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/control-state-transitions-anim.gif" alt="Control State Transition">  </img>
 </figure>
 
 You should see the following transitions and class names:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/ng-control-class-changes.png" width="500px" alt="Control state transitions">  </img>
@@ -538,6 +531,7 @@ To create such visual feedback, add definitions for the `ng-*` CSS classes.
 
 You can mark required fields and invalid data at the same time with a colored bar
 on the left of the input box:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/validity-required-indicator.png" width="400px" alt="Invalid Form">  </img>
@@ -565,6 +559,7 @@ That says something is wrong but the user doesn't know *what* is wrong or what t
 Leverage the control's state to reveal a helpful message.
 
 When the user deletes the name, the form should look like this:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/forms/name-required-error.png" width="400px" alt="Name required">  </img>
@@ -796,6 +791,7 @@ framework features to provide support for data modification, validation, and mor
 
 The final project folder structure should look like this:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -808,60 +804,47 @@ The final project folder structure should look like this:
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
-
 
         <aio-file>
           hero.ts
         </aio-file>
 
-
         <aio-file>
           hero-form.component.html
         </aio-file>
-
 
         <aio-file>
           hero-form.component.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         tsconfig.json
       </aio-file>
-
 
       <aio-file>
         index.html
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -874,41 +857,33 @@ Here’s the code for the final version of the application:
 
   </code-pane>
 
-
   <code-pane title="hero-form.component.html" path="forms/src/app/hero-form.component.html" region="final">
 
   </code-pane>
-
 
   <code-pane title="hero.ts" path="forms/src/app/hero.ts">
 
   </code-pane>
 
-
   <code-pane title="app.module.ts" path="forms/src/app/app.module.ts">
 
   </code-pane>
-
 
   <code-pane title="app.component.ts" path="forms/src/app/app.component.ts">
 
   </code-pane>
 
-
   <code-pane title="main.ts" path="forms/src/main.ts">
 
   </code-pane>
-
 
   <code-pane title="index.html" path="forms/src/index.html">
 
   </code-pane>
 
-
   <code-pane title="forms.css" path="forms/src/forms.css">
 
   </code-pane>
-
 
 </code-tabs>
 

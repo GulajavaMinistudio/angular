@@ -21,6 +21,7 @@ These FAQs assume that you have read the [NgModules](guide/ngmodule) page.
 ~~~
 
 Declarations
+
 * [What classes should I add to _declarations_?](guide/ngmodule-faq#q-what-to-declare)
 * [What is a _declarable_?](guide/ngmodule-faq#q-declarable)
 * [What classes should I _not_ add to _declarations_?](guide/ngmodule-faq#q-what-not-to-declare)
@@ -28,17 +29,20 @@ Declarations
 * [What does "Can't bind to 'x' since it isn't a known property of 'y'" mean?](guide/ngmodule-faq#q-why-cant-bind-to)
 
 Imports
+
 * [What should I import?](guide/ngmodule-faq#q-what-to-import)
 * [Should I import _BrowserModule_ or _CommonModule_?](guide/ngmodule-faq#q-browser-vs-common-module)
 * [What if I import the same module twice?](guide/ngmodule-faq#q-reimport)
 
 Exports
+
 * [What should I export?](guide/ngmodule-faq#q-what-to-export)
 * [What should I *not* export?](guide/ngmodule-faq#q-what-not-to-export)
 * [Can I re-export imported classes and modules?](guide/ngmodule-faq#q-re-export)
 * [What is the _forRoot_ method?](guide/ngmodule-faq#q-for-root)
 
 Service Providers
+
 * [Why is a service provided in a feature module visible everywhere?](guide/ngmodule-faq#q-module-provider-visibility)
 * [Why is a service provided in a _lazy-loaded_ module visible only to that module?](guide/ngmodule-faq#q-lazy-loaded-module-provider-visibility)
 * [What if two modules provide the same service?](guide/ngmodule-faq#q-module-provider-duplicates)
@@ -50,18 +54,21 @@ Service Providers
 * [How can I tell if a module or service was previously loaded?](guide/ngmodule-faq#q-is-it-loaded)
 
 Entry Components
+
 * [What is an _entry component_?](guide/ngmodule-faq#q-entry-component-defined)
 * [What is the difference between a _bootstrap_ component and an _entry component_?](guide/ngmodule-faq#q-bootstrap_vs_entry_component)
 * [When do I add components to _entryComponents_?](guide/ngmodule-faq#q-when-entry-components)
 * [Why does Angular need _entryComponents_?](guide/ngmodule-faq#q-why-entry-components)
 
 General
+
 * [What kinds of modules should I have and how should I use them?](guide/ngmodule-faq#q-module-recommendations)
 * [What's the difference between Angular and JavaScript Modules?](guide/ngmodule-faq#q-ng-vs-js-modules)
 * [How does Angular find components, directives, and pipes in a template?](guide/ngmodule-faq#q-template-reference)
 * [What is a "template reference"?](guide/ngmodule-faq#q-template-reference)
 * [What is the Angular compiler?](guide/ngmodule-faq#q-angular-compiler)
 * [Can you summarize the NgModule API?](guide/ngmodule-faq#q-ngmodule-api)
+
 
 <div class='l-hr'>
 
@@ -78,6 +85,7 @@ Add [declarable](guide/ngmodule-faq#q-declarable) classes&mdash;components, dire
 Declare these classes in _exactly one_ module of the application.
 Declare them in _this_ module if they _belong_ to this module.
 
+
 <div class='l-hr'>
 
 </div>
@@ -91,6 +99,7 @@ Declare them in _this_ module if they _belong_ to this module.
 Declarables are the class types&mdash;components, directives, and pipes&mdash;that
 you can add to a module's `declarations` list.
 They're the _only_ classes that you can add to `declarations`.
+
 
 <div class='l-hr'>
 
@@ -112,6 +121,7 @@ For example, don't declare FORMS_DIRECTIVES from `@angular/forms`.
 * Service classes.
 * Non-Angular classes and objects, such as
 strings, numbers, functions, entity models, configurations, business logic, and helper classes.
+
 
 <div class='l-hr'>
 
@@ -135,6 +145,7 @@ Membership in one list doesn't imply membership in another list.
 * `HeroComponent` could be exported for inclusion in an external component's template
 as well as dynamically loaded in a pop-up dialog.
 
+
 <div class='l-hr'>
 
 </div>
@@ -152,6 +163,7 @@ For example, if "x" is `ngModel`, you probably haven't imported the `FormsModule
 
 Perhaps you declared "x" in an application sub-module but forgot to export it?
 The "x" class isn't visible to other modules until you add it to the `exports` list.
+
 
 <div class='l-hr'>
 
@@ -177,6 +189,7 @@ Import _shared_ and _feature_ modules when this module's components incorporate 
 components, directives, and pipes.
 
 Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
+
 
 <div class='l-hr'>
 
@@ -209,6 +222,7 @@ They need the common directives. They don't need to re-install the app-wide prov
 
 Importing `CommonModule` also frees feature modules for use on _any_ target platform, not just browsers.
 
+
 <div class='l-hr'>
 
 </div>
@@ -228,6 +242,7 @@ then 'D' triggers the evaluation of 'C', which triggers the evaluation of 'B', w
 When Angular gets to the 'B' and 'A' in 'D', they're already cached and ready to go.
 
 Angular doesn't like modules with circular references, so don't let Module 'A' import Module 'B', which imports Module 'A'.
+
 
 <div class='l-hr'>
 
@@ -249,6 +264,7 @@ it's declared in this module or in an imported module.
 
 You _can_ re-export entire imported modules, which effectively re-exports all of their exported classes.
 A module can even export a module that it doesn't import.
+
 
 <div class='l-hr'>
 
@@ -272,6 +288,7 @@ While there's no harm in exporting them, there's also no benefit.
 For example, there's no point in re-exporting `HttpModule` because it doesn't export anything.
 It's only purpose is to add http service providers to the application as a whole.
 
+
 <div class='l-hr'>
 
 </div>
@@ -292,6 +309,7 @@ re-export them in a consolidated, convenience module.
 
 A module can re-export entire modules, which effectively re-exports all of their exported classes.
 Angular's own `BrowserModule` exports a couple of modules like this:
+
 <code-example>
   exports: [CommonModule, ApplicationModule]  
     
@@ -308,6 +326,7 @@ It's only purpose is to add http service providers to the application as a whole
 
 
 ~~~
+
 
 
 <div class='l-hr'>
@@ -344,6 +363,7 @@ configure services in root and feature modules respectively.
 Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
 
+
 <div class='l-hr'>
 
 </div>
@@ -375,6 +395,7 @@ If the `HeroModule` provides the `HeroService` and the root `AppModule` imports 
 any class that knows the `HeroService` _type_ can inject that service,
 not just the classes declared in the `HeroModule`.
 
+
 <div class='l-hr'>
 
 </div>
@@ -397,6 +418,7 @@ The router adds the lazy module's providers and the providers of its imported mo
 These providers are insulated from changes to application providers with the same lookup token.
 When the router creates a component within the lazy-loaded context,
 Angular prefers service instances created from these providers to the service instances of the application root injector.
+
 
 <div class='l-hr'>
 
@@ -422,6 +444,7 @@ that also provides a service for token 'X', then Module A's service definition "
 
 The service provided by the root `AppModule` takes precedence over services provided by imported modules.
 The `AppModule` always wins.
+
 
 <div class='l-hr'>
 
@@ -483,6 +506,7 @@ You can embed the child components in the top component's template.
 Alternatively, make the top component a routing host by giving it a `<router-outlet>`.
 Define child routes and let the router load module components into that outlet.
 
+
 <div class='l-hr'>
 
 </div>
@@ -524,6 +548,7 @@ In the NgModule page sample applications, if you had registered `UserService` in
 the `HeroComponent` couldn't inject it.
 The application  would fail the moment a user navigated to "Heroes".
 
+
 <div class='l-hr'>
 
 </div>
@@ -548,6 +573,7 @@ The changes that editor makes to heroes in its service don't touch the hero inst
 
 [Always register _application-wide_ services with the root `AppModule`](guide/ngmodule-faq#q-root-component-or-module),
 not the root `AppComponent`.
+
 
 <div class='l-hr'>
 
@@ -598,6 +624,7 @@ The username goes bonkers as the Angular creates a new `UserService` instance ea
 ~~~
 
 
+
 <div class='l-hr'>
 
 </div>
@@ -629,6 +656,7 @@ Angular must add the lazy-loaded module's providers to an injector somewhere.
 It can't added them to the app root injector because that injector is closed to new providers.
 So Angular creates a new child injector for the lazy-loaded module context.
 
+
 <div class='l-hr'>
 
 </div>
@@ -653,6 +681,7 @@ such as this `CoreModule` constructor from the NgModules page.
 <code-example path="ngmodule/src/app/core/core.module.ts" region="ctor" linenums="false">
 
 </code-example>
+
 
 
 <div class='l-hr'>
@@ -698,6 +727,7 @@ Angular automatically adds the following types of components to the module's `en
 
 You don't have to mention these components explicitly, although doing so is harmless.
 
+
 <div class='l-hr'>
 
 </div>
@@ -717,6 +747,7 @@ it should generate code to bootstrap the application with this component.
 
 There's no need to list a component in both the `bootstrap` and `entryComponent` lists,
 although doing so is harmless.
+
 
 <div class='l-hr'>
 
@@ -742,6 +773,7 @@ Although it's harmless to add components to this list,
 it's best to add only the components that are truly _entry components_.
 Don't include components that [are referenced](guide/ngmodule-faq#q-template-reference)
 in the templates of other components.
+
 
 <div class='l-hr'>
 
@@ -776,6 +808,7 @@ and every component reachable from an entry component.
 
 If a component isn't an _entry component_ or wasn't found in a template,
 the compiler omits it.
+
 
 
 <div class='l-hr'>
@@ -854,6 +887,7 @@ follow them unless you have a good reason to do otherwise.
 ~~~
 
 
+
 <table>
 
   <tr>
@@ -862,21 +896,17 @@ follow them unless you have a good reason to do otherwise.
       Feature Module
     </th>
 
-
     <th style="vertical-align: top">
       Guidelines
     </th>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <a id="domain-feature-module"></a>Domain
     </td>
-
 
     <td>
       Domain feature modules deliver a user experience *dedicated to a particular application domain*      
@@ -909,16 +939,13 @@ follow them unless you have a good reason to do otherwise.
       
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <a id="routed-feature-module"></a>Routed
     </td>
-
 
     <td>
       _Routed feature modules_ are _domain feature modules_      
@@ -947,16 +974,13 @@ follow them unless you have a good reason to do otherwise.
             or in a module that the routed module imports.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <a id="routing-module"></a>Routing
     </td>
-
 
     <td>
       A [routing module](guide/router) *provides routing configuration* for another module.      
@@ -1000,16 +1024,13 @@ follow them unless you have a good reason to do otherwise.
       
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <a id="service-feature-module"></a>Service
     </td>
-
 
     <td>
       Service modules *provide utility services* such as data access and messaging.      
@@ -1023,16 +1044,13 @@ follow them unless you have a good reason to do otherwise.
             If you deviate from this guideline, know what you're doing and why.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <a id="widget-feature-module"></a>Widget
     </td>
-
 
     <td>
       A widget module makes *components, directives, and pipes* available to external modules.      
@@ -1049,9 +1067,7 @@ follow them unless you have a good reason to do otherwise.
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1064,6 +1080,7 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
 ~~~
 
 
+
 <table>
 
   <tr>
@@ -1072,34 +1089,27 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
       Feature Module
     </th>
 
-
     <th>
       Declarations
     </th>
-
 
     <th>
       Providers
     </th>
 
-
     <th>
       Exports
     </th>
-
 
     <th>
       Imported By
     </th>
 
-
     <th>
       Examples
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -1107,34 +1117,27 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
       Domain
     </td>
 
-
     <td>
       Yes
     </td>
-
 
     <td>
       Rare
     </td>
 
-
     <td>
       Top component
     </td>
-
 
     <td>
       Feature, <code>AppModule</code>
     </td>
 
-
     <td>
       <code>ContactModule</code> (before routing)
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -1142,34 +1145,27 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
       Routed
     </td>
 
-
     <td>
       Yes
     </td>
-
 
     <td>
       Rare
     </td>
 
-
     <td>
       No
     </td>
-
 
     <td>
       Nobody
     </td>
 
-
     <td>
       <code>ContactModule</code>, <code>HeroModule</code>, <code>CrisisModule</code>
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -1177,34 +1173,27 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
       Routing
     </td>
 
-
     <td>
       No
     </td>
-
 
     <td>
       Yes (Guards)
     </td>
 
-
     <td>
       <code>RouterModule</code>
     </td>
-
 
     <td>
       Feature (for routing)
     </td>
 
-
     <td>
       <code>AppRoutingModule</code>, <code>ContactRoutingModule</code>, <code>HeroRoutingModule</code>
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -1212,34 +1201,27 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
       Service
     </td>
 
-
     <td>
       No
     </td>
-
 
     <td>
       Yes
     </td>
 
-
     <td>
       No
     </td>
-
 
     <td>
       <code>AppModule</code>
     </td>
 
-
     <td>
       <code>HttpModule</code>, <code>CoreModule</code>
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -1247,36 +1229,30 @@ Real-world modules are often hybrids that knowingly deviate from these guideline
       Widget
     </td>
 
-
     <td>
       Yes
     </td>
-
 
     <td>
       Rare
     </td>
 
-
     <td>
       Yes
     </td>
-
 
     <td>
       Feature
     </td>
 
-
     <td>
       <code>CommonModule</code>, <code>SharedModule</code>
     </td>
 
-
   </tr>
 
-
 </table>
+
 
 
 <div class='l-hr'>
@@ -1295,12 +1271,14 @@ In modern JavaScript, every file is a _module_
 (see the [Modules](http://exploringjs.com/es6/ch_modules.html) page of the Exploring ES6 website).
 Within each file you write an `export` statement to make parts of the module public:
 
+
 <code-example format='.'>
   export class AppComponent { ... }  
     
 </code-example>
 
 Then you `import` a part in another module:
+
 
 <code-example format='.'>
   import { AppComponent }  from './app.component';  
@@ -1353,6 +1331,7 @@ Of course you use _JavaScript_ modules to write _Angular_ modules as seen in the
 </code-example>
 
 
+
 <div class='l-hr'>
 
 </div>
@@ -1373,6 +1352,7 @@ The compiler finds a pipe if the pipe's *name* appears within the pipe syntax of
 
 Angular only matches selectors and pipe names for classes that are declared by this module
 or exported by a module that this module imports.
+
 
 <div class='l-hr'>
 
@@ -1405,6 +1385,7 @@ the Angular compiler incorporates them into compiled component code too.
 `@NgModule` metadata tells the Angular compiler what components to compile for this module and
 how to link this module with other modules.
 
+
 <div class='l-hr'>
 
 </div>
@@ -1416,6 +1397,7 @@ how to link this module with other modules.
 ## NgModule API
 
 The following table summarizes the `NgModule` metadata properties.
+
 <table>
 
   <tr>
@@ -1424,21 +1406,17 @@ The following table summarizes the `NgModule` metadata properties.
       Property
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>declarations</code>
     </td>
-
 
     <td>
       A list of [declarable](guide/ngmodule-faq#q-declarable) classes,      
@@ -1455,16 +1433,13 @@ The following table summarizes the `NgModule` metadata properties.
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>providers</code>
     </td>
-
 
     <td>
       A list of dependency-injection providers.      
@@ -1488,16 +1463,13 @@ The following table summarizes the `NgModule` metadata properties.
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>imports</code>
     </td>
-
 
     <td>
       A list of supporting modules.      
@@ -1517,16 +1489,13 @@ The following table summarizes the `NgModule` metadata properties.
             A component template can bind with `[(ngModel)]` only after importing the Angular `FormsModule`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>exports</code>
     </td>
-
 
     <td>
       A list of declarations&mdash;*component*, *directive*, and *pipe* classes&mdash;that      
@@ -1539,7 +1508,7 @@ The following table summarizes the `NgModule` metadata properties.
             Declarations are private by default.      
             If this module does _not_ export `HeroComponent`, no other module can see it.      
                   
-            Importing a module does _not_ automatically re-export the imported module's exports.      
+            Importing a module does _not_ automatically re-export the imported module's imports.      
             Module 'B' can't use `ngIf` just because it imported module `A` which imported `CommonModule`.      
             Module 'B' must import `CommonModule` itself.      
                   
@@ -1552,16 +1521,13 @@ The following table summarizes the `NgModule` metadata properties.
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>bootstrap</code>
     </td>
-
 
     <td>
       A list of components that can be bootstrapped.      
@@ -1575,16 +1541,13 @@ The following table summarizes the `NgModule` metadata properties.
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>entryComponents</code>
     </td>
-
 
     <td>
       A list of components that are _not_ [referenced](guide/ngmodule-faq#q-template-reference) in a reachable component template.      
@@ -1616,9 +1579,7 @@ The following table summarizes the `NgModule` metadata properties.
             `entryComponents` list yourself, either programmatically or by hand.
     </td>
 
-
   </tr>
-
 
 </table>
 

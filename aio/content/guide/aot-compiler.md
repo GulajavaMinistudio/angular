@@ -11,6 +11,7 @@ during a build process.
 
 {@a toc}
 # Contents
+
 - [Overview](guide/overview)
 - [Ahead-of-time (AOT) vs just-in-time (JIT)](guide/aot-compiler#aot-jit)
 - [Why do AOT compilation?](guide/aot-compiler#why-aot)
@@ -120,15 +121,14 @@ A few minor changes to the lone `app.component` lead to these two class and HTML
 
   </code-pane>
 
-
   <code-pane title="src/app/app.component.ts" path="cb-aot-compiler/src/app/app.component.ts">
 
   </code-pane>
 
-
 </code-tabs>
 
 Install a few new npm dependencies with the following command:
+
 <code-example language="none" class="code-shell">
   npm install @angular/compiler-cli @angular/platform-server --save
 </code-example>
@@ -167,6 +167,7 @@ While JIT app URLs are more flexible, stick with _component-relative_ URLs for c
 ***Compiling the application***
 
 Initiate AOT compilation from the command line using the previously installed `ngc` compiler by executing:
+
 <code-example language="none" class="code-shell">
   node_modules/.bin/ngc -p tsconfig-aot.json
 </code-example>
@@ -176,6 +177,7 @@ Initiate AOT compilation from the command line using the previously installed `n
 ~~~ {.l-sub-section}
 
 Windows users should surround the `ngc` command in double quotes:
+
 <code-example format='.'>
   "node_modules/.bin/ngc" -p tsconfig-aot.json
 </code-example>
@@ -240,11 +242,9 @@ Here is AOT bootstrap in `main.ts` next to the original JIT version:
 
   </code-pane>
 
-
   <code-pane title="src/main-jit.ts" path="cb-aot-compiler/src/main-jit.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -290,6 +290,7 @@ What matters is that the code uses ES `import` and `export` statements rather th
 ~~~
 
 In the terminal window, install the Rollup dependencies with this command:
+
 <code-example language="none" class="code-shell">
   npm install rollup rollup-plugin-node-resolve rollup-plugin-commonjs rollup-plugin-uglify --save-dev
 </code-example>
@@ -327,7 +328,7 @@ Luckily, there is a Rollup plugin that modifies _RxJs_
 to use the ES `import` and `export` statements that Rollup requires.
 Rollup then preserves the parts of `RxJS` referenced by the application 
 in the final bundle. Using it is straigthforward. Add the following to 
-the `plugins` !{_array} in `rollup-config.js`:
+the `plugins` array in `rollup-config.js`:
 
 
 <code-example path="cb-aot-compiler/rollup-config.js" region="commonjs" linenums="false">
@@ -338,7 +339,7 @@ the `plugins` !{_array} in `rollup-config.js`:
 
 Rollup tree shaking reduces code size considerably.  Minification makes it smaller still.
 This cookbook relies on the _uglify_ Rollup plugin to minify and mangle the code. 
-Add the following to the `plugins` !{_array}:
+Add the following to the `plugins` array:
 
 
 <code-example path="cb-aot-compiler/rollup-config.js" region="uglify" linenums="false">
@@ -360,6 +361,7 @@ the code into an even smaller package going over the wire.
 {@a run-rollup}
 ### Run Rollup
 Execute the Rollup process with this command:
+
 <code-example language="none" class="code-shell">
   node_modules/.bin/rollup -c rollup-config.js
 </code-example>
@@ -369,6 +371,7 @@ Execute the Rollup process with this command:
 ~~~ {.l-sub-section}
 
 Windows users should surround the `rollup` command in double quotes:
+
 <code-example language="none" class="code-shell">
   "node_modules/.bin/rollup"  -c rollup-config.js
 </code-example>
@@ -400,6 +403,7 @@ Instead, load the bundle file using a single `<script>` tag **_after_** the `</b
 
 You'll need a web server to host the application.
 Use the same `lite-server` employed elsewhere in the documentation:
+
 <code-example language="none" class="code-shell">
   npm run lite
 </code-example>
@@ -419,31 +423,25 @@ Here's the pertinent source code:
 
   </code-pane>
 
-
   <code-pane title="src/app/app.component.ts" path="cb-aot-compiler/src/app/app.component.ts">
 
   </code-pane>
-
 
   <code-pane title="src/main.ts" path="cb-aot-compiler/src/main.ts">
 
   </code-pane>
 
-
   <code-pane title="src/index.html" path="cb-aot-compiler/src/index.html">
 
   </code-pane>
-
 
   <code-pane title="tsconfig-aot.json" path="cb-aot-compiler/tsconfig-aot.json">
 
   </code-pane>
 
-
   <code-pane title="rollup-config.js" path="cb-aot-compiler/rollup-config.js">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -457,6 +455,7 @@ You'll rebuild the AOT version of the application every time you make a change.
 Those _npm_ commands are long and difficult to remember.
 
 Add the following _npm_ convenience script to the `package.json` so you can compile and rollup in one command.Open a terminal window and try it.
+
 <code-example language="none" class="code-shell">
   npm run build:aot  
     
@@ -482,20 +481,21 @@ The same source code can be built both ways. Here's one way to do that.
 Notice the slight change to the `system.import` which now specifies `src/app/main-jit`.
 That's the JIT version of the bootstrap file that we preserved [above](guide/aot-compiler#bootstrap).
 Open a _different_ terminal window and enter `npm start`.
+
 <code-example language="none" class="code-shell">
   npm start
 </code-example>
 
 That compiles the app with JIT and launches the server.
 The server loads `index.html` which is still the AOT version, which you can confirm in the browser console.
-Change the address bar to `index-jit.html` and it loads the JIT version. 
+Change the address bar to `index-jit.html` and it loads the JIT version.
 This is also evident in the browser console.
 
 Develop as usual.
 The server and TypeScript compiler are in "watch mode" so your changes are reflected immediately in the browser.
 
 To see those changes in AOT, switch to the original terminal and re-run `npm run build:aot`.
-When it finishes, go back to the browser and use the back button to 
+When it finishes, go back to the browser and use the back button to
 return to the AOT version in the default `index.html`.
 
 Now you can develop JIT and AOT, side-by-side.
@@ -532,11 +532,9 @@ Here they are for comparison:
 
   </code-pane>
 
-
   <code-pane title="src/index.html (JIT)" path="toh-6/src/index.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -559,11 +557,9 @@ are evident in these `main` files which can and should reside in the same folder
 
   </code-pane>
 
-
   <code-pane title="main.ts (JIT)" path="toh-6/src/main.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -582,17 +578,16 @@ You'll need separate TypeScript configuration files such as these:
 
   </code-pane>
 
-
   <code-pane title="src/tsconfig.json (JIT)" path="toh-6/src/tsconfig.1.json">
 
   </code-pane>
-
 
 </code-tabs>
 
 
 
 ~~~ {.callout.is-helpful}
+
 
 
 <header>
@@ -649,25 +644,22 @@ Compiling with AOT presupposes certain supporting files, most of them discussed 
 
   </code-pane>
 
-
   <code-pane title="copy-dist-files.js" path="toh-6/copy-dist-files.js">
 
   </code-pane>
-
 
   <code-pane title="rollup-config.js" path="toh-6/rollup-config.js">
 
   </code-pane>
 
-
   <code-pane title="tsconfig-aot.json" path="toh-6/tsconfig-aot.json">
 
   </code-pane>
 
-
 </code-tabs>
 
 Extend the `scripts` section of the `package.json` with these npm scripts:Copy the AOT distribution files into the `/aot` folder with the node script:
+
 <code-example language="none" class="code-shell">
   node copy-dist-files
 </code-example>
@@ -681,6 +673,7 @@ You won't do that again until there are updates to `zone.js` or the `core-js` sh
 ~~~
 
 Now AOT-compile the app and launch it with the `lite-server`:
+
 <code-example language="none" class="code-shell">
   npm run build:aot && npm run serve:aot  
     
@@ -697,11 +690,13 @@ But the <a href="https://github.com/danvk/source-map-explorer/blob/master/README
 tool can be quite revealing.
 
 Install it:
+
 <code-example language="none" class="code-shell">
   npm install source-map-explorer --save-dev
 </code-example>
 
 Run the following command to generate the map.
+
 
 <code-example language="none" class="code-shell">
   node_modules/.bin/source-map-explorer aot/dist/build.js  
@@ -716,5 +711,4 @@ Here's the map for _Tour of Heroes_.
 <figure class='image-display'>
   <img src="assets/images/cookbooks/aot-compiler/toh6-bundle.png" alt="TOH-6-bundle">  </img>
 </figure>
-
 </a>

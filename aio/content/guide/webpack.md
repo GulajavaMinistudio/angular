@@ -6,6 +6,7 @@ Create Angular applications with a Webpack based tooling.
 
 @description
 
+
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}  
     .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
@@ -85,6 +86,7 @@ It opens the `@angular/core` file and follows _its_ network of `import` statemen
 
 Then it **outputs** these files to the `app.js` _bundle file_ designated in configuration:
 
+
 <div class='code-example'>
 
   <code-example name="webpack.config.js (single output)" language="javascript">
@@ -93,7 +95,6 @@ Then it **outputs** these files to the `app.js` _bundle file_ designated in conf
         }    
         
   </code-example>
-
 
 </div>
 
@@ -108,6 +109,7 @@ It's preferable to separate the volatile application app code from comparatively
 
 Change the configuration so that it has two entry points, `main.ts` and `vendor.ts`:
 
+
 <div class='code-example'>
 
   <code-example language="javascript">
@@ -121,7 +123,6 @@ Change the configuration so that it has two entry points, `main.ts` and `vendor.
         }    
         
   </code-example>
-
 
 </div>
 
@@ -156,6 +157,7 @@ Webpack _itself_ only understands JavaScript files.
 Teach it to transform non-JavaScript file into their JavaScript equivalents with *loaders*.
 Configure loaders for TypeScript and CSS as follows.
 
+
 <div class='code-example'>
 
   <code-example language="javascript">
@@ -172,11 +174,11 @@ Configure loaders for TypeScript and CSS as follows.
         
   </code-example>
 
-
 </div>
 
 When Webpack encounters `import` statements like the following, 
 it applies the `test` RegEx patterns. 
+
 
 <div class='code-example'>
 
@@ -186,7 +188,6 @@ it applies the `test` RegEx patterns.
         import 'uiframework/dist/uiframework.css';    
         
   </code-example>
-
 
 </div>
 
@@ -208,6 +209,7 @@ Then it applies the `style` loader to append the css inside `<style>` elements o
 Webpack has a build pipeline with well-defined phases.
 Tap into that pipeline with plugins such as the `uglify` minification plugin:
 
+
 <div class='code-example'>
 
   <code-example language="javascript">
@@ -216,7 +218,6 @@ Tap into that pipeline with plugins such as the `uglify` minification plugin:
         ]    
         
   </code-example>
-
 
 </div>
 
@@ -231,6 +232,7 @@ After that brief orientation, you are ready to build your own Webpack configurat
 Begin by setting up the development environment.
 
 Create a new project folder.
+
 <code-example language="sh" class="code-shell">
   mkdir angular-webpack  
     cd    angular-webpack  
@@ -246,26 +248,21 @@ Add these files:
 
   </code-pane>
 
-
   <code-pane title="src/tsconfig.json" path="webpack/src/tsconfig.1.json">
 
   </code-pane>
-
 
   <code-pane title="webpack.config.js" path="webpack/webpack.config.js">
 
   </code-pane>
 
-
   <code-pane title="karma.conf.js" path="webpack/karma.webpack.conf.js">
 
   </code-pane>
 
-
   <code-pane title="config/helpers.js" path="webpack/config/helpers.js">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -284,6 +281,7 @@ They are listed in the updated `packages.json`.
 ~~~
 
 Open a terminal window and install the npm packages.
+
 <code-example language="sh" class="code-shell">
   npm install  
     
@@ -309,6 +307,7 @@ Add a `polyfills.ts` like this one to the `src/` folder.
 
 
 ~~~ {.callout.is-critical}
+
 
 
 <header>
@@ -376,13 +375,13 @@ This `entry` object defines the three bundles:
 The app will `import` dozens if not hundreds of JavaScript and TypeScript files.
 You could write `import` statements with explicit extensions like this example:
 
+
 <div class='code-example'>
 
   <code-example language="typescript">
     import { AppComponent } from './app.component.ts';    
         
   </code-example>
-
 
 </div>
 
@@ -525,6 +524,7 @@ other configuration options in this file.
 
 Grab the app code at the end of this guide and try:
 
+
 <code-example language="sh" class="code-shell">
   npm start  
     
@@ -567,6 +567,7 @@ Thanks to the `DefinePlugin` and the `ENV` variable defined at top, you can enab
 </code-example>
 
 Grab the app code at the end of this guide and try:
+
 
 <code-example language="sh" class="code-shell">
   npm run build  
@@ -616,6 +617,7 @@ Each spec file imports all&mdash;and only&mdash;the application source code that
 Webpack loads just _those_ specific application files and ignores the other files that you aren't testing.
 Grab the app code at the end of this guide and try:
 
+
 <code-example language="sh" class="code-shell">
   npm test  
     
@@ -633,16 +635,13 @@ Webpack techniques covered in this guide.
 
   </code-pane>
 
-
   <code-pane title="src/main.ts" path="webpack/src/main.ts">
 
   </code-pane>
 
-
   <code-pane title="src/assets/css/styles.css" path="webpack/src/assets/css/styles.css">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -654,32 +653,27 @@ Webpack techniques covered in this guide.
 
   </code-pane>
 
-
   <code-pane title="src/app/app.component.html" path="webpack/src/app/app.component.html">
 
   </code-pane>
-
 
   <code-pane title="src/app/app.component.css" path="webpack/src/app/app.component.css">
 
   </code-pane>
 
-
   <code-pane title="src/app/app.component.spec.ts" path="webpack/src/app/app.component.spec.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/app.module.ts" path="webpack/src/app/app.module.ts">
 
   </code-pane>
 
-
 </code-tabs>
 
 The <code>app.component.html</code> displays this downloadable Angular logo
-<a href="https://raw.githubusercontent.com/angular/angular.io/master/publicassets/images/logos/angular2/angular.png" target="_blank">
-<img src="assets/images/logos/angular2/angular.png" height="40px" title="download Angular logo"></a>.
+<a href="assets/images/logos/angular/angular.png" target="_blank">
+<img src="assets/images/logos/angular/angular.png" height="40px" title="download Angular logo"></a>.
 Create a folder called `images` under the project's `assets` folder, then right-click (Cmd+click on Mac) 
 on the image and download it to that folder.
 
@@ -693,11 +687,9 @@ Here again are the TypeScript entry-point files that define the `polyfills` and 
 
   </code-pane>
 
-
   <code-pane title="src/vendor.ts" path="webpack/src/vendor.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

@@ -221,6 +221,7 @@ Given this configuration, when the browser URL for this application becomes `/he
 the router matches that URL to the route path `/heroes` and displays the `HeroListComponent`
 _after_ a `RouterOutlet` that you've placed in the host view's HTML.
 
+
 <code-example language="html">
   &lt;router-outlet>&lt;/router-outlet>  
     &lt;!-- Routed views go here -->  
@@ -275,9 +276,11 @@ The shell component has a `RouterOutlet` where it can display views produced by 
 It has `RouterLink`s that users can click to navigate via the router.
 
 Here are the key `Router` terms and their meanings:
+
 <style>
   td, th {vertical-align: top}
 </style>
+
 
 
 <table>
@@ -288,14 +291,11 @@ Here are the key `Router` terms and their meanings:
       Router Part
     </th>
 
-
     <th>
       Meaning
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -303,15 +303,12 @@ Here are the key `Router` terms and their meanings:
       <code>Router</code>
     </td>
 
-
     <td>
       Displays the application component for the active URL.      
             Manages navigation from one component to the next.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -319,15 +316,12 @@ Here are the key `Router` terms and their meanings:
       <code>RouterModule</code>
     </td>
 
-
     <td>
       A separate Angular module that provides the necessary service providers      
             and directives for navigating through application views.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -335,14 +329,11 @@ Here are the key `Router` terms and their meanings:
       <code>Routes</code>
     </td>
 
-
     <td>
       Defines an array of Routes, each mapping a URL path to a component.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -350,15 +341,12 @@ Here are the key `Router` terms and their meanings:
       <code>Route</code>
     </td>
 
-
     <td>
       Defines how the router should navigate to a component based on a URL pattern.      
             Most routes consist of a path and a component type.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -366,14 +354,11 @@ Here are the key `Router` terms and their meanings:
       <code>RouterOutlet</code>
     </td>
 
-
     <td>
       The directive (<code>&lt;router-outlet></code>) that marks where the router displays a view.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -381,16 +366,13 @@ Here are the key `Router` terms and their meanings:
       <code>RouterLink</code>
     </td>
 
-
     <td>
       The directive for binding a clickable HTML element to      
             a route. Clicking an element with a <code>routerLink</code> directive      
             that is bound to a <i>string</i> or a <i>link parameters array</i> triggers a navigation.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -398,15 +380,12 @@ Here are the key `Router` terms and their meanings:
       <code>RouterLinkActive</code>
     </td>
 
-
     <td>
       The directive for adding/removing classes from an HTML element when an associated      
             <code>routerLink</code> contained on or inside the element becomes active/inactive.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -414,15 +393,12 @@ Here are the key `Router` terms and their meanings:
       <code>ActivatedRoute</code>
     </td>
 
-
     <td>
       A service that is provided to each route component that contains route specific      
             information such as route parameters, static data, resolve data, global query params, and the global fragment.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -430,15 +406,12 @@ Here are the key `Router` terms and their meanings:
       <code>RouterState</code>
     </td>
 
-
     <td>
       The current state of the router including a tree of the currently activated      
             routes together with convenience methods for traversing the route tree.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -446,16 +419,13 @@ Here are the key `Router` terms and their meanings:
       <b><i>Link parameters array</i></b>
     </td>
 
-
     <td>
       An array that the router interprets as a routing instruction.      
             You can bind that array to a <code>RouterLink</code> or pass the array as an argument to      
             the <code>Router.navigate</code> method.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -463,15 +433,12 @@ Here are the key `Router` terms and their meanings:
       <b><i>Routing component</i></b>
     </td>
 
-
     <td>
       An Angular component with a <code>RouterOutlet</code> that displays views based on router navigations.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -516,11 +483,13 @@ Try it by clicking on this <live-example title="Hero Employment Agency Live Exam
 Once the app warms up, you'll see a row of navigation buttons
 and the *Heroes* view with its list of heroes.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/hero-list.png' alt="Hero List" width="250">  </img>
 </figure>
 
 Select one hero and the app takes you to a hero editing screen.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/hero-detail.png' alt="Crisis Center Detail" width="250">  </img>
 </figure>
@@ -535,6 +504,7 @@ Angular app navigation updates the browser history as normal web navigation does
 
 Now click the *Crisis Center* link for a list of ongoing crises.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/crisis-center-list.png' alt="Crisis Center List" width="250">  </img>
 </figure>
@@ -544,6 +514,7 @@ The _Crisis Detail_ appears in a child view on the same page, beneath the list.
 
 Alter the name of a crisis. 
 Notice that the corresponding name in the crisis list does _not_ change.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250">  </img>
@@ -557,6 +528,7 @@ Both buttons navigate back to the *Crisis Center* and its list of crises.
 Click the browser back button or the "Heroes" link instead.
 
 Up pops a dialog box.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/router/confirm-dialog.png' alt="Confirm Dialog" width="250">  </img>
@@ -575,6 +547,7 @@ Proceed to the first application milestone.
 ## Milestone 1: Getting started with the router
 
 Begin with a simple version of the app that navigates between two empty views.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/router-1-anim.gif' alt="App in action" width="250">  </img>
 </figure>
@@ -623,12 +596,14 @@ set the `href` value in **`index.html`** *exactly* as shown here.
 ~~~ {.callout.is-important}
 
 
+
 <header>
   Live example note
 </header>
 
 A live coding environment like Plunker sets the application base address dynamically so you can't specify a fixed address.
 That's why the example code replaces the `<base href...>` with a script that writes the `<base>` tag on the fly.
+
 
 <code-example language="html">
   &lt;script>document.write('&lt;base href="' + document.location + '" />');&lt;/script>  
@@ -705,6 +680,7 @@ Providing the `RouterModule` in the `AppModule` makes the Router available every
 
 The root `AppComponent` is the application shell. It has a title, a navigation bar with two links,
 and a *router outlet* where the router swaps views on and off the page. Here's what you get:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/router/shell-and-outlet.png' alt="Shell" width="300">  </img>
@@ -849,6 +825,7 @@ The browser address bar continues to point to the invalid URL.
 
 When the application launches, the initial URL in the browser bar is something like:
 
+
 <code-example>
   localhost:3000  
     
@@ -929,6 +906,7 @@ Here are the details for readers inclined to build the sample through to this mi
 
 The starter app's structure looks like this:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -941,65 +919,51 @@ The starter app's structure looks like this:
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
-
 
         <aio-file>
           crisis-list.component.ts
         </aio-file>
 
-
         <aio-file>
           hero-list.component.ts
         </aio-file>
-
 
         <aio-file>
           not-found.component.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -1012,36 +976,29 @@ Here are the files discussed in this milestone.
 
   </code-pane>
 
-
   <code-pane title="app.module.ts" path="router/src/app/app.module.1.ts">
 
   </code-pane>
-
 
   <code-pane title="main.ts" path="router/src/main.ts">
 
   </code-pane>
 
-
   <code-pane title="hero-list.component.ts" path="router/src/app/hero-list.component.ts">
 
   </code-pane>
-
 
   <code-pane title="crisis-list.component.ts" path="router/src/app/crisis-list.component.ts">
 
   </code-pane>
 
-
   <code-pane title="not-found.component.ts" path="router/src/app/not-found.component.ts">
 
   </code-pane>
 
-
   <code-pane title="index.html" path="router/src/index.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -1142,6 +1099,7 @@ from the <live-example name="toh-4" title="Tour of Heroes: Services example code
 
 Here's how the user will experience this version of the app:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/router-2-anim.gif' alt="App in action">  </img>
 </figure>
@@ -1183,6 +1141,7 @@ Follow these steps:
 
 When you're done, you'll have these *hero management* files:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -1191,24 +1150,19 @@ When you're done, you'll have these *hero management* files:
       hero-detail.component.ts
     </aio-file>
 
-
     <aio-file>
       hero-list.component.ts
     </aio-file>
-
 
     <aio-file>
       hero.service.ts
     </aio-file>
 
-
     <aio-file>
       heroes.module.ts
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -1395,6 +1349,7 @@ In this case, the router will insert the `id` of a hero into that slot.
 If you tell the router to navigate to the detail component and display "Magneta", 
 you expect a hero id to appear in the browser URL like this:
 
+
 <code-example format="nocode">
   localhost:3000/hero/15  
     
@@ -1405,6 +1360,7 @@ pattern and go to the same "Magneta" detail view.
 
 
 ~~~ {.callout.is-helpful}
+
 
 
 <header>
@@ -1677,6 +1633,7 @@ It holds the _path to the `HeroListComponent`_:
 Use [*route parameters*](guide/router#route-parameters) to specify a *required* parameter value *within* the route URL
 as you do when navigating to the `HeroDetailComponent` in order to view the hero with *id* 15:
 
+
 <code-example format="nocode">
   localhost:3000/hero/15  
     
@@ -1685,6 +1642,7 @@ as you do when navigating to the `HeroDetailComponent` in order to view the hero
 You can also add *optional* information to a route request.
 For example, when returning to the heroes list from the hero detail view, 
 it would be nice if the viewed hero was preselected in the list.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/router/selected-hero.png' alt="Selected hero">  </img>
@@ -1758,6 +1716,7 @@ The application still works. Clicking "back" returns to the hero list view.
 
 Look at the browser address bar.
 It should look something like this, depending on where you run it:
+
 
 <code-example language="bash">
   localhost:3000/heroes;id=15;foo=foo  
@@ -1864,6 +1823,7 @@ Look for it within the repeated `<li>` tag as shown here:
 </code-example>
 
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/selected-hero.png' alt="Selected List">  </img>
 </figure>
@@ -1946,6 +1906,7 @@ You've learned how to do the following:
 
 After these changes, the folder structure looks like this:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -1960,88 +1921,69 @@ After these changes, the folder structure looks like this:
             hero-detail.component.ts
           </aio-file>
 
-
           <aio-file>
             hero-list.component.ts
           </aio-file>
-
 
           <aio-file>
             hero.service.ts
           </aio-file>
 
-
           <aio-file>
             heroes.module.ts
           </aio-file>
-
 
           <aio-file>
             heroes-routing.module.ts
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-file>
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
-
 
         <aio-file>
           app-routing.module.ts
         </aio-file>
 
-
         <aio-file>
           crisis-list.component.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -2053,41 +1995,33 @@ After these changes, the folder structure looks like this:
 
   </code-pane>
 
-
   <code-pane title="app.module.ts" path="router/src/app/app.module.3.ts">
 
   </code-pane>
-
 
   <code-pane title="app-routing.module.ts" path="router/src/app/app-routing.module.2.ts">
 
   </code-pane>
 
-
   <code-pane title="hero-list.component.ts" path="router/src/app/heroes/hero-list.component.ts">
 
   </code-pane>
-
 
   <code-pane title="hero-detail.component.ts" path="router/src/app/heroes/hero-detail.component.ts">
 
   </code-pane>
 
-
   <code-pane title="hero.service.ts" path="router/src/app/heroes/hero.service.ts">
 
   </code-pane>
-
 
   <code-pane title="heroes.module.ts" path="router/src/app/heroes/heroes.module.ts">
 
   </code-pane>
 
-
   <code-pane title="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2102,8 +2036,8 @@ It's time to add real features to the app's current placeholder crisis center.
 Begin by imitating the heroes feature:
 
 - Delete the placeholder crisis center file.
-- Create !{_an} `!{_appDir}/crisis-center` folder.
-- Copy the files from `!{_appDir}/heroes` into the new crisis center folder.
+- Create an `app/crisis-center` folder.
+- Copy the files from `app/heroes` into the new crisis center folder.
 - In the new files, change every mention of "hero" to "crisis", and "heroes" to "crises".
 
 You'll turn the `CrisisService` into a purveyor of mock crises instead of mock heroes:
@@ -2122,7 +2056,7 @@ and decide later if the differences are worthwhile.
 
 In keeping with the
 <a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" title="Separation of Concerns">*Separation of Concerns* principle</a>,
-changes to the *Crisis Center* won't affect the `!{_AppModuleVsAppComp}` or
+changes to the *Crisis Center* won't affect the `AppModule` or
 any other feature's component.
 
 ~~~
@@ -2142,6 +2076,7 @@ to conform to the following recommended pattern for Angular applications:
 * Feature area routes rarely (if ever) cross with routes of other features.
 
 If your app had many feature areas, the app component trees might look like this:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/router/component-tree.png' alt="Component Tree">  </img>
@@ -2228,6 +2163,7 @@ Apply that logic to navigation within the crisis center for which the parent pat
 `/crisis-center/2` (`/crisis-center` + `''` +  `'/2'`).
 
 The absolute URL for the latter example, including the `localhost` origin, is
+
 <code-example>
   localhost:3000/crisis-center/2  
     
@@ -2400,6 +2336,7 @@ Create a new component named `ComposeMessageComponent` in `src/app/compose-messa
 It displays a simple form with a header, an input box for the message,
 and two buttons, "Send" and "Cancel".
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/router/contact-popup.png' alt="Contact popup" width="250">  </img>
 </figure>
@@ -2413,11 +2350,9 @@ Here's the component and its template:
 
   </code-pane>
 
-
   <code-pane title="src/app/compose-message.component.html" path="router/src/app/compose-message.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2487,6 +2422,7 @@ But to target a named outlet, you must use the richer, more verbose syntax.
 Navigate to the _Crisis Center_ and click "Contact".
 you should see something like the following URL in the browser address bar.
 
+
 <code-example>
   http://.../crisis-center(popup:compose)  
     
@@ -2498,6 +2434,7 @@ The interesting part of the URL follows the `...`:
 * The secondary route consists of an outlet name (`popup`), a `colon` separator, and the secondary route path (`compose`).
 
 Click the _Heroes_ link and look at the URL again.
+
 
 <code-example>
   http://.../heroes(popup:compose)
@@ -2618,6 +2555,7 @@ Create an `admin` folder with a feature module file, a routing configuration fil
 
 The admin feature file structure looks like this:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -2626,34 +2564,27 @@ The admin feature file structure looks like this:
       admin-dashboard.component.ts
     </aio-file>
 
-
     <aio-file>
       admin.component.ts
     </aio-file>
-
 
     <aio-file>
       admin.module.ts
     </aio-file>
 
-
     <aio-file>
       admin-routing.module.ts
     </aio-file>
-
 
     <aio-file>
       manage-crises.component.ts
     </aio-file>
 
-
     <aio-file>
       manage-heroes.component.ts
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -2667,26 +2598,21 @@ feature module, a dashboard route and two unfinished components to manage crises
 
   </code-pane>
 
-
   <code-pane title="src/app/admin/admin.component.ts" path="router/src/app/admin/admin.component.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/admin/admin.module.ts" path="router/src/app/admin/admin.module.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/admin/manage-crises.component.ts" path="router/src/app/admin/manage-crises.component.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/admin/manage-heroes.component.ts" path="router/src/app/admin/manage-heroes.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2833,16 +2759,13 @@ Import and add the `LoginRoutingModule` to the `AppModule` imports as well.
 
   </code-pane>
 
-
   <code-pane title="src/app/login.component.ts" path="router/src/app/login.component.1.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/login-routing.module.ts" path="router/src/app/login-routing.module.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3007,7 +2930,7 @@ Add the `Guard` to the crisis detail route in `crisis-center-routing.module.ts` 
 
 </code-example>
 
-Add the `Guard` to the main `AppRoutingModule` `providers` !{_array} so the 
+Add the `Guard` to the main `AppRoutingModule` `providers` array so the 
 `Router` can inject it during the navigation process.
 
 
@@ -3072,7 +2995,7 @@ canceling the previous in-flight navigation to the `CrisisDetailComponent`.
 Import this resolver in the `crisis-center-routing.module.ts` 
 and add a `resolve` object to the `CrisisDetailComponent` route configuration.
 
-Remember to add the `CrisisDetailResolver` service to the `CrisisCenterRoutingModule`'s `providers` !{_array}.
+Remember to add the `CrisisDetailResolver` service to the `CrisisCenterRoutingModule`'s `providers` array.
 
 
 <code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" linenums="false" title="src/app/crisis-center/crisis-center-routing.module.ts (resolver)" region="crisis-detail-resolver">
@@ -3107,41 +3030,33 @@ The relevant *Crisis Center* code for this milestone follows.
 
   </code-pane>
 
-
   <code-pane title="crisis-center-home.component.ts" path="router/src/app/crisis-center/crisis-center-home.component.ts">
 
   </code-pane>
-
 
   <code-pane title="crisis-center.component.ts" path="router/src/app/crisis-center/crisis-center.component.ts">
 
   </code-pane>
 
-
   <code-pane title="crisis-center-routing.module.ts" path="router/src/app/crisis-center/crisis-center-routing.module.4.ts">
 
   </code-pane>
-
 
   <code-pane title="crisis-list.component.ts" path="router/src/app/crisis-center/crisis-list.component.ts">
 
   </code-pane>
 
-
   <code-pane title="crisis-detail.component.ts" path="router/src/app/crisis-center/crisis-detail.component.ts">
 
   </code-pane>
-
 
   <code-pane title="crisis-detail-resolver.service.ts" path="router/src/app/crisis-center/crisis-detail-resolver.service.ts">
 
   </code-pane>
 
-
   <code-pane title="crisis.service.ts" path="router/src/app/crisis-center/crisis.service.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3153,11 +3068,9 @@ The relevant *Crisis Center* code for this milestone follows.
 
   </code-pane>
 
-
   <code-pane title="can-deactivate-guard.service.ts" path="router/src/app/can-deactivate-guard.service.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3323,7 +3236,7 @@ The router sets the `canLoad()` method's `route` parameter to the intended desti
 The `checkLogin()` method redirects to that URL once the user has logged in.
 
 Now import the `AuthGuard` into the `AppRoutingModule` and add the `AuthGuard` to the `canLoad` 
-!{_array} for the `admin` route. 
+array for the `admin` route. 
 The completed admin route looks like this:
 
 
@@ -3401,16 +3314,13 @@ Here are the updated modules _before enabling preload_:
 
   </code-pane>
 
-
   <code-pane title="app-routing.module.ts" path="router/src/app/app-routing.module.6.ts" region="preload-v1">
 
   </code-pane>
 
-
   <code-pane title="crisis-center-routing.module.ts" path="router/src/app/crisis-center/crisis-center-routing.module.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3647,6 +3557,7 @@ one that would otherwise require a page load.
 
 Here's the *Crisis Center* URL in this "HTML5 pushState" style:
 
+
 <code-example format="nocode">
   localhost:3002/crisis-center/  
     
@@ -3656,6 +3567,7 @@ Older browsers send page requests to the server when the location URL changes
 _unless_ the change occurs after a "#" (called the "hash").
 Routers can take advantage of this exception by composing in-application route
 URLs with hashes.  Here's a "hash URL" that routes to the *Crisis Center*.
+
 
 <code-example format="nocode">
   localhost:3002/src/#/crisis-center/  

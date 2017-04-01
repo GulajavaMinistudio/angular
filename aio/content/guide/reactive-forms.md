@@ -310,6 +310,7 @@ Add the `bootstrap` _CSS stylesheet_ to the head of `index.html`:
 
 Now that everything is wired up, the browser should display something like this: 
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl">  </img>
 </figure>
@@ -396,6 +397,7 @@ closing `form` tag in the `hero-detail.component.html`:
 
 The `heroForm.value` returns the _form model_.
 Piping it through the `JsonPipe` renders the model as JSON in the browser:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/json-output.png" width="400px" alt="JSON output">  </img>
@@ -485,6 +487,7 @@ Update the diagnostic message at the bottom of the template to display the form'
 </code-example>
 
 The browser displays the following:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl">  </img>
@@ -594,6 +597,7 @@ The new _address_ HTML looks like this:
 After these changes, the JSON output in the browser shows the revised _form model_
 with the nested address `FormGroup`: 
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/address-group.png" width="400px" alt="JSON output">  </img>
 </figure>
@@ -627,9 +631,11 @@ To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notat
 
 You can use this technique to display _any_ property of a `FormControl` 
 such as one of the following:
+
 <style>
   td, th {vertical-align: top}
 </style>
+
 
 
 <table width="100%">
@@ -638,11 +644,9 @@ such as one of the following:
 
   </col>
 
-
   <col width="90%">
 
   </col>
-
 
   <tr>
 
@@ -650,14 +654,11 @@ such as one of the following:
       Property
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -665,14 +666,11 @@ such as one of the following:
       <code>myControl.value</code>
     </td>
 
-
     <td>
       the value of a `FormControl`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -680,15 +678,12 @@ such as one of the following:
       <code>myControl.status</code>
     </td>
 
-
     <td>
       the validity of a `FormControl`. Possible values: `VALID`,       
              `INVALID`, `PENDING`, or `DISABLED`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -696,15 +691,12 @@ such as one of the following:
       <code>myControl.pristine</code>
     </td>
 
-
     <td>
       `true` if the user has _not_ changed the value in the UI.      
             Its opposite is `myControl.dirty`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -712,16 +704,13 @@ such as one of the following:
       <code>myControl.untouched</code>
     </td>
 
-
     <td>
       `true` if the control user has not yet entered the HTML control      
              and triggered its blur event. Its opposite is `myControl.touched`.      
                                      
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -916,6 +905,7 @@ A little refactoring and `ngOnChanges` becomes this:
 The `HeroDetailComponent` is a nested sub-component of the `HeroListComponent` in a _master/detail_ view.
 Together they look a bit like this:
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent">  </img>
 </figure>
@@ -1102,6 +1092,7 @@ You do not want to save changes when the user clicks the _Add a Secret Lair_ but
 Back in the browser, select the hero named "Magneta".
 "Magneta" doesn't have an address, as you can see in the diagnostic JSON at the bottom of the form.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array">  </img>
 </figure>
@@ -1166,6 +1157,7 @@ The `HeroDetailComponent` captures user input but it doesn't do anything with it
 In a real app, you'd probably save those hero changes.
 In a real app, you'd also be able to revert unsaved changes and resume editing.
 After you implement both features in this section, the form will look like this:
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons">  </img>
@@ -1255,41 +1247,33 @@ The key files of the final version are as follows:
 
   </code-pane>
 
-
   <code-pane title="src/app/app.module.ts" path="reactive-forms/src/app/app.module.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/hero-detail.component.ts" path="reactive-forms/src/app/hero-detail.component.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/hero-detail.component.html" path="reactive-forms/src/app/hero-detail.component.html">
 
   </code-pane>
-
 
   <code-pane title="src/app/hero-list.component.html" path="reactive-forms/src/app/hero-list.component.html">
 
   </code-pane>
 
-
   <code-pane title="src/app/hero-list.component.ts" path="reactive-forms/src/app/hero-list.component.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/data-model.ts" path="reactive-forms/src/app/data-model.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/hero.service.ts" path="reactive-forms/src/app/hero.service.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

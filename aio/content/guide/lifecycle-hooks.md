@@ -7,6 +7,7 @@ Angular calls lifecycle hook methods on directives and components as it creates,
 @description
 
 
+
 <figure>
   <img src="assets/images/devguide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px">  </img>
 </figure>
@@ -20,7 +21,26 @@ Angular offers **lifecycle hooks**
 that provide visibility into these key life moments and the ability to act when they occur.
 
 A directive has the same set of lifecycle hooks, minus the hooks that are specific to component content and views.
-<br class="l-clear-both">Try the <live-example></live-example>.
+<br class="l-clear-both">
+## Contents
+* [Component lifecycle hooks overview](guide/lifecycle-hooks#hooks-overview)
+* [Lifecycle sequence](guide/lifecycle-hooks#hooks-purpose-timing)
+* [Interfaces are optional (technically)](guide/lifecycle-hooks#interface-optional)
+* [Other Angular lifecycle hooks](guide/lifecycle-hooks#other-lifecycle-hooks)
+* [Lifecycle examples](guide/lifecycle-hooks#the-sample)
+* [Peek-a-boo: all hooks](guide/lifecycle-hooks#peek-a-boo)
+* [Spying OnInit and OnDestroy](guide/lifecycle-hooks#spy)
+  * [OnInit](guide/lifecycle-hooks#oninit)
+  * [OnDestroy](guide/lifecycle-hooks#ondestroy)
+* [OnChanges](guide/lifecycle-hooks#onchanges)
+* [DoCheck](guide/lifecycle-hooks#docheck)
+* [AfterView](guide/lifecycle-hooks#afterview)
+  * [Abide by the unidirectional data flow rule](guide/lifecycle-hooks#wait-a-tick)
+* [AfterContent](guide/lifecycle-hooks#aftercontent)
+  * [Content projection](guide/lifecycle-hooks#content-projection)
+  * [AfterContent hooks](guide/lifecycle-hooks#aftercontent-hooks)
+  * [No unidirectional flow worries with _AfterContent_](guide/lifecycle-hooks#no-unidirectional-flow-worries)
+Try the <live-example></live-example>.
 
 
 {@a hooks-overview}
@@ -32,7 +52,7 @@ Developers can tap into key moments in that lifecycle by implementing
 one or more of the *lifecycle hook* interfaces in the Angular `core` library.
 
 Each interface has a single hook method whose name is the interface name prefixed with `ng`.
-For example, the `OnInit` interface has a hook method named `ngOnInit()` 
+For example, the `OnInit` interface has a hook method named `ngOnInit()`
 that Angular calls shortly after creating the component:
 
 <code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" linenums="false">
@@ -48,17 +68,16 @@ Angular only calls a directive/component hook method *if it is defined*.
 ## Lifecycle sequence
 *After* creating a component/directive by calling its constructor, Angular
 calls the lifecycle hook methods in the following sequence at specific moments:
+
 <table width="100%">
 
   <col width="20%">
 
   </col>
 
-
   <col width="80%">
 
   </col>
-
 
   <tr>
 
@@ -66,21 +85,17 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       Hook
     </th>
 
-
     <th>
       Purpose and Timing
     </th>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngOnChanges()</code>
     </td>
-
 
     <td>
       Respond when Angular (re)sets data-bound input properties.      
@@ -90,53 +105,44 @@ calls the lifecycle hook methods in the following sequence at specific moments:
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngOnInit()</code>
     </td>
 
-
     <td>
       Initialize the directive/component after Angular first displays the data-bound properties      
             and sets the directive/component's input properties.      
                   
-            Called _once_, after the _first_ `ngOnChanges()`.       
+            Called _once_, after the _first_ `ngOnChanges()`.      
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngDoCheck()</code>
     </td>
 
-
     <td>
-      Detect and act upon changes that Angular can't or won't detect on its own.       
+      Detect and act upon changes that Angular can't or won't detect on its own.      
                   
             Called during every change detection run, immediately after `ngOnChanges()` and `ngOnInit()`.      
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngAfterContentInit()</code>
     </td>
-
 
     <td>
       Respond after Angular projects external content into the component's view.      
@@ -147,16 +153,13 @@ calls the lifecycle hook methods in the following sequence at specific moments:
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngAfterContentChecked()</code>
     </td>
-
 
     <td>
       Respond after Angular checks the content projected into the component.      
@@ -167,16 +170,13 @@ calls the lifecycle hook methods in the following sequence at specific moments:
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngAfterViewInit()</code>
     </td>
-
 
     <td>
       Respond after Angular initializes the component's views and child views.      
@@ -187,16 +187,13 @@ calls the lifecycle hook methods in the following sequence at specific moments:
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngAfterViewChecked()</code>
     </td>
-
 
     <td>
       Respond after Angular checks the component's views and child views.      
@@ -207,31 +204,44 @@ calls the lifecycle hook methods in the following sequence at specific moments:
             
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <code>ngOnDestroy</code>
     </td>
 
-
     <td>
       Cleanup just before Angular destroys the directive/component.      
-            Unsubscribe Observables and detach event handlers to avoid memory leaks.            
+            Unsubscribe Observables and detach event handlers to avoid memory leaks.      
                   
             Called _just before_ Angular destroys the directive/component.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
+
+
+{@a interface-optional}
+
+ ## Interfaces are optional (technically)
+
+The interfaces are optional for JavaScript and Typescript developers from a purely technical perspective.
+The JavaScript language doesn't have interfaces.
+Angular can't see TypeScript interfaces at runtime because they disappear from the transpiled JavaScript.
+
+Fortunately, they aren't necessary.
+You don't have to add the lifecycle hook interfaces to directives and components to benefit from the hooks themselves.
+
+Angular instead inspects directive and component classes and calls the hook methods *if they are defined*.
+Angular finds and calls methods like `ngOnInit()`, with or without the interfaces.
+
+Nonetheless, it's good practice to add interfaces to TypeScript directive classes
+in order to benefit from strong typing and editor tooling.
 
 
 {@a other-lifecycle-hooks}
@@ -239,7 +249,6 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 ## Other Angular lifecycle hooks
 
 Other Angular sub-systems may have their own lifecycle hooks apart from these component hooks.
-
 3rd party libraries might implement their hooks as well in order to give developers more
 control over how these libraries are used.
 
@@ -254,17 +263,16 @@ a *child* component that illustrates one or more of the lifecycle hook methods.
 
 Here's a brief description of each exercise:
 
+
 <table width="100%">
 
   <col width="20%">
 
   </col>
 
-
   <col width="80%">
 
   </col>
-
 
   <tr>
 
@@ -272,37 +280,30 @@ Here's a brief description of each exercise:
       Component
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <a href="#peek-a-boo">Peek-a-boo</a>
     </td>
-
 
     <td>
       Demonstrates every lifecycle hook.      
             Each hook method writes to the on-screen log.
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <a href="#spy">Spy</a>
     </td>
-
 
     <td>
       Directives have lifecycle hooks too.      
@@ -313,16 +314,13 @@ Here's a brief description of each exercise:
             managed by the parent `SpyComponent`.
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <a href="#onchanges">OnChanges</a>
     </td>
-
 
     <td>
       See how Angular calls the `ngOnChanges()` hook with a `changes` object      
@@ -330,48 +328,39 @@ Here's a brief description of each exercise:
             Shows how to interpret the `changes` object.
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <a href="#docheck">DoCheck</a>
     </td>
-
 
     <td>
       Implements an `ngDoCheck()` method with custom change detection.      
             See how often Angular calls this hook and watch it post changes to a log.
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <a href="#afterview">AfterView</a>
     </td>
-
 
     <td>
       Shows what Angular means by a *view*.      
             Demonstrates the `ngAfterViewInit` and `ngAfterViewChecked` hooks.
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       <a href="#aftercontent">AfterContent</a>
     </td>
-
 
     <td>
       Shows how to project external content into a component and      
@@ -379,16 +368,13 @@ Here's a brief description of each exercise:
             Demonstrates the `ngAfterContentInit` and `ngAfterContentChecked` hooks.
     </td>
 
-
   </tr>
 
-
-  <tr style=top>
+  <tr style='vertical-align:top'>
 
     <td>
       Counter
     </td>
-
 
     <td>
       Demonstrates a combination of a component and a directive      
@@ -401,9 +387,7 @@ Here's a brief description of each exercise:
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -419,6 +403,7 @@ You would rarely, if ever, implement all of the interfaces like this.
 The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
+
 <figure class='image-display'>
   <img src="assets/images/devguide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">  </img>
 </figure>
@@ -486,6 +471,7 @@ Here it is attached to the repeated hero `<div>`:
 Each spy's birth and death marks the birth and death of the attached hero `<div>`
 with an entry in the *Hook Log* as seen here:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">  </img>
 </figure>
@@ -510,7 +496,7 @@ Experienced developers agree that components should be cheap and safe to constru
 ~~~ {.l-sub-section}
 
 Misko Hevery, Angular team lead,
-[explains why](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/) 
+[explains why](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/)
 you should avoid complex constructor logic.
 
 
@@ -522,7 +508,7 @@ created under test or before you decide to display it.
 Constructors should do no more than set the initial local variables to simple values.
 
 An `ngOnInit()` is a good place for a component to fetch its initial data. The
-[Tour of Heroes Tutorial](tutorial/toh-pt4) and [HTTP Client](guide/server-communication) 
+[Tour of Heroes Tutorial](tutorial/toh-pt4) and [HTTP Client](guide/server-communication)
 guides show how.
 
 
@@ -585,11 +571,12 @@ The host `OnChangesParentComponent` binds to them like this:
 
 Here's the sample in action as the user makes changes.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">  </img>
 </figure>
 
-The log entries appear as the string value of the *power* property changes. 
+The log entries appear as the string value of the *power* property changes.
 But the `ngOnChanges` does not catch changes to `hero.name`
 That's surprising at first.
 
@@ -620,12 +607,13 @@ This code inspects certain _values of interest_, capturing and comparing their c
 It writes a special message to the log when there are no substantive changes to the `hero` or the `power`
 so you can see how often `DoCheck` is called. The results are illuminating:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">  </img>
 </figure>
 
 While the `ngDoCheck()` hook can detect when the hero's `name` has changed, it has a frightful cost.
-This hook is called with enormous frequency&mdash;after _every_ 
+This hook is called with enormous frequency&mdash;after _every_
 change detection cycle no matter where the change occurred.
 It's called over twenty times in this example before the user can do anything.
 
@@ -682,6 +670,7 @@ Angular throws an error if the hook updates the component's data-bound `comment`
 The `LoggerService.tick_then()` postpones the log update 
 for one turn of the browser's JavaScript cycle and that's just long enough.
 Here's *AfterView* in action:
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">  </img>
 </figure>
@@ -731,6 +720,7 @@ Now look at the component's template:
 The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
 In this case, the projected content is the `<my-child>` from the parent.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content">  </img>
 </figure>
@@ -739,7 +729,7 @@ In this case, the projected content is the `<my-child>` from the parent.
 
 ~~~ {.l-sub-section}
 
-The telltale signs of *content projection* are twofold: 
+The telltale signs of *content projection* are twofold:
   - HTML between component element tags.
   - The presence of `<ng-content>` tags in the component's template.
 
@@ -749,7 +739,7 @@ The telltale signs of *content projection* are twofold:
 
 {@a aftercontent-hooks}
 ### AfterContent hooks
-*AfterContent* hooks are similar to the *AfterView* hooks. 
+*AfterContent* hooks are similar to the *AfterView* hooks.
 The key difference is in the child component.
 
 * The *AfterView* hooks concern `ViewChildren`, the child components whose element tags

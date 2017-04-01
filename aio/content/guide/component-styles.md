@@ -33,7 +33,7 @@ but also the CSS styles that go with that template,
 specifying any selectors, rules, and media queries that you need.
 
 One way to do this is to set the `styles` property in the component metadata.
-The `styles` property takes #{_an} #{_array} of strings that contain CSS code.
+The `styles` property takes an array of strings that contain CSS code.
 Usually you give it one string, as in the following example:
 
 
@@ -151,8 +151,8 @@ The scoping rules outlined earlier apply to each of these loading patterns.
 
 ### Styles in metadata
 
-You can add a `styles` #{_array} property to the `@Component` #{_decorator}.
-Each string in the #{_array} (usually just one string) defines the CSS.
+You can add a `styles` array property to the `@Component` decorator.
+Each string in the array (usually just one string) defines the CSS.
 
 
 <code-example path="component-styles/src/app/hero-app.component.ts">
@@ -162,13 +162,12 @@ Each string in the #{_array} (usually just one string) defines the CSS.
 ### Style URLs in metadata
 
 You can load styles from external CSS files by adding a `styleUrls` attribute
-into a component's `@Component` #{_decorator}:
+into a component's `@Component` decorator:
 
 
 <code-example path="component-styles/src/app/hero-details.component.ts" region="styleurls">
 
 </code-example>
-
 
 
 
@@ -182,7 +181,6 @@ To specify a URL relative to the component file, see [Appendix 2](guide/componen
 
 
 ~~~
-
 
 
 
@@ -229,7 +227,6 @@ application root, not the component file.
 You can also import CSS files into the CSS files using the standard CSS `@import` rule.
 For details, see [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import)
 on the [MDN](https://developer.mozilla.org) site.
-
 In this case, the URL is relative to the CSS file into which you're importing.
 
 
@@ -288,6 +285,7 @@ In the DOM of a running Angular application with emulated view
 encapsulation enabled, each DOM element has some extra attributes
 attached to it:
 
+
 <code-example format="">
   &lt;hero-details _nghost-pmm-5>  
       &lt;h2 _ngcontent-pmm-5>Mister Fantastic&lt;/h2>  
@@ -307,6 +305,7 @@ that identifies to which host's emulated shadow DOM this element belongs.
 The exact values of these attributes aren't important. They are automatically
 generated and you never refer to them in application code. But they are targeted
 by the generated component styles, which are in the `<head>` section of the DOM:
+
 
 <code-example format="">
   [_nghost-pmm-5] {  
@@ -331,6 +330,7 @@ These extra selectors enable the scoping rules described in this page.
 ## Appendix 2: Loading styles with relative URLs
 
 It's common practice to split a component's code, HTML, and CSS into three separate files in the same directory:
+
 <code-example format="nocode">
   quest-summary.component.ts  
     quest-summary.component.html  
@@ -341,7 +341,6 @@ It's common practice to split a component's code, HTML, and CSS into three separ
 You include the template and CSS files by setting the `templateUrl` and `styleUrls` metadata properties respectively.
 Because these files are co-located with the component,
 it would be nice to refer to them by name without also having to specify a path back to the root of the application.
-
 You can use a relative URL by prefixing your filenames with `./`:
 
 

@@ -7,6 +7,7 @@ Angular has a powerful template engine that lets us easily manipulate the DOM st
 @description
 
 
+
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}  
     .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
@@ -79,6 +80,7 @@ and how to [write your own](guide/structural-directives#unless) structural direc
 ~~~ {.callout.is-helpful}
 
 
+
 <header>
   Directive spelling
 </header>
@@ -135,6 +137,7 @@ It takes a boolean expression and makes an entire chunk of the DOM appear or dis
 The `ngIf` directive doesn't hide elements with CSS. It adds and removes them physically from the DOM.
 Confirm that fact using browser developer tools to inspect the DOM.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM">  </img>
 </figure>
@@ -157,6 +160,7 @@ A directive could hide the unwanted paragraph instead by setting its `display` s
 </code-example>
 
 While invisible, the element remains in the DOM. 
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM">  </img>
@@ -221,6 +225,7 @@ Then it translates the template _attribute_ into a template _element_, wrapped a
 
 None of these forms are actually rendered. 
 Only the finished product ends up in the DOM.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM">  </img>
@@ -426,6 +431,7 @@ That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 
 Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/template-rendering.png' width="350" alt="template tag rendering">  </img>
 </figure>
@@ -479,6 +485,7 @@ You also have a CSS style rule that happens to apply to a `<span>` within a `<p>
 
 The constructed paragraph renders strangely.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style">  </img>
 </figure>
@@ -497,6 +504,7 @@ When you try this,
 </code-example>
 
 the drop down is empty.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/bad-select.png' alt="spanned options don't work">  </img>
@@ -518,6 +526,7 @@ Here's the conditional paragraph again, this time using `<ng-container>`.
 
 It renders properly.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style">  </img>
 </figure>
@@ -531,6 +540,7 @@ Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 
 The drop down works properly.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">  </img>
 </figure>
@@ -538,6 +548,7 @@ The drop down works properly.
 The `<ng-container>` is a syntax element recognized by the Angular parser.
 It's not a directive, component, class, or interface. 
 It's more like the curly braces in a JavaScript `if`-block:
+
 
 <code-example language="javascript">
   if (someCondition) {  
@@ -652,7 +663,7 @@ The completed directive code looks like this:
 
 </code-example>
 
-Add this directive to the `!{_declsVsDirectives}` !{_array} of the !{_AppModuleVsAppComp}.
+Add this directive to the `declarations` array of the AppModule.
 
 Then create some HTML to try it.
 
@@ -663,6 +674,7 @@ Then create some HTML to try it.
 
 When the `condition` is falsy, the top (A) paragraph appears and the bottom (B) paragraph disappears.
 When the `condition` is truthy, the top (A) paragraph is removed and the bottom (B) paragraph appears.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/structural-directives/unless-anim.gif' alt="UnlessDirective in action">  </img>
@@ -685,36 +697,29 @@ Here is the source from the `src/app/` folder.
 
   </code-pane>
 
-
   <code-pane title="app.component.html" path="structural-directives/src/app/app.component.html">
 
   </code-pane>
-
 
   <code-pane title="app.component.css" path="structural-directives/src/app/app.component.css">
 
   </code-pane>
 
-
   <code-pane title="app.module.ts" path="structural-directives/src/app/app.module.ts">
 
   </code-pane>
-
 
   <code-pane title="hero.ts" path="structural-directives/src/app/hero.ts">
 
   </code-pane>
 
-
   <code-pane title="hero-switch.components.ts" path="structural-directives/src/app/hero-switch.components.ts">
 
   </code-pane>
 
-
   <code-pane title="unless.directive.ts" path="structural-directives/src/app/unless.directive.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

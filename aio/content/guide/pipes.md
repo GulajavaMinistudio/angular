@@ -52,6 +52,7 @@ function on the right. All pipes work this way.
 The `Date` and `Currency` pipes need the *ECMAScript Internationalization API*.
 Safari and other older browsers don't support it. You can add support with a polyfill.
 
+
 <code-example language="html">
   &lt;script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"&gt;&lt;/script&gt;  
     
@@ -120,6 +121,7 @@ As you click the button, the displayed date alternates between
 "**<samp>04/15/1988</samp>**" and
 "**<samp>Friday, April 15, 1988</samp>**".
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">  </img>
 </figure>
@@ -173,8 +175,8 @@ accepts an input value followed by optional parameters and returns the transform
 * There will be one additional argument to the `transform` method for each parameter passed to the pipe.
 Your pipe has one such parameter: the `exponent`.
 * To tell Angular that this is a pipe, you apply the
-`@Pipe` #{_decorator}, which you import from the core Angular library.
-* The `@Pipe` #{_decorator} allows you to define the
+`@Pipe` decorator, which you import from the core Angular library.
+* The `@Pipe` decorator allows you to define the
    pipe name that you'll use within template expressions. It must be a valid JavaScript identifier.
    Your pipe's name is `exponentialStrength`.
 
@@ -197,6 +199,7 @@ Now you need a component to demonstrate the pipe.
 </code-example>
 
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/pipes/power-booster.png' alt="Power Booster">  </img>
 </figure>
@@ -204,14 +207,15 @@ Now you need a component to demonstrate the pipe.
 Note the following:
 
 * You use your custom pipe the same way you use built-in pipes.
-* You must include your pipe in the `!{_decls}` #{_array} of the `!{_appMod}`.
+* You must include your pipe in the `declarations` array of the `AppModule`.
 
 
 ~~~ {.callout.is-helpful}
 
 
+
 <header>
-  Remember the    
+  Remember the declarations array
 </header>
 
 You must manually register custom pipes.
@@ -237,6 +241,7 @@ your pipe and two-way data binding with `ngModel`.
 </code-example>
 
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator">  </img>
 </figure>
@@ -256,21 +261,21 @@ Angular picks a simpler, faster change detection algorithm when you use a pipe.
 ### No pipe
 
 In the next example, the component uses the default, aggressive change detection strategy to monitor and update
-its display of every hero in the `heroes` #{_array}. Here's the template:
+its display of every hero in the `heroes` array. Here's the template:
 
 
 <code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" linenums="false">
 
 </code-example>
 
-The companion component class provides heroes, adds heroes into the #{_array}, and can reset the #{_array}.
+The companion component class provides heroes, adds heroes into the array, and can reset the array.
 
 <code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" linenums="false">
 
 </code-example>
 
 You can add heroes and Angular updates the display when you do.
-If you click the `reset` button, Angular replaces `heroes` with a new #{_array} of the original heroes and updates the display.
+If you click the `reset` button, Angular replaces `heroes` with a new array of the original heroes and updates the display.
 If you added the ability to remove or change a hero, Angular would detect those changes and update the display as well.
 
 ### Flying-heroes pipe
@@ -299,24 +304,25 @@ Notice how a hero is added:
 
 </code-example>
 
-You add the hero into the `heroes` #{_array}.  The reference to the #{_array} hasn't changed.
-It's the same #{_array}. That's all Angular cares about. From its perspective, *same #{_array}, no change, no display update*.
+You add the hero into the `heroes` array.  The reference to the array hasn't changed.
+It's the same array. That's all Angular cares about. From its perspective, *same array, no change, no display update*.
 
-To fix that, create an #{_array} with the new hero appended and assign that to `heroes`.
-This time Angular detects that the #{_array} reference has changed.
-It executes the pipe and updates the display with the new #{_array}, which includes the new flying hero.
+To fix that, create an array with the new hero appended and assign that to `heroes`.
+This time Angular detects that the array reference has changed.
+It executes the pipe and updates the display with the new array, which includes the new flying hero.
 
-If you *mutate* the #{_array}, no pipe is invoked and the display isn't updated;
-if you *replace* the #{_array}, the pipe executes and the display is updated.
+If you *mutate* the array, no pipe is invoked and the display isn't updated;
+if you *replace* the array, the pipe executes and the display is updated.
 The Flying Heroes application extends the
 code with checkbox switches and additional displays to help you experience these effects.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">  </img>
 </figure>
 
-Replacing the #{_array} is an efficient way to signal Angular to update the display.
-When do you replace the #{_array}? When the data change.
+Replacing the array is an efficient way to signal Angular to update the display.
+When do you replace the array? When the data change.
 That's an easy rule to follow in *this* example
 where the only way to change the data is by adding a hero.
 
@@ -351,7 +357,7 @@ A pure change is either a change to a primitive input value (`String`, `Number`,
 or a changed object reference (`Date`, `Array`, `Function`, `Object`).
 
 Angular ignores changes within (composite) objects.
-It won't call a pure pipe if you change an input month, add to an input #{_array}, or update an input object property.
+It won't call a pure pipe if you change an input month, add to an input array, or update an input object property.
 
 This may seem restrictive but it's also fast.
 An object reference check is fast&mdash;much faster than a deep check for
@@ -391,11 +397,9 @@ The complete implementation is as follows:
 
   </code-pane>
 
-
   <code-pane title="FlyingHeroesPipe" path="pipes/src/app/flying-heroes.pipe.ts" region="pure">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -412,28 +416,29 @@ This is a good candidate for an impure pipe because the `transform` function is 
 You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 
 
-<code-example path="pipes/src/app/flying-heroes" linenums="false" title="src/app/flying-heroes (_region)" region="_region">
+<code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" title="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
 
 </code-example>
 
 The only substantive change is the pipe in the template.
 You can confirm in the <live-example></live-example> that the _flying heroes_
-display updates as you add heroes, even when you mutate the `heroes` #{_array}.
+display updates as you add heroes, even when you mutate the `heroes` array.
+
 
 <h3 id='async-pipe'>
   The impure   <i>  AsyncPipe  </i>  
 </h3>
 
 The Angular `AsyncPipe` is an interesting example of an impure pipe.
-The `AsyncPipe` accepts a `#{_Promise}` or `#{_Observable}` as input
+The `AsyncPipe` accepts a `Promise` or `Observable` as input
 and subscribes to the input automatically, eventually returning the emitted values.
 
 The `AsyncPipe` is also stateful.
-The pipe maintains a subscription to the input `#{_Observable}` and
-keeps delivering values from that `#{_Observable}` as they arrive.
+The pipe maintains a subscription to the input `Observable` and
+keeps delivering values from that `Observable` as they arrive.
 
-This next example binds an `#{_Observable}` of message strings
-(`message#{_dollar}`) to a view with the `async` pipe.
+This next example binds an `Observable` of message strings
+(`message$`) to a view with the `async` pipe.
 
 
 <code-example path="pipes/src/app/hero-async-message.component.ts">
@@ -454,7 +459,7 @@ Remember that impure pipes are called every few milliseconds.
 If you're not careful, this pipe will punish the server with requests.
 
 In the following code, the pipe only calls the server when the request URL changes and it caches the server response.
-The code<span if-docs="ts"> uses the [Angular http](guide/server-communication) client to retrieve data</span>:
+The code uses the [Angular http](guide/server-communication) client to retrieve data</span>:
 
 
 <code-example path="pipes/src/app/fetch-json.pipe.ts">
@@ -470,6 +475,7 @@ both requesting the heroes from the `heroes.json` file.
 </code-example>
 
 The component renders as the following:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/pipes/hero-list.png' alt="Hero List">  </img>
@@ -487,6 +493,7 @@ It displays the same hero data in JSON format by chaining through to the built-i
 
 
 ~~~ {.callout.is-helpful}
+
 
 
 <header>
@@ -550,6 +557,7 @@ by offering `filter` and `orderBy` in the first place.
 
 The minification hazard is also compelling, if less obvious. Imagine a sorting pipe applied to a list of heroes.
 The list might be sorted by hero `name` and `planet` of origin properties in the following way:
+
 <code-example language="html">
   &lt;!-- NOT REAL CODE! -->  
     &lt;div *ngFor="let hero of heroes | orderBy:'name,planet'">&lt;/div>

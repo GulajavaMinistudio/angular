@@ -7,9 +7,10 @@ Build a simple hero editor.
 @description
 ## Setup to develop locally
 Follow the [setup](guide/setup) instructions for creating a new project
-named <ngio-ex path="angular-tour-of-heroes"></ngio-ex>.
+named <code>angular-tour-of-heroes</code>.
 
 The file structure should look like this:
+
 
 <aio-filetree>
 
@@ -23,55 +24,43 @@ The file structure should look like this:
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -81,6 +70,7 @@ When you're done with this page, the app should look like this <live-example></l
 {@a keep-transpiling}
 ## Keep the app transpiling and running
 Enter the following command in the terminal window:
+
 
 <code-example language="sh" class="code-shell">
   npm start  

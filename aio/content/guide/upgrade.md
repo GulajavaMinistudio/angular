@@ -245,6 +245,7 @@ Dependency injection is front and center in both AngularJS and
 Angular, but there are some key differences between the two
 frameworks in how it actually works.
 
+
 <table>
 
   <tr>
@@ -253,14 +254,11 @@ frameworks in how it actually works.
       AngularJS
     </th>
 
-
     <th>
       Angular
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -268,15 +266,12 @@ frameworks in how it actually works.
       Dependency injection tokens are always strings
     </td>
 
-
     <td>
       Tokens [can have different types](guide/dependency-injection).      
             They are often classes. They may also be strings.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -285,16 +280,13 @@ frameworks in how it actually works.
             everything is poured into one big namespace.
     </td>
 
-
     <td>
       There is a [tree hierarchy of injectors](guide/hierarchical-dependency-injection),      
             with a root injector and an additional injector for each component.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -311,6 +303,7 @@ everything work seamlessly:
   be downgraded. Again, the same singleton instances are shared between the frameworks.
   When we register a downgrade, we explicitly specify a *string token* that we want to
   use in AngularJS.
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700">  </img>
@@ -352,6 +345,7 @@ ways:
   `UpgradeModule` bridges the related concepts of  AngularJS transclusion
    and Angular content projection together.
 
+
 <figure class='image-display'>
   <img src="assets/images/devguide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500">  </img>
 </figure>
@@ -360,6 +354,7 @@ Whenever we use a component that belongs to the other framework, a
 switch between framework boundaries occurs. However, that switch only
 happens to the *children* of the component element. Consider a situation
 where we use an Angular component from AngularJS like this:
+
 
 <code-example language="html" escape="html">
   <a-component></a-component>  
@@ -397,6 +392,7 @@ AngularJS and Angular approaches. Here's what happens:
 * The `UpgradeModule` will invoke the AngularJS `$rootScope.$apply()` after
   every turn of the Angular zone. This also triggers AngularJS change
   detection after every event.
+
 
 <figure class='image-display'>
   <img src="assets/images/devguide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600">  </img>
@@ -511,6 +507,7 @@ and add a mapping for the `@angular/upgrade/static` package:
 Congratulations! You're running a hybrid application! The
 existing AngularJS code works as before _and_ you're ready to run Angular code.
 ### Using Angular Components from AngularJS Code
+
 <figure>
   <img src="assets/images/devguide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -610,6 +607,7 @@ components. The expressions themselves are still regular AngularJS expressions.
 ~~~ {.callout.is-important}
 
 
+
 <header>
   Use kebab-case for downgraded component attributes
 </header>
@@ -617,11 +615,13 @@ components. The expressions themselves are still regular AngularJS expressions.
 There's one notable exception to the rule of using Angular attribute syntax
 for downgraded components. It has to do with input or output names that consist
 of multiple words. In Angular we would bind these attributes using camelCase:
+
 <code-example format="">
   [myHero]="hero"
 </code-example>
 
 But when using them from AngularJS templates, we need to use kebab-case:
+
 <code-example format="">
   [my-hero]="hero"  
     
@@ -645,6 +645,7 @@ For  example, we can easily make multiple copies of the component using `ng-repe
 </code-example>
 
 ### Using AngularJS Component Directives from Angular Code
+
 <figure>
   <img src="assets/images/devguide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -706,6 +707,7 @@ directive. When we use the component from an Angular template,
 we provide the inputs and outputs using **Angular template syntax**,
 with the following rules:
 
+
 <table>
 
   <tr>
@@ -714,19 +716,15 @@ with the following rules:
 
     </th>
 
-
     <th>
       Binding definition
     </th>
-
 
     <th>
       Template syntax
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -734,19 +732,15 @@ with the following rules:
       Attribute binding
     </th>
 
-
     <td>
       `myAttribute: '@myAttribute'`
     </td>
-
 
     <td>
       `<my-component myAttribute="value">`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -754,19 +748,15 @@ with the following rules:
       Expression binding
     </th>
 
-
     <td>
       `myOutput: '&myOutput'`
     </td>
-
 
     <td>
       `<my-component (myOutput)="action()">`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -774,19 +764,15 @@ with the following rules:
       One-way binding
     </th>
 
-
     <td>
       `myValue: '<myValue'`
     </td>
-
 
     <td>
       `<my-component [myValue]="anExpression">`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -794,11 +780,9 @@ with the following rules:
       Two-way binding
     </th>
 
-
     <td>
       `myValue: '=myValue'`
     </td>
-
 
     <td>
       As a two-way binding: `<my-component [(myValue)]="anExpression">`.      
@@ -807,9 +791,7 @@ with the following rules:
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -836,6 +818,7 @@ and then provide the input and output using Angular template syntax:
 </code-example>
 
 ### Projecting AngularJS Content into Angular Components
+
 <figure>
   <img src="assets/images/devguide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -874,6 +857,7 @@ remains in "AngularJS land" and is managed by the AngularJS framework.
 ~~~
 
 ### Transcluding Angular Content into AngularJS Component Directives
+
 <figure>
   <img src="assets/images/devguide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" align="left" style="width:250px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -1109,6 +1093,7 @@ and apply the steps as we go.
 
 In terms of project structure, this is where our work begins:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -1117,16 +1102,13 @@ In terms of project structure, this is where our work begins:
       bower.json
     </aio-file>
 
-
     <aio-file>
       karma.conf.js
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
-
 
     <aio-folder>
       app
@@ -1138,14 +1120,11 @@ In terms of project structure, this is where our work begins:
             checkmark.filter.js
           </aio-file>
 
-
           <aio-file>
             checkmark.filter.spec.js
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-folder>
           phone
@@ -1153,27 +1132,21 @@ In terms of project structure, this is where our work begins:
             phone.module.js
           </aio-file>
 
-
           <aio-file>
             phone.service.js
           </aio-file>
-
 
           <aio-file>
             phone.service.spec.js
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-file>
           core.module.js
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-folder>
         phone-detail
@@ -1181,24 +1154,19 @@ In terms of project structure, this is where our work begins:
           phone-detail.component.js
         </aio-file>
 
-
         <aio-file>
           phone-detail.component.spec.js
         </aio-file>
-
 
         <aio-file>
           phone-detail.module.js
         </aio-file>
 
-
         <aio-file>
           phone-detail.template.html
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-folder>
         phone-list
@@ -1206,24 +1174,19 @@ In terms of project structure, this is where our work begins:
           phone-list.component.js
         </aio-file>
 
-
         <aio-file>
           phone-list.component.spec.js
         </aio-file>
-
 
         <aio-file>
           phone-list.module.js
         </aio-file>
 
-
         <aio-file>
           phone-list.template.html
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-folder>
         img
@@ -1231,9 +1194,7 @@ In terms of project structure, this is where our work begins:
            ...
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-folder>
         phones
@@ -1241,37 +1202,29 @@ In terms of project structure, this is where our work begins:
            ...
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         app.animations.js
       </aio-file>
 
-
       <aio-file>
         app.config.js
       </aio-file>
-
 
       <aio-file>
         app.css
       </aio-file>
 
-
       <aio-file>
         app.module.js
       </aio-file>
-
 
       <aio-file>
         index.html
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-folder>
       e2e-tests
@@ -1279,17 +1232,13 @@ In terms of project structure, this is where our work begins:
         protractor-conf.js
       </aio-file>
 
-
       <aio-file>
         scenarios.js
       </aio-file>
 
-
     </aio-folder>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -1321,6 +1270,7 @@ able to remove Bower from the project.
 
 Let's begin by installing TypeScript to the project.
 
+
 <code-example format="">
   npm i typescript --save-dev  
     
@@ -1330,6 +1280,7 @@ Let's also add run scripts for the `tsc` TypeScript compiler to `package.json`:
 We can now install type definitions for the existing libraries that
 we're using but that don't come with prepackaged types: AngularJS and the 
 Jasmine unit test framework.
+
 
 <code-example format="">
   npm install @types/jasmine @types/angular  @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev  
@@ -1347,6 +1298,7 @@ We can now launch the TypeScript compiler from the command line. It will watch
 our `.ts` source files and compile them to JavaScript on the fly. Those compiled
 `.js` files are then loaded into the browser by SystemJS. This is a process we'll
 want to have continuously running in the background as we go along.
+
 
 <code-example format="">
   npm run tsc:w  
@@ -1490,6 +1442,7 @@ and get the following configurations from there:
 * The SystemJS configuration file `systemjs.config.js` to the project root directory.
 
 Once these are done, run:
+
 
 <code-example format="">
   npm install  
@@ -2113,6 +2066,7 @@ The external typings for AngularJS may be uninstalled as well. The only ones
 we still need are for Jasmine and Angular polyfills.
 The `@angular/upgrade` package and it's mapping in `systemjs.config.js` can also go.
 
+
 <code-example format="">
   npm uninstall @angular/upgrade --save  
     npm uninstall @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev  
@@ -2155,6 +2109,7 @@ working. It is only when we change our bootstrap to that of a Hybrid app that we
 make some changes.
 
 The following change is needed in `protractor-conf.js` to sync with hybrid apps:
+
 <code-example format="">
   ng12Hybrid: true  
     
@@ -2164,6 +2119,7 @@ The next set of changes is when we start to upgrade components and their templat
 This is because the E2E tests have matchers that are specific to AngularJS. 
 For PhoneCat we need to make the following changes in order to make things work with Angular:
 
+
 <table>
 
   <tr>
@@ -2172,19 +2128,15 @@ For PhoneCat we need to make the following changes in order to make things work 
       Previous code
     </th>
 
-
     <th>
       New code
     </th>
-
 
     <th>
       Notes
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -2192,19 +2144,15 @@ For PhoneCat we need to make the following changes in order to make things work 
       `by.repeater('phone in $ctrl.phones').column('phone.name')`
     </td>
 
-
     <td>
       `by.css('.phones .name')`
     </td>
-
 
     <td>
       The repeater matcher relies on AngularJS `ng-repeat`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2212,19 +2160,15 @@ For PhoneCat we need to make the following changes in order to make things work 
       `by.repeater('phone in $ctrl.phones')`
     </td>
 
-
     <td>
       `by.css('.phones li')`
     </td>
-
 
     <td>
       The repeater matcher relies on AngularJS `ng-repeat`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2232,19 +2176,15 @@ For PhoneCat we need to make the following changes in order to make things work 
       `by.model('$ctrl.query')`
     </td>
 
-
     <td>
       `by.css('input')`
     </td>
-
 
     <td>
       The model matcher relies on AngularJS `ng-model`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2252,19 +2192,15 @@ For PhoneCat we need to make the following changes in order to make things work 
       `by.model('$ctrl.orderProp')`
     </td>
 
-
     <td>
       `by.css('select')`
     </td>
-
 
     <td>
       The model matcher relies on AngularJS `ng-model`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2272,11 +2208,9 @@ For PhoneCat we need to make the following changes in order to make things work 
       `by.binding('$ctrl.phone.name')`
     </td>
 
-
     <td>
       `by.css('h1')`
     </td>
-
 
     <td>
       The binding matcher relies on AngularJS data binding      
@@ -2284,9 +2218,7 @@ For PhoneCat we need to make the following changes in order to make things work 
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -2297,6 +2229,7 @@ an AngularJS app anymore, but instead it should find *Angular apps* from
 the page. 
 
 Replace the `ng12Hybrid` previously added with the following in `protractor-conf.js`:
+
 
 <code-example format="">
   useAllAngular2AppRoots: true,  

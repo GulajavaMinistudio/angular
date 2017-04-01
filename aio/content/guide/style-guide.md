@@ -63,6 +63,7 @@ If you fully understand the meaning behind the guideline and have a good reason 
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** gives reasons for following the previous recommendations.  
     
@@ -107,6 +108,7 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** One component per file makes it far easier to read, maintain, and avoid   
     collisions with teams in source control.  
@@ -114,10 +116,12 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 </div>
 
 
+
 <div class='s-why'>
   **Why?** One component per file avoids hidden bugs that often arise when combining components in a file where they may share variables, create unwanted closures, or unwanted coupling with dependencies.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -145,36 +149,29 @@ supporting classes into their own, dedicated files.
 
   </code-pane>
 
-
   <code-pane title="app/app.module.ts" path="style-guide/src/01-01/app/app.module.ts">
 
   </code-pane>
-
 
   <code-pane title="app/app.component.ts" path="style-guide/src/01-01/app/app.component.ts">
 
   </code-pane>
 
-
   <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/01-01/app/heroes/heroes.component.ts">
 
   </code-pane>
-
 
   <code-pane title="app/heroes/shared/hero.service.ts" path="style-guide/src/01-01/app/heroes/shared/hero.service.ts">
 
   </code-pane>
 
-
   <code-pane title="app/heroes/shared/hero.model.ts" path="style-guide/src/01-01/app/heroes/shared/hero.model.ts">
 
   </code-pane>
 
-
   <code-pane title="app/heroes/shared/mock-heroes.ts" path="style-guide/src/01-01/app/heroes/shared/mock-heroes.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -200,10 +197,12 @@ As the app grows, this rule becomes even more important.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Small functions are easier to test, especially when they do one thing and serve one purpose.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -212,16 +211,19 @@ As the app grows, this rule becomes even more important.
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Small functions are easier to read.  
     
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Small functions are easier to maintain.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -255,16 +257,19 @@ Naming conventions are hugely important to maintainability and readability. This
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.  
     
 </div>
 
 
+
 <div class='s-why'>
   **Why?** The naming conventions should simply help find desired code faster and make it easier to understand.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -313,10 +318,12 @@ Invent additional type names if you must but take care not to create too many.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Type names provide a consistent way to quickly identify what is in the file.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -325,11 +332,13 @@ Invent additional type names if you must but take care not to create too many.
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Unabbreviated type names such as `.service` are descriptive and unambiguous.  
     Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -387,11 +396,13 @@ Invent additional type names if you must but take care not to create too many.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Consistent conventions make it easy to quickly identify   
     and reference assets of different types.  
     
 </div>
+
 
 
 <table width="100%">
@@ -400,11 +411,9 @@ Invent additional type names if you must but take care not to create too many.
 
   </col>
 
-
   <col width="50%">
 
   </col>
-
 
   <tr>
 
@@ -412,14 +421,11 @@ Invent additional type names if you must but take care not to create too many.
       Symbol Name
     </th>
 
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -430,17 +436,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class AppComponent { }
       </code-example>
 
-
     </td>
-
 
     <td>
       app.component.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -451,17 +453,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class HeroesComponent { }
       </code-example>
 
-
     </td>
-
 
     <td>
       heroes.component.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -472,17 +470,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class HeroListComponent { }
       </code-example>
 
-
     </td>
-
 
     <td>
       hero-list.component.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -493,17 +487,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class HeroDetailComponent { }
       </code-example>
 
-
     </td>
-
 
     <td>
       hero-detail.component.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -514,17 +504,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class ValidationDirective { }
       </code-example>
 
-
     </td>
-
 
     <td>
       validation.directive.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -535,17 +521,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class AppModule
       </code-example>
 
-
     </td>
-
 
     <td>
       app.module.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -556,17 +538,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class InitCapsPipe implements PipeTransform { }
       </code-example>
 
-
     </td>
-
 
     <td>
       init-caps.pipe.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -577,17 +555,13 @@ Invent additional type names if you must but take care not to create too many.
                 export class UserProfileService { }
       </code-example>
 
-
     </td>
-
 
     <td>
       user-profile.service.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -621,10 +595,12 @@ As always, strive for consistency.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Provides a consistent way to quickly identify and reference services.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -633,10 +609,12 @@ As always, strive for consistency.
 </div>
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** Service names such as `Credit` are nouns and require a suffix and should be named with a suffix when it is not obvious if it is a service or something else.  
     
 </div>
+
 
 
 <table width="100%">
@@ -645,11 +623,9 @@ As always, strive for consistency.
 
   </col>
 
-
   <col width="50%">
 
   </col>
-
 
   <tr>
 
@@ -657,14 +633,11 @@ As always, strive for consistency.
       Symbol Name
     </th>
 
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -675,17 +648,13 @@ As always, strive for consistency.
                 export class HeroDataService { }
       </code-example>
 
-
     </td>
-
 
     <td>
       hero-data.service.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -696,17 +665,13 @@ As always, strive for consistency.
                 export class CreditService { }
       </code-example>
 
-
     </td>
-
 
     <td>
       credit.service.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -717,17 +682,13 @@ As always, strive for consistency.
                 export class Logger { }
       </code-example>
 
-
     </td>
-
 
     <td>
       logger.service.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -762,10 +723,12 @@ As always, strive for consistency.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Follows a consistent convention for the startup logic of an app.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -792,10 +755,12 @@ As always, strive for consistency.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -836,16 +801,19 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Prevents element name collisions with components in other apps and with native HTML elements.  
     
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Makes it easier to promote and share the component in other apps.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -898,10 +866,12 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Prevents name collisions.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -934,10 +904,12 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** Provides a consistent way to quickly identify and reference pipes.  
     
 </div>
+
 
 
 <table width="100%">
@@ -946,11 +918,9 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
   </col>
 
-
   <col width="50%">
 
   </col>
-
 
   <tr>
 
@@ -958,14 +928,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Symbol Name
     </th>
 
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -976,17 +943,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class EllipsisPipe implements PipeTransform { }
       </code-example>
 
-
     </td>
-
 
     <td>
       ellipsis.pipe.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -997,17 +960,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class InitCapsPipe implements PipeTransform { }
       </code-example>
 
-
     </td>
-
 
     <td>
       init-caps.pipe.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1033,10 +992,12 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Provides a consistent way to quickly identify tests.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1045,17 +1006,16 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 </div>
 
 
+
 <table width="100%">
 
   <col width="50%">
 
   </col>
 
-
   <col width="50%">
 
   </col>
-
 
   <tr>
 
@@ -1063,14 +1023,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Symbol Name
     </th>
 
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1078,14 +1035,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Components
     </td>
 
-
     <td>
       heroes.component.spec.ts      hero-list.component.spec.ts      hero-detail.component.spec.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1093,14 +1047,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Services
     </td>
 
-
     <td>
       logger.service.spec.ts      hero.service.spec.ts      filter-text.service.spec.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1108,14 +1059,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Pipes
     </td>
 
-
     <td>
       ellipsis.pipe.spec.ts      init-caps.pipe.spec.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1132,10 +1080,12 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Provides a consistent way to quickly identify end-to-end tests.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1144,17 +1094,16 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 </div>
 
 
+
 <table width="100%">
 
   <col width="50%">
 
   </col>
 
-
   <col width="50%">
 
   </col>
-
 
   <tr>
 
@@ -1162,14 +1111,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Symbol Name
     </th>
 
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1177,14 +1123,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       End-to-End Tests
     </td>
 
-
     <td>
       app.e2e-spec.ts      heroes.e2e-spec.ts
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1219,16 +1162,19 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Provides a consistent way to quickly identify and reference modules.  
     
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Upper camel case is conventional for identifying objects that can be instantiated using a constructor.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1255,10 +1201,12 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** A `RoutingModule` is a module dedicated exclusively to configuring the Angular router.  
     A consistent class and file name convention make these modules easy to spot and verify.
 </div>
+
 
 
 <table width="100%">
@@ -1267,11 +1215,9 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
   </col>
 
-
   <col width="50%">
 
   </col>
-
 
   <tr>
 
@@ -1279,14 +1225,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
       Symbol Name
     </th>
 
-
     <th>
       File Name
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1297,17 +1240,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class AppModule { }
       </code-example>
 
-
     </td>
-
 
     <td>
       app.module.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1318,17 +1257,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class HeroesModule { }
       </code-example>
 
-
     </td>
-
 
     <td>
       heroes.module.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1339,17 +1274,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class VillainsModule { }
       </code-example>
 
-
     </td>
-
 
     <td>
       villains.module.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1360,17 +1291,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class AppRoutingModule { }
       </code-example>
 
-
     </td>
-
 
     <td>
       app-routing.module.ts
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -1381,17 +1308,13 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
                 export class HeroesRoutingModule { }
       </code-example>
 
-
     </td>
-
 
     <td>
       heroes-routing.module.ts        
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -1412,10 +1335,12 @@ Have a consistent set of coding, naming, and whitespace conventions.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Follows conventional thinking for class names.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1449,10 +1374,12 @@ Have a consistent set of coding, naming, and whitespace conventions.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Conveys to readers that the value is invariant.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1471,11 +1398,13 @@ Have a consistent set of coding, naming, and whitespace conventions.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Lower camel case variable names (`heroRoutes`) are easier to read and understand  
     than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1493,6 +1422,7 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1539,11 +1469,13 @@ Have a consistent set of coding, naming, and whitespace conventions.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines" target="_blank">TypeScript guidelines</a>   
     discourage the `I` prefix.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -1552,10 +1484,12 @@ Have a consistent set of coding, naming, and whitespace conventions.
 </div>
 
 
+
 <div class='s-why'>
   **Why?** A class can act as an interface (use `implements` instead of `extends`).  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1597,16 +1531,19 @@ Have a consistent set of coding, naming, and whitespace conventions.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Follows conventional thinking for properties and methods.  
     
 </div>
 
 
+
 <div class='s-why'>
   **Why?** JavaScript lacks a true private property or method.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1657,10 +1594,12 @@ Have a consistent set of coding, naming, and whitespace conventions.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** The empty line separates _your_ stuff from _their_ stuff.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1717,6 +1656,7 @@ keep the **F**lattest structure you can, and
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.   
     To confirm your intuition about a particular structure, ask:   
@@ -1735,6 +1675,7 @@ keep the **F**lattest structure you can, and
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1774,6 +1715,7 @@ keep the **F**lattest structure you can, and
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1824,6 +1766,7 @@ in a single file than as multiple files. Be wary of this loophole.
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** No one wants to search for a file through seven levels of folders.   
     A flat structure is easy to scan.  
@@ -1858,6 +1801,7 @@ in a single file than as multiple files. Be wary of this loophole.
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1909,10 +1853,12 @@ in a single file than as multiple files. Be wary of this loophole.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -1924,6 +1870,7 @@ in a single file than as multiple files. Be wary of this loophole.
 
 {@a file-tree}
 Here is a compliant folder and file structure:
+
 
 <aio-filetree>
 
@@ -1939,19 +1886,15 @@ Here is a compliant folder and file structure:
             core.module.ts
           </aio-file>
 
-
           <aio-file>
             exception.service.ts|spec.ts
           </aio-file>
-
 
           <aio-file>
             user-profile.service.ts|spec.ts
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-folder>
           heroes
@@ -1961,9 +1904,7 @@ Here is a compliant folder and file structure:
               hero.component.ts|html|css|spec.ts
             </aio-file>
 
-
           </aio-folder>
-
 
           <aio-folder>
             hero-list
@@ -1971,9 +1912,7 @@ Here is a compliant folder and file structure:
               hero-list.component.ts|html|css|spec.ts
             </aio-file>
 
-
           </aio-folder>
-
 
           <aio-folder>
             shared
@@ -1981,37 +1920,29 @@ Here is a compliant folder and file structure:
               hero-button.component.ts|html|css|spec.ts
             </aio-file>
 
-
             <aio-file>
               hero.model.ts
             </aio-file>
-
 
             <aio-file>
               hero.service.ts|spec.ts
             </aio-file>
 
-
           </aio-folder>
-
 
           <aio-file>
             heroes.component.ts|html|css|spec.ts
           </aio-file>
 
-
           <aio-file>
             heroes.module.ts
           </aio-file>
-
 
           <aio-file>
             heroes-routing.module.ts
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-folder>
           shared
@@ -2019,24 +1950,19 @@ Here is a compliant folder and file structure:
             shared.module.ts
           </aio-file>
 
-
           <aio-file>
             init-caps.pipe.ts|spec.ts
           </aio-file>
-
 
           <aio-file>
             text-filter.component.ts|spec.ts
           </aio-file>
 
-
           <aio-file>
             text-filter.service.ts|spec.ts
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-folder>
           villains
@@ -2046,9 +1972,7 @@ Here is a compliant folder and file structure:
               ...
             </aio-file>
 
-
           </aio-folder>
-
 
           <aio-folder>
             villain-list
@@ -2056,9 +1980,7 @@ Here is a compliant folder and file structure:
               ...
             </aio-file>
 
-
           </aio-folder>
-
 
           <aio-folder>
             shared
@@ -2066,76 +1988,59 @@ Here is a compliant folder and file structure:
               ...
             </aio-file>
 
-
           </aio-folder>
-
 
           <aio-file>
             villains.component.ts|html|css|spec.ts
           </aio-file>
 
-
           <aio-file>
             villains.module.ts
           </aio-file>
-
 
           <aio-file>
             villains-routing.module.ts
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-file>
           app.component.ts|html|css|spec.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
-
 
         <aio-file>
           app-routing.module.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         ...
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules/...
     </aio-file>
 
-
     <aio-file>
       ...
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -2164,11 +2069,13 @@ Whatever you choose, be consistent.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** A developer can locate the code and identify what each file represents   
     at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -2177,11 +2084,13 @@ Whatever you choose, be consistent.
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Helps reduce the app from becoming cluttered through organizing the   
     content and keeping them aligned with the LIFT guidelines.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -2201,16 +2110,19 @@ Whatever you choose, be consistent.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Angular modules make it easy to lazy load routable features.  
     
 </div>
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** Angular modules make it easier to isolate, test, and re-use features.  
     
 </div>
+
 
 
 <div class='file-tree-reference'>
@@ -2231,6 +2143,7 @@ for example, in `/src/app`.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Every app requires at least one root Angular module.  
     
@@ -2244,6 +2157,7 @@ for example, in `/src/app`.
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2300,10 +2214,12 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** A feature module can expose or hide its implementation from other modules.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -2312,10 +2228,12 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 </div>
 
 
+
 <div class='s-why'>
   **Why?** A feature module can easily be routed to both eagerly and lazily.   
     
 </div>
+
 
 
 <div class='s-why'>
@@ -2324,10 +2242,12 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 </div>
 
 
+
 <div class='s-why'>
   **Why?** A feature module helps clarify and make it easier to assign development responsibilities to different teams.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2390,6 +2310,7 @@ for example, `CommonModule` and `FormsModule`.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** `SharedModule` will contain components, directives and pipes   
     that may need features from another common module; for example,   
@@ -2416,6 +2337,7 @@ for example, `CommonModule` and `FormsModule`.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** `SharedModule` exists to make commonly used components, directives and pipes available for use in the templates of components in many other modules.  
     
@@ -2431,10 +2353,12 @@ for example, `CommonModule` and `FormsModule`.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesireable results.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2442,6 +2366,7 @@ for example, `CommonModule` and `FormsModule`.
     Yet there is a real danger of that happening if the `SharedModule` provides a service.  
     
 </div>
+
 
 
 <aio-filetree>
@@ -2456,60 +2381,47 @@ for example, `CommonModule` and `FormsModule`.
           shared.module.ts
         </aio-file>
 
-
         <aio-file>
           init-caps.pipe.ts|spec.ts
         </aio-file>
-
 
         <aio-file>
           text-filter.component.ts|spec.ts
         </aio-file>
 
-
         <aio-file>
           text-filter.service.ts|spec.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         app.component.ts|html|css|spec.ts
       </aio-file>
 
-
       <aio-file>
         app.module.ts
       </aio-file>
-
 
       <aio-file>
         app-routing.module.ts
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       main.ts
     </aio-file>
 
-
     <aio-file>
       index.html
     </aio-file>
 
-
   </aio-folder>
-
 
   <aio-file>
     ...
   </aio-file>
-
 
 </aio-filetree>
 
@@ -2521,31 +2433,25 @@ for example, `CommonModule` and `FormsModule`.
 
   </code-pane>
 
-
   <code-pane title="app/shared/init-caps.pipe.ts" path="style-guide/src/04-10/app/shared/init-caps.pipe.ts">
 
   </code-pane>
-
 
   <code-pane title="app/shared/filter-text/filter-text.component.ts" path="style-guide/src/04-10/app/shared/filter-text/filter-text.component.ts">
 
   </code-pane>
 
-
   <code-pane title="app/shared/filter-text/filter-text.service.ts" path="style-guide/src/04-10/app/shared/filter-text/filter-text.service.ts">
 
   </code-pane>
-
 
   <code-pane title="app/heroes/heroes.component.ts" path="style-guide/src/04-10/app/heroes/heroes.component.ts">
 
   </code-pane>
 
-
   <code-pane title="app/heroes/heroes.component.html" path="style-guide/src/04-10/app/heroes/heroes.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2601,10 +2507,12 @@ and emphasizes its role as orchestrator of the application as a whole.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** `CoreModule` provides one or more singleton services. Angular registers the providers with the app root injector, making a singleton instance of each service available to any component that needs them, whether that component is eagerly or lazily loaded.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -2621,6 +2529,7 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 
 
 ~~~
+
 
 
 <div class='s-why'>
@@ -2640,10 +2549,12 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesireable results.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -2661,10 +2572,12 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** `CoreModule` exists to make commonly used singleton services available for use in the many other modules.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2674,6 +2587,7 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
       
     
 </div>
+
 
 
 <aio-filetree>
@@ -2688,11 +2602,9 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
           core.module.ts
         </aio-file>
 
-
         <aio-file>
           logger.service.ts|spec.ts
         </aio-file>
-
 
         <aio-folder>
           nav
@@ -2700,9 +2612,7 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
             nav.component.ts|html|css|spec.ts
           </aio-file>
 
-
         </aio-folder>
-
 
         <aio-folder>
           spinner
@@ -2710,53 +2620,41 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
             spinner.component.ts|html|css|spec.ts
           </aio-file>
 
-
           <aio-file>
             spinner.service.ts|spec.ts
           </aio-file>
 
-
         </aio-folder>
 
-
       </aio-folder>
-
 
       <aio-file>
         app.component.ts|html|css|spec.ts
       </aio-file>
 
-
       <aio-file>
         app.module.ts
       </aio-file>
-
 
       <aio-file>
         app-routing.module.ts
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       main.ts
     </aio-file>
 
-
     <aio-file>
       index.html
     </aio-file>
 
-
   </aio-folder>
-
 
   <aio-file>
     ...
   </aio-file>
-
 
 </aio-filetree>
 
@@ -2768,41 +2666,33 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 
   </code-pane>
 
-
   <code-pane title="app/core/core.module.ts" path="style-guide/src/04-11/app/core/core.module.ts">
 
   </code-pane>
-
 
   <code-pane title="app/core/logger.service.ts" path="style-guide/src/04-11/app/core/logger.service.ts">
 
   </code-pane>
 
-
   <code-pane title="app/core/nav/nav.component.ts" path="style-guide/src/04-11/app/core/nav/nav.component.ts">
 
   </code-pane>
-
 
   <code-pane title="app/core/nav/nav.component.html" path="style-guide/src/04-11/app/core/nav/nav.component.html">
 
   </code-pane>
 
-
   <code-pane title="app/core/spinner/spinner.component.ts" path="style-guide/src/04-11/app/core/spinner/spinner.component.ts">
 
   </code-pane>
-
 
   <code-pane title="app/core/spinner/spinner.component.html" path="style-guide/src/04-11/app/core/spinner/spinner.component.html">
 
   </code-pane>
 
-
   <code-pane title="app/core/spinner/spinner.service.ts" path="style-guide/src/04-11/app/core/spinner/spinner.service.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2832,10 +2722,12 @@ Only the root `AppModule` should import the `CoreModule`.
 ~~~
 
 
+
 <div class='s-why' class='s-why'>
   **Why?** Guards against reimporting of the `CoreModule`.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2851,11 +2743,9 @@ Only the root `AppModule` should import the `CoreModule`.
 
   </code-pane>
 
-
   <code-pane title="app/core/core.module.ts" path="style-guide/src/04-12/app/core/core.module.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2874,6 +2764,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** The folder makes it easy to identify and isolate the feature content.  
     
@@ -2890,6 +2781,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2912,6 +2804,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).  
     
@@ -2931,11 +2824,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
   </code-pane>
 
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-02/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2952,12 +2843,14 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** components have templates containing HTML and optional Angular template syntax.  
     They display content.   
     Developers place components on the page as they would native HTML elements and web components.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -2985,11 +2878,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
   </code-pane>
 
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-03/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3033,10 +2924,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Large, inline templates and styles obscure the component's purpose and implementation, reducing readability and maintainability.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -3047,10 +2940,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 
+
 <div class='s-why'>
   **Why?** A _component relative_ URL requires no change when you move the component files, as long as the files stay together.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3073,16 +2968,13 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
   </code-pane>
 
-
   <code-pane title="app/heroes/heroes.component.html" path="style-guide/src/05-04/app/heroes/heroes.component.html">
 
   </code-pane>
 
-
   <code-pane title="app/heroes/heroes.component.css" path="style-guide/src/05-04/app/heroes/heroes.component.css">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3109,10 +3001,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** It is easier and more readable to identify which properties in a class are inputs or outputs.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -3122,10 +3016,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 
+
 <div class='s-why'>
   **Why?** The metadata declaration attached to the directive is shorter and thus more readable.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3159,10 +3055,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Two names for the same property (one private, one public) is inherently confusing.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3191,16 +3089,13 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
   </code-pane>
 
-
   <code-pane title="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="style-guide/src/05-13/app/heroes/shared/hero-highlight.directive.ts">
 
   </code-pane>
 
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-13/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3224,6 +3119,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3266,10 +3162,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Logic may be reused by multiple components when placed within a service and exposed via a function.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -3278,10 +3176,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </div>
 
 
+
 <div class='s-why'>
   **Why?** Removes dependencies and hides implementation details from the component.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3323,10 +3223,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** This is consistent with built-in events such as button clicks.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3354,11 +3256,9 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
   </code-pane>
 
-
   <code-pane title="app/app.component.html" path="style-guide/src/05-16/app/app.component.html">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3375,10 +3275,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Logic will be contained in one place (the component class) instead of being spread in two places.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3413,10 +3315,12 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Attribute directives don't have an associated template.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3459,6 +3363,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 ~~~
 
 
+
 <div class='s-why' class='s-why-last'>
   **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`   
     can be modified only in a single place&mdash;in the directive's class.   
@@ -3474,6 +3379,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 </code-example>
 
 Compare with the less preferred `host` metadata alternative.
+
 
 <div class='s-why' class='s-why-last'>
   **Why?** The `host` metadata is only one term to remember and doesn't require extra ES imports.  
@@ -3501,10 +3407,12 @@ Compare with the less preferred `host` metadata alternative.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** Services are ideal for sharing methods across a feature area or an app.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3540,10 +3448,12 @@ Compare with the less preferred `host` metadata alternative.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** When a service has multiple responsibilities, it becomes difficult to test.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3564,10 +3474,12 @@ Compare with the less preferred `host` metadata alternative.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** The Angular injector is hierarchical.  
     
 </div>
+
 
 
 <div class='s-why'>
@@ -3577,10 +3489,12 @@ Compare with the less preferred `host` metadata alternative.
 </div>
 
 
+
 <div class='s-why'>
   **Why?** This is ideal when a service is sharing methods or state.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3596,11 +3510,9 @@ Compare with the less preferred `host` metadata alternative.
 
   </code-pane>
 
-
   <code-pane title="app/heroes/hero-list/hero-list.component.ts" path="style-guide/src/07-03/app/heroes/hero-list/hero-list.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -3617,11 +3529,13 @@ Compare with the less preferred `host` metadata alternative.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** The Angular Dependency Injection (DI) mechanism resolves a service's own   
     dependencies based on the declared types of that service's constructor parameters.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3665,16 +3579,19 @@ Compare with the less preferred `host` metadata alternative.
 ~~~
 
 
+
 <div class='s-why'>
   **Why?** The component's responsibility is for the presentation and gathering of information for the view. It should not care how it gets the data, just that it knows who to ask for it. Separating the data services moves the logic on how to get it to the data service, and lets the component be simpler and more focused on the view.  
     
 </div>
 
 
+
 <div class='s-why'>
   **Why?** This makes it easier to test (mock or real) the data calls when testing a component that uses a data service.  
     
 </div>
+
 
 
 <div class='s-why' class='s-why-last'>
@@ -3703,6 +3620,7 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 
 ~~~
+
 
 
 <div class='s-why' class='s-why-last'>

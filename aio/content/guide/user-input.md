@@ -76,9 +76,11 @@ displays the accumulating input box changes from the `values` property.
 
 Suppose the user enters the letters "abc", and then backspaces to remove them one by one.
 Here's what the UI displays:
+
 <code-example>
   a | ab | abc | ab | a | |
 </code-example>
+
 
 
 <figure class='image-display'>
@@ -91,6 +93,7 @@ Here's what the UI displays:
 
 Alternatively, you could accumulate the individual keys themselves by substituting `event.key`
 for `event.target.value` in which case the same user input would produce:
+
 <code-example>
   a | b | c | backspace | backspace | backspace |  
     
@@ -152,6 +155,7 @@ and the component does nothing.
 
 Type something in the input box, and watch the display update with each keystroke.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/user-input/keyup-loop-back-anim.gif' alt="loop back">  </img>
 </figure>
@@ -195,6 +199,7 @@ Then Angular calls the event handler only when the user presses _Enter_.
 </code-example>
 
 Here's how it works.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/user-input/keyup3-anim.gif' alt="key up 3">  </img>
 </figure>
@@ -223,6 +228,7 @@ Now, put it all together in a micro-app
 that can display a list of heroes and add new heroes to the list.
 The user can add a hero by typing the hero's name in the input box and
 clicking **Add**.
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/user-input/little-tour-anim.gif' alt="Little Tour of Heroes">  </img>
@@ -260,21 +266,17 @@ Following is all the code discussed in this page.
 
   </code-pane>
 
-
   <code-pane title="keyup.components.ts" path="user-input/src/app/keyup.components.ts">
 
   </code-pane>
-
 
   <code-pane title="loop-back.component.ts" path="user-input/src/app/loop-back.component.ts">
 
   </code-pane>
 
-
   <code-pane title="little-tour.component.ts" path="user-input/src/app/little-tour.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

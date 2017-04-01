@@ -21,6 +21,7 @@ When you're done, the app should look like this <live-example></live-example>.
 Before getting started on this page, verify that you have the following structure from earlier in the Tour of Heroes.
 If not, go back to the previous pages.
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -33,55 +34,43 @@ If not, go back to the previous pages.
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -297,6 +286,7 @@ without touching the parent `AppComponent`.
 ### Review the app structure
 Verify that you have the following structure:
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -309,65 +299,51 @@ Verify that you have the following structure:
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
-
 
         <aio-file>
           hero.ts
         </aio-file>
 
-
         <aio-file>
           hero-detail.component.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
@@ -380,21 +356,17 @@ Here are the code files discussed in this page.
 
   </code-pane>
 
-
   <code-pane title="src/app/app.component.ts" path="toh-3/src/app/app.component.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/hero.ts" path="toh-3/src/app/hero.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/app.module.ts" path="toh-3/src/app/app.module.ts">
 
   </code-pane>
-
 
 </code-tabs>
 

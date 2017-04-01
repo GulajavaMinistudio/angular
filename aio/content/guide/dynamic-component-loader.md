@@ -56,26 +56,21 @@ We start by adding a `template` element with the `AdDirective` directive applied
 
   </code-pane>
 
-
   <code-pane title="ad.service.ts" path="cb-dynamic-component-loader/src/app/ad.service.ts">
 
   </code-pane>
-
 
   <code-pane title="ad-item.ts" path="cb-dynamic-component-loader/src/app/ad-item.ts">
 
   </code-pane>
 
-
   <code-pane title="app.module.ts" path="cb-dynamic-component-loader/src/app/app.module.ts">
 
   </code-pane>
 
-
   <code-pane title="app.component" path="cb-dynamic-component-loader/src/app/app.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -126,20 +121,18 @@ Two sample components and the `AdComponent` interface are shown below:
 
   </code-pane>
 
-
   <code-pane title="hero-profile.component.ts" path="cb-dynamic-component-loader/src/app/hero-profile.component.ts">
 
   </code-pane>
-
 
   <code-pane title="ad.component.ts" path="cb-dynamic-component-loader/src/app/ad.component.ts">
 
   </code-pane>
 
-
 </code-tabs>
 
 The final ad banner looks like this:
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/dynamic-component-loader/ads.gif" alt="Ads">  </img>
 </figure>

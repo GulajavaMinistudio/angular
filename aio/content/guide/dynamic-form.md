@@ -49,11 +49,9 @@ We bootstrap our `AppModule` in main.ts.
 
   </code-pane>
 
-
   <code-pane title="main.ts" path="cb-dynamic-form/src/main.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -106,11 +104,9 @@ Now that we have defined the complete model we are ready to create components to
 
   </code-pane>
 
-
   <code-pane title="dynamic-form.component.ts" path="cb-dynamic-form/src/app/dynamic-form.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -125,11 +121,9 @@ the component responsible for rendering the details of each _individual_ questio
 
   </code-pane>
 
-
   <code-pane title="dynamic-form-question.component.ts" path="cb-dynamic-form/src/app/dynamic-form-question.component.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -176,6 +170,7 @@ When the form is valid, we can click *Save* and the app renders the current form
 This proves that any user input is bound back to the data model.
 Saving and retrieving the data is an exercise for another time.
 The final form looks like this:
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/dynamic-form/dynamic-form.png" alt="Dynamic-Form">  </img>
 </figure>

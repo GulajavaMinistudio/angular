@@ -40,6 +40,7 @@ and each iteration's `hero` instance to the child's `hero` property.
 
 The running application displays three heroes:
 
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/component-communication/parent-to-child.png" alt="Parent-to-child">  </img>
 </figure>
@@ -73,6 +74,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 <code-example path="cb-component-communication/src/app/name-parent.component.ts">
 
 </code-example>
+
 
 
 <figure class='image-display'>
@@ -118,6 +120,7 @@ The `VersionParentComponent` supplies the `minor` and `major` values and binds b
 
 Here's the output of a button-pushing sequence:
 
+
 <figure class='image-display'>
   <img src="assets/images/cookbooks/component-communication/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">  </img>
 </figure>
@@ -160,6 +163,7 @@ payload `$event` and updates a counter.
 
 The framework passes the event argument&mdash;represented by `$event`&mdash;to the handler method,
 and the method processes it:
+
 
 <figure class='image-display'>
   <img src="assets/images/cookbooks/component-communication/child-to-parent.gif" alt="Child-to-parent">  </img>
@@ -211,6 +215,7 @@ This example wires parent buttons to the child's `start` and `stop` and
 uses interpolation to display the child's `seconds` property.
 
 Here we see the parent and child working together.
+
 
 <figure class='image-display'>
   <img src="assets/images/cookbooks/component-communication/countdown-timer-anim.gif" alt="countdown timer">  </img>
@@ -338,6 +343,7 @@ it controls the lifetime of the `MissionService`.
 The *History* log demonstrates that messages travel in both directions between
 the parent `MissionControlComponent` and the `AstronautComponent` children,
 facilitated by the service:
+
 
 <figure class='image-display'>
   <img src="assets/images/cookbooks/component-communication/bidirectional-service.gif" alt="bidirectional-service">  </img>

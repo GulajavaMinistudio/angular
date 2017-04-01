@@ -15,6 +15,7 @@ Before you continue with this page of the Tour of Heroes,
 verify that you have the following structure after [The Hero Editor](tutorial/toh-pt1) page.
 If your structure doesn't match, go back to that page to figure out what you missed.
 
+
 <aio-filetree>
 
   <aio-folder>
@@ -27,60 +28,49 @@ If your structure doesn't match, go back to that page to figure out what you mis
           app.component.ts
         </aio-file>
 
-
         <aio-file>
           app.module.ts
         </aio-file>
 
-
       </aio-folder>
-
 
       <aio-file>
         main.ts
       </aio-file>
 
-
       <aio-file>
         index.html
       </aio-file>
-
 
       <aio-file>
         styles.css
       </aio-file>
 
-
       <aio-file>
         systemjs.config.js
       </aio-file>
-
 
       <aio-file>
         tsconfig.json
       </aio-file>
 
-
     </aio-folder>
-
 
     <aio-file>
       node_modules ...
     </aio-file>
 
-
     <aio-file>
       package.json
     </aio-file>
 
-
   </aio-folder>
-
 
 </aio-filetree>
 
 ## Keep the app transpiling and running
 Enter the following command in the terminal window:
+
 
 <code-example language="sh" class="code-shell">
   npm start  
@@ -281,6 +271,7 @@ When the app loads, the `selectedHero` is undefined and won't be defined until y
 Angular can't display properties of the undefined `selectedHero` and throws the following error,
 visible in the browser's console:
 
+
 <code-example format="nocode">
   EXCEPTION: TypeError: Cannot read property 'name' of undefined in [null]  
     
@@ -334,6 +325,7 @@ To make the selected hero more visible, you'll apply this `selected` class to th
 For example, when the user clicks "Magneta", it should render with a distinctive but subtle background color
 like this:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/heroes-list-selected.png' alt="Selected hero">  </img>
 </figure>
@@ -363,6 +355,7 @@ The final version of the `<li>` looks like this:
 </code-example>
 
 After clicking "Magneta", the list should look like this:
+
 
 <figure class='image-display'>
   <img src='assets/images/devguide/toh/heroes-list-1.png' alt="Output of heroes list app">  </img>

@@ -119,6 +119,7 @@ Which brings us to the _bootstrapping_ process itself.
 
 {@a main}
 
+
 <l-main-section>
 
 </l-main-section>
@@ -155,6 +156,7 @@ so Angular looks for a `<my-app>` tag in the `index.html` like this one ...
 ... and displays the `AppComponent` there.
 
 This file is very stable. Once you've set it up, you may never change it again.
+
 
 <l-main-section>
 

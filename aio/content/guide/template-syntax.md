@@ -7,6 +7,7 @@ Learn how to write templates that display data and consume user events with the 
 @description
 
 
+
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}  
     .syntax { font-family: Consolas, 'Lucida Sans', Courier, sans-serif; color: black; font-size: 85%; }  
@@ -55,6 +56,7 @@ This guide covers the basic elements of the Angular template syntax, elements yo
 The <live-example></live-example>
 demonstrates all of the syntax and code snippets described in this guide.
 
+
 <div class='l-hr'>
 
 </div>
@@ -80,6 +82,7 @@ In the following sections, you'll learn how to get and set DOM (Document Object 
 
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -133,6 +136,7 @@ Though this is not exactly true. Interpolation is a special syntax that Angular 
 
 But first, let's take a closer look at template expressions and statements.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -150,17 +154,17 @@ The interpolation braces in `{{1 + 1}}` surround the template expression `1 + 1`
 In the [property binding](guide/template-syntax#property-binding) section below,
 a template expression appears in quotes to the right of the&nbsp;`=` symbol as in `[property]="expression"`.
 
-You write these template expressions in a language that looks like #{_JavaScript}.
-Many #{_JavaScript} expressions are legal template expressions, but not all.
+You write these template expressions in a language that looks like JavaScript.
+Many JavaScript expressions are legal template expressions, but not all.
 
-#{_JavaScript} expressions that have or promote side effects are prohibited,
+JavaScript expressions that have or promote side effects are prohibited,
 including:
 
 * assignments (`=`, `+=`, `-=`, ...)
-* !{__new_op}
-* chaining expressions with !{__chaining_op}
+* <code>new</code>
+* chaining expressions with <code>;</code> or <code>,</code>
 * increment and decrement operators (`++` and `--`)
-Other notable differences from #{_JavaScript} syntax include:
+Other notable differences from JavaScript syntax include:
 
 * no support for the bitwise operators `|` and `&`
 * new [template expression operators](guide/template-syntax#expression-operators), such as `|` and `?.`
@@ -257,9 +261,10 @@ one of its dependent values changes.
 
 Dependent values should not change during a single turn of the event loop.
 If an idempotent expression returns a string or a number, it returns the same string or number
-when called twice in a row. If the expression returns an object (including #{_an} `#{_Array}`),
+when called twice in a row. If the expression returns an object (including an `array`),
 it returns the same object *reference* when called twice in a row.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -286,14 +291,14 @@ It's how you update application state from user action.
 Responding to events is the other side of Angular's "unidirectional data flow".
 You're free to change anything, anywhere, during this turn of the event loop.
 
-Like template expressions, template *statements* use a language that looks like #{_JavaScript}.
+Like template expressions, template *statements* use a language that looks like JavaScript.
 The template statement parser differs from the template expression parser and
 specifically supports both basic assignment (`=`) and chaining expressions
-(with !{__chaining_op}).
+(with <code>;</code> or <code>,</code>).
 
-However, certain #{_JavaScript} syntax is not allowed:
+However, certain JavaScript syntax is not allowed:
 
-* !{__new_op}
+* <code>new</code>
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
 * the bitwise operators `|` and `&`
@@ -339,6 +344,7 @@ A method call or simple property assignment should be the norm.
 Now that you have a feel for template expressions and statements,
 you're ready to learn about the varieties of data binding syntax beyond interpolation.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -359,9 +365,11 @@ This guide covers most of them, after a high-level view of Angular data binding 
 Binding types can be grouped into three categories distinguished by the direction of data flow:
 from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _view-to-source-to-view_:
 
+
 <style>
   td, th {vertical-align: top}
 </style>
+
 
 
 <table width="100%">
@@ -370,16 +378,13 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
 
   </col>
 
-
   <col width="50%">
 
   </col>
 
-
   <col width="20%">
 
   </col>
-
 
   <tr>
 
@@ -387,26 +392,21 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
       Data direction
     </th>
 
-
     <th>
       Syntax
     </th>
-
 
     <th>
       Type
     </th>
 
-
   </tr>
-
 
   <tr>
 
     <td>
       One-way<br>from data source<br>to view target
     </td>
-
 
     <td>
 
@@ -416,9 +416,7 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
                 bind-target="expression"
       </code-example>
 
-
     </td>
-
 
     <td>
       Interpolation<br>      
@@ -428,13 +426,11 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
             Style
     </td>
 
-
     <tr>
 
       <td>
         One-way<br>from view target<br>to data source
       </td>
-
 
       <td>
 
@@ -443,24 +439,19 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
                     on-target="statement"
         </code-example>
 
-
       </td>
-
 
       <td>
         Event
       </td>
 
-
     </tr>
-
 
     <tr>
 
       <td>
         Two-way
       </td>
-
 
       <td>
 
@@ -469,20 +460,15 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
                     bindon-target="expression"
         </code-example>
 
-
       </td>
-
 
       <td>
         Two-way
       </td>
 
-
     </tr>
 
-
   </tr>
-
 
 </table>
 
@@ -590,6 +576,7 @@ This fact bears repeating:
 ~~~ {.callout.is-helpful}
 
 
+
 <header>
   A world without attributes
 </header>
@@ -611,9 +598,11 @@ Depending on the binding type, the target can be an
 (element | component | directive) event, or (rarely) an attribute name.
 The following table summarizes:
 
+
 <style>
   td, th {vertical-align: top}
 </style>
+
 
 
 <table width="100%">
@@ -622,16 +611,13 @@ The following table summarizes:
 
   </col>
 
-
   <col width="15%">
 
   </col>
 
-
   <col width="75%">
 
   </col>
-
 
   <tr>
 
@@ -639,19 +625,15 @@ The following table summarizes:
       Type
     </th>
 
-
     <th>
       Target
     </th>
-
 
     <th>
       Examples
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -659,27 +641,21 @@ The following table summarizes:
       Property
     </td>
 
-
     <td>
       Element&nbsp;property<br>      
             Component&nbsp;property<br>      
             Directive&nbsp;property
     </td>
 
-
     <td>
-      
-      
+
       <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -687,27 +663,21 @@ The following table summarizes:
       Event
     </td>
 
-
     <td>
       Element&nbsp;event<br>      
             Component&nbsp;event<br>      
             Directive&nbsp;event
     </td>
 
-
     <td>
-      
-      
+
       <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -715,25 +685,19 @@ The following table summarizes:
       Two-way
     </td>
 
-
     <td>
       Event and property
     </td>
 
-
     <td>
-      
-      
+
       <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -741,26 +705,20 @@ The following table summarizes:
       Attribute
     </td>
 
-
     <td>
       Attribute      
             (the&nbsp;exception)
     </td>
 
-
     <td>
-      
-      
+
       <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -768,25 +726,19 @@ The following table summarizes:
       Class
     </td>
 
-
     <td>
       <code>class</code> property
     </td>
 
-
     <td>
-      
-      
+
       <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -794,30 +746,25 @@ The following table summarizes:
       Style
     </td>
 
-
     <td>
       <code>style</code> property
     </td>
 
-
     <td>
-      
-      
+
       <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
 </table>
 
 With this broad view in mind, you're ready to look at binding types in detail.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1030,14 +977,17 @@ nor property binding.
 Interpolation handles the script tags differently than property binding but both approaches render the
 content harmlessly.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'>  </img>
 </figure>
 
 
+
 <p>
   <a href="#toc">  back to top  </a>
 </p>
+
 
 
 <div class='l-hr'>
@@ -1077,12 +1027,14 @@ There are no property targets to bind to.
 
 This fact becomes painfully obvious when you write something like this.
 
+
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;  
     
 </code-example>
 
 And you get this error:
+
 
 <code-example format="nocode">
   Template parse errors:  
@@ -1124,6 +1076,7 @@ is to set ARIA attributes, as in this example:
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1153,8 +1106,8 @@ You can replace that with a binding to a string of the desired class names; this
 </code-example>
 
 Finally, you can bind to a specific class name.
-Angular adds the class when the template expression evaluates to #{_truthy}.
-It removes the class when the expression is #{_falsy}.
+Angular adds the class when the template expression evaluates to truthy.
+It removes the class when the expression is falsy.
 
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" linenums="false">
@@ -1172,6 +1125,7 @@ the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1219,6 +1173,7 @@ Note that a _style property_ name can be written in either
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1373,6 +1328,7 @@ Deleting the hero updates the model, perhaps triggering other changes
 including queries and saves to a remote server.
 These changes percolate through the system and are ultimately displayed in this and other views.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1393,6 +1349,7 @@ of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
 
 
 ~~~ {.callout.is-important}
+
 
 
 <header>
@@ -1448,6 +1405,7 @@ However, no native HTML element follows the `x` value and `xChange` event patter
 
 Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1477,6 +1435,7 @@ You'll write your own directives, just not as many.
 This segment reviews some of the most frequently used built-in directives,
 classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives).
 
+
 <div class='l-hr'>
 
 </div>
@@ -1499,6 +1458,7 @@ This section is an introduction to the most commonly used attribute directives:
 * [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
 * [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1521,7 +1481,7 @@ A [class binding](guide/template-syntax#class-binding) is a good way to add or r
 
 To add or remove *many* CSS classes at the same time, the `NgClass` directive may be the better choice.
 
-Try binding `ngClass` to a key:value control !{__objectAsMap}.
+Try binding `ngClass` to a key:value control object.
 Each key of the object is a CSS class name; its value is `true` if the class should be added,
 `false` if it should be removed.
 Consider a `setCurrentClasses` component method that sets a component property,
@@ -1550,6 +1510,7 @@ It's up to you to call `setCurrentClassess()`, both initially and when the depen
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1571,7 +1532,7 @@ A [style binding](guide/template-syntax#style-binding) is an easy way to set a *
 
 To set *many* inline styles at the same time, the `NgStyle` directive may be the better choice.
 
-Try binding `ngStyle` to a key:value control !{__objectAsMap}.
+Try binding `ngStyle` to a key:value control object.
 Each key of the object is a style name; its value is whatever is appropriate for that style.
 
 Consider a `setCurrentStyles` component method that sets a component property, `currentStyles`
@@ -1599,6 +1560,7 @@ It's up to you to call `setCurrentStyles()`, both initially and when the depende
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1615,6 +1577,20 @@ Two-way data binding with the `NgModel` directive makes that easy. Here's an exa
 
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (NgModel-1)" region="NgModel-1">
+
+</code-example>
+
+#### _FormsModule_ is required to use _ngModel_
+
+Before using the `ngModel` directive in a two-way data binding,
+you must import the `FormsModule` and add it to the Angular module's `imports` list.
+Learn more about the `FormsModule` and `ngModel` in the
+[Forms](guide/forms) guide.
+
+Here's how to import the `FormsModule` to make `[(ngModel)]` available.
+
+
+<code-example path="template-syntax/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (FormsModule import)" region="FormsModule import">
 
 </code-example>
 
@@ -1691,14 +1667,17 @@ The following contrived example forces the input value to uppercase:
 
 Here are all variations in action, including the uppercase version:
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/ng-model-anim.gif' alt="NgModel variations">  </img>
 </figure>
 
 
+
 <p>
   <a href="#toc">  back to top  </a>
 </p>
+
 
 
 <div class='l-hr'>
@@ -1731,6 +1710,7 @@ _This_ section is an introduction to the common structural directives:
 * [`NgFor`](guide/template-syntax#ngFor) - repeat a template for each item in a list
 * [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
 
+
 <div class='l-hr'>
 
 </div>
@@ -1758,8 +1738,8 @@ Don't forget the asterisk (`*`) in front of `ngIf`.
 
 ~~~
 
-When the `isActive` expression returns a #{_truthy} value, `NgIf` adds the `HeroDetailComponent` to the DOM.
-When the expression is #{_falsy}, `NgIf` removes the `HeroDetailComponent`
+When the `isActive` expression returns a truthy value, `NgIf` adds the `HeroDetailComponent` to the DOM.
+When the expression is falsy, `NgIf` removes the `HeroDetailComponent`
 from the DOM, destroying that component and all of its sub-components.
 
 #### Show/hide is not the same thing
@@ -1814,6 +1794,7 @@ described below.
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1860,7 +1841,7 @@ The string assigned to `*ngFor` is not a [template expression](guide/template-sy
 It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
 The string `"let hero of heroes"` means:
 
-> *Take each hero in the `heroes` #{_array}, store it in the local `hero` looping variable, and
+> *Take each hero in the `heroes` array, store it in the local `hero` looping variable, and
 make it available to the templated HTML for each iteration.*
 
 Angular translates this instruction into a `<template>` around the host element,
@@ -1877,8 +1858,8 @@ Learn about the _microsyntax_ in the [_Structural Directives_](guide/structural-
 ### Template input variables
 
 The `let` keyword before `hero` creates a _template input variable_ called `hero`.
-The `ngFor` directive iterates over the `heroes` #{_array} returned by the parent component's `heroes` property
-and sets `hero` to the current item from the #{_array} during each iteration.
+The `ngFor` directive iterates over the `heroes` array returned by the parent component's `heroes` property
+and sets `hero` to the current item from the array during each iteration.
 
 You reference the `hero` input variable within the `ngFor` host element
 (and within its descendents) to access the hero's properties.
@@ -1952,14 +1933,17 @@ Here is an illustration of the _trackBy_ effect.
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy">  </img>
 </figure>
 
 
+
 <p>
   <a href="#toc">  back to top  </a>
 </p>
+
 
 
 <div class='l-hr'>
@@ -1982,6 +1966,7 @@ Angular puts only the *selected* element into the DOM.
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" linenums="false">
 
 </code-example>
+
 
 
 <figure class='image-display'>
@@ -2017,6 +2002,7 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2100,6 +2086,7 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2184,7 +2171,7 @@ In the `HeroDetailComponent`, such properties are marked as input or output prop
 
 ~~~ {.l-sub-section}
 
-Alternatively, you can identify members in the `inputs` and `outputs` #{_array}s
+Alternatively, you can identify members in the `inputs` and `outputs` arrays
 of the directive metadata, as in this example:
 
 
@@ -2192,7 +2179,7 @@ of the directive metadata, as in this example:
 
 </code-example>
 
-You can specify an input/output property either with a decorator or in a metadata #{_array}.
+You can specify an input/output property either with a decorator or in a metadata array.
 Don't do both!
 
 
@@ -2205,6 +2192,7 @@ Don't do both!
 
 The terms _input_ and _output_ reflect the perspective of the target directive.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/template-syntax/input-output.png' alt="Inputs and outputs">  </img>
 </figure>
@@ -2214,6 +2202,7 @@ because data flows *into* that property from a template binding expression.
 
 `HeroDetailComponent.deleteRequest` is an **output** property from the perspective of `HeroDetailComponent`
 because events stream *out* of that property and toward the handler in a template binding statement.
+
 
 <h3 id='aliasing-io'>
   Aliasing input/output properties
@@ -2251,7 +2240,7 @@ You can specify the alias for the property name by passing it into the input/out
 
 ~~~ {.l-sub-section}
 
-You can also alias property names in the `inputs` and `outputs` #{_array}s.
+You can also alias property names in the `inputs` and `outputs` arrays.
 You write a colon-delimited (`:`) string with
 the directive property name on the *left* and the public alias on the *right*:
 
@@ -2265,6 +2254,7 @@ the directive property name on the *left* and the public alias on the *right*:
 ~~~
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2274,7 +2264,7 @@ the directive property name on the *left* and the public alias on the *right*:
 {@a expression-operators}
 ## Template expression operators
 
-The template expression language employs a subset of #{_JavaScript} syntax supplemented with a few special operators
+The template expression language employs a subset of JavaScript syntax supplemented with a few special operators
 for specific scenarios. The next sections cover two of these operators: _pipe_ and _safe navigation operator_.
 
 
@@ -2318,6 +2308,7 @@ The `json` pipe is particularly helpful for debugging bindings:
 
 The generated output would look something like this
 
+
 <code-example language="json">
   { "id": 0, "name": "Hercules", "emotion": "happy",  
       "birthdate": "1970-02-25T08:00:00.000Z",  
@@ -2327,6 +2318,7 @@ The generated output would look something like this
 </code-example>
 
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2358,12 +2350,14 @@ That is reasonable behavior. At least the app doesn't crash.
 Suppose the template expression involves a property path, as in this next example
 that displays the `name` of a null hero.
 
+
 <code-example language="html">
   The null hero's name is {{nullHero.name}}  
     
 </code-example>
 
 JavaScript throws a null reference error, and so does Angular:
+
 
 <code-example format="nocode">
   TypeError: Cannot read property 'name' of null in [null].  
@@ -2392,7 +2386,6 @@ You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
 
 </code-example>
 
-
 You could try to chain parts of the property path with `&&`, knowing that the expression bails out
 when it encounters the first null.
 
@@ -2415,6 +2408,7 @@ The display is blank, but the app keeps rolling without errors.
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 <a href="#toc">back to top</a>
+
 <div class='l-hr'>
 
 </div>

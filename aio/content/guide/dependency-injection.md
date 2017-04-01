@@ -13,6 +13,7 @@ It's used so widely that almost everyone just calls it _DI_.
 
 This page covers what DI is, why it's so useful,
 and [how to use it](guide/dependency-injection#angular-di) in an Angular app.# Contents
+
 - [Why dependency injection?](guide/dependency-injection#why-di)
 - [Angular dependency injection](guide/dependency-injection#angular-dependency-injection)
   - [Configuring the injector](guide/dependency-injection#injector-config)
@@ -62,7 +63,7 @@ the very specific classes `Engine` and `Tires`.
 
 What if the `Engine` class evolves and its constructor requires a parameter?
 That would break the `Car` class and it would stay broken until you rewrote it along the lines of
-`#{_thisDot}engine = new Engine(theNewParameter)`.
+`this.engine = new Engine(theNewParameter)`.
 The `Engine` constructor parameters weren't even a consideration when you first wrote `Car`.
 You may not anticipate them even now.
 But you'll *have* to start caring because
@@ -104,11 +105,9 @@ That's super easy. Change the `Car` constructor to a version with DI:
 
   </code-pane>
 
-
   <code-pane title="src/app/car/car.ts (excerpt without DI)" path="dependency-injection/src/app/car/car-no-di.ts" region="car-ctor">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -116,7 +115,6 @@ See what happened? The definition of the dependencies are
 now in the constructor.
 The `Car` class no longer creates an `engine` or `tires`.
 It just consumes them.
-
 
 
 ~~~ {.l-sub-section}
@@ -232,21 +230,17 @@ that from the [The Tour of Heroes](tutorial/).
 
   </code-pane>
 
-
   <code-pane title="src/app/heroes/hero-list.component.ts" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
 
   </code-pane>
-
 
   <code-pane title="src/app/heroes/hero.ts" path="dependency-injection/src/app/heroes/hero.ts">
 
   </code-pane>
 
-
   <code-pane title="src/app/heroes/mock-heroes.ts" path="dependency-injection/src/app/heroes/mock-heroes.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -270,6 +264,8 @@ Given that the service is a
 [separate concern](https://en.wikipedia.org/wiki/Separation_of_concerns),
 consider writing the service code in its own file.
 
+See [this note](guide/dependency-injection#one-class-per-file) for details.
+
 ~~~
 
 The following `HeroService` exposes a `getHeroes` method that returns
@@ -284,7 +280,7 @@ the same mock data as before, but none of its consumers need to know that.
 
 ~~~ {.l-sub-section}
 
-The `@Injectable()` #{_decorator} above the service class is
+The `@Injectable()` decorator above the service class is
 covered [shortly](guide/dependency-injection#injectable).
 
 
@@ -296,7 +292,7 @@ covered [shortly](guide/dependency-injection#injectable).
 
 Of course, this isn't a real service.
 If the app were actually getting data from a remote server, the API would have to be
-asynchronous, #{_perhaps} returning a !{_PromiseLinked}.
+asynchronous, perhaps returning a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 You'd also have to rewrite the way components consume the service.
 This is important in general, but not in this example.
 
@@ -305,6 +301,7 @@ This is important in general, but not in this example.
 
 A service is nothing more than a class in Angular.
 It remains nothing more than a class until you register it with an Angular injector.
+
 
 <div id='bootstrap'>
 
@@ -326,17 +323,16 @@ Angular creates an application-wide injector for you during the bootstrap proces
 You do have to configure the injector by registering the **providers**
 that create the services the application requires.
 This guide explains what [providers](guide/dependency-injection#providers) are later.
-
 You can either register a provider within an [NgModule](guide/ngmodule) or in application components.
 
 
 {@a register-providers-ngmodule}
 ### Registering providers in an _NgModule_
 Here's the `AppModule` that registers two providers, `UserService` and an `APP_CONFIG` provider,
-in its `providers` !{_array}.
+in its `providers` array.
 
 
-<code-example path="dependency-injection/app_module_ts + ' (excerpt)'" linenums="false" title="app_module_ts + ' (excerpt)' (ngmodule)" region="ngmodule">
+<code-example path="dependency-injection/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (excerpt)" region="ngmodule">
 
 </code-example>
 
@@ -348,13 +344,12 @@ place to register it.
 {@a register-providers-component}
 ### Registering providers in a component
 
-Here's a revised `HeroesComponent` that registers the `HeroService` in its `providers` !{_array}.
+Here's a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
 
 
 <code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" region="full" linenums="false">
 
 </code-example>
-
 
 
 
@@ -368,7 +363,7 @@ On the other hand, a provider registered in an application component is availabl
 that component and all its children.
 
 Here, the `APP_CONFIG` service needs to be available all across the application, so it's
-registered in the `AppModule` `@NgModule` `providers` !{_array}.
+registered in the `AppModule` `@NgModule` `providers` array.
 But since the `HeroService` is only used within the *Heroes*
 feature area and nowhere else, it makes sense to register it in
 the `HeroesComponent`.
@@ -399,11 +394,9 @@ It's a small change:
 
   </code-pane>
 
-
   <code-pane title="src/app/heroes/hero-list.component (without DI)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -421,12 +414,12 @@ Adding a parameter to the constructor isn't all that's happening here.
 </code-example>
 
 Note that the constructor parameter has the type `HeroService`, and that
-the `HeroListComponent` class has an `@Component` #{_decorator}
+the `HeroListComponent` class has an `@Component` decorator
 (scroll up to confirm that fact).
 Also recall that the parent component (`HeroesComponent`)
 has `providers` information for `HeroService`.
 
-The constructor parameter type, the `@Component` #{_decorator},
+The constructor parameter type, the `@Component` decorator,
 and the parent's `providers` information combine to tell the
 Angular injector to inject an instance of
 `HeroService` whenever it creates a new `HeroListComponent`.
@@ -515,26 +508,23 @@ Here is the revision compared to the original.
 
   </code-pane>
 
-
   <code-pane title="src/app/heroes/hero.service (v1)" path="dependency-injection/src/app/heroes/hero.service.1.ts">
 
   </code-pane>
 
-
 </code-tabs>
 
-The constructor now asks for an injected instance of a `Logger` and stores it in a private property called `#{_priv}logger`.
+The constructor now asks for an injected instance of a `Logger` and stores it in a private property called `logger`.
 You call that property within the `getHeroes()` method when anyone asks for heroes.
 
 
 {@a injectable}
 ### Why _@Injectable()_?
 
-**<a href="#{injUrl}">@Injectable()</a>** marks a class as available to an
+**<a href="../api/core/index/Injectable-decorator.html">@Injectable()</a>** marks a class as available to an
 injector for instantiation. Generally speaking, an injector reports an
 error when trying to instantiate a class that is not marked as
 `@Injectable()`.
-
 
 
 ~~~ {.l-sub-section}
@@ -553,6 +543,7 @@ in order to inject a `Logger`.
 ~~~ {.callout.is-helpful}
 
 
+
 <header>
   Suggestion: add @Injectable() to every service class
 </header>
@@ -560,17 +551,16 @@ in order to inject a `Logger`.
 Consider adding `@Injectable()` to every service class, even those that don't have dependencies
 and, therefore, do not technically require it. Here's why:
 
+
 <ul style="font-size:inherit">
 
   <li>
     <b>Future proofing:</b> No need to remember <code>@Injectable()</code> when you add a dependency later.
   </li>
 
-
   <li>
-    <b>Consistency:</b> All services follow the same rules, and you don't have to wonder why           is missing.
+    <b>Consistency:</b> All services follow the same rules, and you don't have to wonder why a decorator is missing.
   </li>
-
 
 </ul>
 
@@ -584,19 +574,41 @@ like `HeroesComponent`. So why doesn't `HeroesComponent` have
 
 You *can* add it if you really want to. It isn't necessary because the
 `HeroesComponent` is already marked with `@Component`, and this
-!{_decorator} class (like `@Directive` and `@Pipe`, which you learn about later)
-is a subtype of <a href="#{injUrl}">@Injectable()</a>.  It is in
-fact `@Injectable()` #{_decorator}s that
+decorator class (like `@Directive` and `@Pipe`, which you learn about later)
+is a subtype of <a href="../api/core/index/Injectable-decorator.html">@Injectable()</a>.  It is in
+fact `@Injectable()` decorators that
 identify a class as a target for instantiation by an injector.
+
+
+~~~ {.l-sub-section}
+
+At runtime, injectors can read class metadata in the transpiled JavaScript code
+and use the constructor parameter type information
+to determine what things to inject.
+
+Not every JavaScript class has metadata.
+The TypeScript compiler discards metadata by default.
+If the `emitDecoratorMetadata` compiler option is true
+(as it should be in the `tsconfig.json`),
+the compiler adds the metadata to the generated JavaScript
+for _every class with at least one decorator_.
+
+While any decorator will trigger this effect, mark the service class with the
+<a href="../api/core/index/Injectable-decorator.html">@Injectable()</a> decorator
+to make the intent clear.
+
+
+~~~
+
 
 
 ~~~ {.callout.is-critical}
 
 
+
 <header>
   Always include the parentheses
 </header>
-
 
 Always write `@Injectable()`, not just `@Injectable`.
 The application will fail mysteriously if you forget the parentheses.
@@ -618,10 +630,9 @@ The logger service is quite simple:
 
 </code-example>
 
-
 You're likely to need the same logger service everywhere in your application,
-so put it in the project's `#{_appDir}` folder and
-register it in the `providers` #{_array} of the application !{_moduleVsComp}, `!{_AppModuleVsAppComp}`.
+so put it in the project's `app` folder and
+register it in the `providers` array of the application module, `AppModule`.
 
 
 <code-example path="dependency-injection/src/app/providers.component.ts" linenums="false" title="src/app/providers.component.ts (excerpt)" region="providers-logger">
@@ -629,6 +640,7 @@ register it in the `providers` #{_array} of the application !{_moduleVsComp}, `!
 </code-example>
 
 If you forget to register the logger, Angular throws an exception when it first looks for the logger:
+
 <code-example format="nocode">
   EXCEPTION: No provider for Logger! (HeroListComponent -> HeroService -> Logger)  
     
@@ -649,36 +661,36 @@ that the injector injects into components and other services.
 
 You must register a service *provider* with the injector, or it won't know how to create the service.
 
-Earlier you registered the `Logger` service in the `providers` #{_array} of the metadata for the `AppModule` like this:
+Earlier you registered the `Logger` service in the `providers` array of the metadata for the `AppModule` like this:
 
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 
 </code-example>
 
-There are many ways to *provide* something that #{implements} `Logger`.
+There are many ways to *provide* something that looks and behaves like a `Logger`.
 The `Logger` class itself is an obvious and natural provider.
 But it's not the only way.
 
-You can configure the injector with alternative providers that can deliver #{objectlike} a `Logger`.
-You could provide a substitute class. #{loggerlike}
+You can configure the injector with alternative providers that can deliver an object that behaves like a `Logger`.
+You could provide a substitute class. You could provide a logger-like object.
 You could give it a provider that calls a logger factory function.
 Any of these approaches might be a good choice under the right circumstances.
 
 What matters is that the injector has a provider to go to when it needs a `Logger`.
 
+
 <div id='provide'>
 
 </div>
 
-### The *Provider* class !{_andProvideFn}
-You wrote the `providers` #{_array} like this:
+### The *Provider* class and _provide_ object literal
+You wrote the `providers` array like this:
 
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-1">
 
 </code-example>
-
 
 This is actually a shorthand expression for a provider registration
 using a _provider_ object literal with two properties:
@@ -688,13 +700,13 @@ using a _provider_ object literal with two properties:
 
 </code-example>
 
-
 The first is the [token](guide/dependency-injection#token) that serves as the key for both locating a dependency value
 and registering the provider.
 
-The second is a !{_secondParam},
+The second is a provider definition object,
 which you can think of as a *recipe* for creating the dependency value.
 There are many ways to create dependency values just as there are many ways to write a recipe.
+
 
 <div id='class-provider'>
 
@@ -710,7 +722,6 @@ to return a `BetterLogger` when something asks for the `Logger`.
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-4">
 
 </code-example>
-
 
 
 
@@ -770,7 +781,6 @@ The solution: alias with the `useExisting` option.
 Sometimes it's easier to provide a ready-made object rather than ask the injector to create it from a class.
 
 
-
 <code-example path="dependency-injection/src/app/providers.component.ts" region="silent-logger" linenums="false">
 
 </code-example>
@@ -786,6 +796,7 @@ which makes this object play the logger role.
 See more `useValue` examples in the
 [Non-class dependencies](guide/dependency-injection#non-class-dependencies) and
 [OpaqueToken](guide/dependency-injection#opaquetoken) sections.
+
 
 <div id='factory-provider'>
 
@@ -847,19 +858,19 @@ and let the injector pass them along to the factory function:
 The `useFactory` field tells Angular that the provider is a factory function
 whose implementation is the `heroServiceFactory`.
 
-The `deps` property is #{_an} #{_array} of [provider tokens](guide/dependency-injection#token).
+The `deps` property is an array of [provider tokens](guide/dependency-injection#token).
 The `Logger` and `UserService` classes serve as tokens for their own class providers.
 The injector resolves these tokens and injects the corresponding services into the matching factory function parameters.
 
 
 ~~~
 
-Notice that you captured the factory provider in #{_an} #{exportedvar}, `heroServiceProvider`.
+Notice that you captured the factory provider in an exported variable, `heroServiceProvider`.
 This extra step makes the factory provider reusable.
-You can register the `HeroService` with this #{variable} wherever you need it.
+You can register the `HeroService` with this variable wherever you need it.
 
 In this sample, you need it only in the `HeroesComponent`,
-where it replaces the previous `HeroService` registration in the metadata `providers` #{_array}.
+where it replaces the previous `HeroService` registration in the metadata `providers` array.
 Here you see the new and the old implementation side-by-side:
 
 
@@ -869,11 +880,9 @@ Here you see the new and the old implementation side-by-side:
 
   </code-pane>
 
-
   <code-pane title="src/app/heroes/heroes.component (v2)" path="dependency-injection/src/app/heroes/heroes.component.1.ts" region="full">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -908,10 +917,12 @@ This is especially convenient when you consider that most dependency values are 
 
 {@a non-class-dependencies}
 ### Non-class dependencies
+
 <p>
   What if the dependency value isn't a class? Sometimes the thing you want to inject is a  
     span string, function, or object.
 </p>
+
 
 
 <p>
@@ -929,7 +940,6 @@ This is especially convenient when you consider that most dependency values are 
 
 What if you'd like to make this configuration object available for injection?
 You know you can register an object with a [value provider](guide/dependency-injection#value-provider).
-
 But what should you use as the token?
 You don't have a class to serve as a token.
 There is no `AppConfig` class.
@@ -968,7 +978,7 @@ There is no interface type information left for Angular to find at runtime.
 ### _OpaqueToken_
 
 One solution to choosing a provider token for non-class dependencies is
-to define and use an !{opaquetoken}.
+to define and use an <a href="../api/core/index/OpaqueToken-class.html"><b>OpaqueToken</b></a>.
 The definition looks like this:
 
 
@@ -984,7 +994,7 @@ Register the dependency provider using the `OpaqueToken` object:
 </code-example>
 
 Now you can inject the configuration object into any constructor that needs it, with
-the help of an `@Inject` #{_decorator}:
+the help of an `@Inject` decorator:
 
 
 <code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" linenums="false">
@@ -995,19 +1005,15 @@ the help of an `@Inject` #{_decorator}:
 
 ~~~ {.l-sub-section}
 
-Although the !{configType} interface plays no role in dependency injection,
+Although the `AppConfig` interface plays no role in dependency injection,
 it supports typing of the configuration object within the class.
 
 
 ~~~
 
-
 Aternatively, you can provide and inject the configuration object in an ngModule like `AppModule`.
 
-
-<code-example path="dependency-injection/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (ngmodule-providers)" region="ngmodule-providers">
-
-</code-example>
++makeExcerpt('src/app/app.module.ts','ngmodule-providers')
 
 
 <div id='optional'>
@@ -1020,6 +1026,12 @@ The `HeroService` *requires* a `Logger`, but what if it could get by without
 a `logger`?
 You can tell Angular that the dependency is optional by annotating the
 constructor argument with `@Optional()`:
+
+
+<code-example path="dependency-injection/src/app/providers.component.ts" region="import-optional">
+
+</code-example>
+
 
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor" linenums="false">
@@ -1080,6 +1092,28 @@ You're forced to spelunk the implementation to discover what it does.
 Framework developers may take this approach when they
 must acquire services generically and dynamically.
 
+
+~~~
+
+
+## Appendix: Why have one class per file
+
+Having multiple classes in the same file is confusing and best avoided.
+Developers expect one class per file. Keep them happy.
+
+If you combine the `HeroService` class with
+the `HeroesComponent` in the same file,
+**define the component last**.
+If you define the component before the service,
+you'll get a runtime null reference error.
+
+
+~~~ {.l-sub-section}
+
+You actually can define the component first with the help of the `forwardRef()` method as explained
+in this [blog post](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html).
+But why flirt with trouble?
+Avoid the problem altogether by defining components and services in separate files.
 
 ~~~
 

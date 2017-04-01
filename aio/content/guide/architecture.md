@@ -6,7 +6,6 @@ The basic building blocks of Angular applications.
 
 @description
 
-
 Angular is a framework for building client applications in HTML and
 either JavaScript or a language like TypeScript that compiles to JavaScript.
 
@@ -21,6 +20,7 @@ responding to user interactions according to the instructions you've provided.
 
 Of course, there is more to it than this.
 You'll learn the details in the pages that follow. For now, focus on the big picture.
+
 
 <figure>
   <img src="assets/images/devguide/architecture/overview2.png" alt="overview" style="margin-left:-40px;" width="700">  </img>
@@ -43,6 +43,7 @@ Learn these building blocks, and you're on your way.
 ~~~ {.l-sub-section}
 
 
+
 <p>
   The code referenced on this page is available as a <live-example></live-example>.
 </p>
@@ -53,10 +54,10 @@ Learn these building blocks, and you're on your way.
 
 
 ## Modules
+
 <figure>
   <img src="assets/images/devguide/architecture/module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
-
 
 Angular apps are modular and Angular has its own modularity system called _Angular modules_ or _NgModules_.
 
@@ -151,14 +152,14 @@ Other JavaScript modules use *import statements* to access public objects from o
 These are two different and _complementary_ module systems. Use them both to write your apps.
 ### Angular libraries
 
+
 <figure>
   <img src="assets/images/devguide/architecture/library-module.png" alt="Component" align="left" style="width:240px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
-
 Angular ships as a collection of JavaScript modules. You can think of them as library modules. 
 
-Each Angular library name begins with the `!{_at_angular}` prefix.
+Each Angular library name begins with the `@angular` prefix.
 
 You install them with the **npm** package manager and import parts of them with JavaScript `import` statements.
 <br class="l-clear-both"><br>
@@ -195,12 +196,14 @@ Learn more from the [Angular modules](guide/ngmodule) page.
 ~~~
 
 
+
 <div class='l-hr'>
    
 </div>
 
 
 ## Components
+
 
 <figure>
   <img src="assets/images/devguide/architecture/hero-component.png" alt="Component" align="left" style="width:200px; margin-left:-40px;margin-right:10px">  </img>
@@ -218,7 +221,7 @@ You define a component's application logic&mdash;what it does to support the vie
 The class interacts with the view through an API of properties and methods.
 
 <a id="component-code"></a>
-For example, this `HeroListComponent` has a `heroes` property that returns !{_an} !{_array} of heroes
+For example, this `HeroListComponent` has a `heroes` property that returns an array of heroes
 that it acquires from a service.
 `HeroListComponent` also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list.
 
@@ -230,12 +233,14 @@ that it acquires from a service.
 Angular creates, updates, and destroys components as the user moves through the application.
 Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()` declared above.
 
+
 <div class='l-hr'>
    
 </div>
 
 
 ## Templates
+
 <figure>
   <img src="assets/images/devguide/architecture/template.png" alt="Template" align="left" style="width:200px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -261,18 +266,21 @@ The `HeroDetailComponent` (code not shown) presents facts about a particular her
 hero that the user selects from the list presented by the `HeroListComponent`.
 The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 
+
 <figure>
   <img src="assets/images/devguide/architecture/component-tree.png" alt="Metadata" align="left" style="width:300px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
 <br class="l-clear-both">
+
 <div class='l-hr'>
    
 </div>
 
 
 ## Metadata
+
 <figure>
   <img src="assets/images/devguide/architecture/metadata.png" alt="Metadata" align="left" style="width:150px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -285,7 +293,7 @@ In fact, `HeroListComponent` really is *just a class*. It's not a component unti
 
 To tell Angular that `HeroListComponent` is a component, attach **metadata** to the class.
 
-In !{_Lang}, you attach metadata by using !{_a} **!{_decorator}**.
+In TypeScript, you attach metadata by using a **decorator**.
 Here's some metadata for `HeroListComponent`:
 
 
@@ -293,9 +301,8 @@ Here's some metadata for `HeroListComponent`:
 
 </code-example>
 
-Here is the `@Component` !{_decorator}, which identifies the class
+Here is the `@Component` decorator, which identifies the class
 immediately below it as a component class.
-
 The `@Component` decorator takes a required configuration object with the
 information Angular needs to create and present the component and its view.
 
@@ -306,10 +313,10 @@ For example, if an app's  HTML contains `<hero-list></hero-list>`, then
 Angular inserts an instance of the `HeroListComponent` view between those tags.
 
 - `templateUrl`: module-relative address of this component's HTML template, shown [above](guide/architecture#templates).
-
-- `providers`: !{_array} of **dependency injection providers** for services that the component requires.
+- `providers`: array of **dependency injection providers** for services that the component requires.
 This is one way to tell Angular that the component's constructor requires a `HeroService`
 so it can get the list of heroes to display. 
+
 
 <figure>
   <img src="assets/images/devguide/architecture/template-metadata-component.png" alt="Metadata" align="left" style="height:200px; margin-left:-40px;margin-right:10px">  </img>
@@ -319,9 +326,10 @@ The metadata in the `@Component` tells Angular where to get the major building b
 
 The template, metadata, and component together describe a view.
 
-Apply other metadata !{_decorator}s in a similar fashion to guide Angular behavior.
-`@Injectable`, `@Input`, and `@Output` are a few of the more popular !{_decorator}s.<br class="l-clear-both">The architectural takeaway is that you must add metadata to your code
+Apply other metadata decorators in a similar fashion to guide Angular behavior.
+`@Injectable`, `@Input`, and `@Output` are a few of the more popular decorators.<br class="l-clear-both">The architectural takeaway is that you must add metadata to your code
 so that Angular knows what to do.
+
 
 <div class='l-hr'>
    
@@ -332,6 +340,7 @@ so that Angular knows what to do.
 Without a framework, you would be responsible for pushing data values into the HTML controls and turning user responses
 into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to
 read as any experienced jQuery programmer can attest.
+
 <figure>
   <img src="assets/images/devguide/architecture/databinding.png" alt="Data Binding" style="width:220px; float:left; margin-left:-40px;margin-right:20px">  </img>
 </figure>
@@ -371,23 +380,27 @@ as with event binding.
 Angular processes *all* data bindings once per JavaScript event cycle,
 from the root of the application component tree through all child components.
 
+
 <figure>
   <img src="assets/images/devguide/architecture/component-databinding.png" alt="Data Binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Data binding plays an important role in communication
 between a template and its component.<br class="l-clear-both">
+
 <figure>
   <img src="assets/images/devguide/architecture/parent-child-binding.png" alt="Parent/Child binding" style="float:left; width:300px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
 
 Data binding is also important for communication between parent and child components.<br class="l-clear-both">
+
 <div class='l-hr'>
    
 </div>
 
 
 ## Directives
+
 <figure>
   <img src="assets/images/devguide/architecture/directive.png" alt="Parent child" style="float:left; width:150px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -395,9 +408,9 @@ Data binding is also important for communication between parent and child compon
 Angular templates are *dynamic*. When Angular renders them, it transforms the DOM
 according to the instructions given by **directives**.
 
-A directive is a class with a `@Directive` !{_decorator}.
+A directive is a class with a `@Directive` decorator.
 A component is a *directive-with-a-template*;
-a `@Component` !{_decorator} is actually a `@Directive` !{_decorator} extended with template-oriented features.
+a `@Component` decorator is actually a `@Directive` decorator extended with template-oriented features.
 <br class="l-clear-both">
 
 
@@ -424,7 +437,6 @@ The [example template](guide/architecture#templates) uses two built-in structura
 
 * [`*ngFor`](guide/displaying-data) tells Angular to stamp out one `<li>` per hero in the `heroes` list.
 * [`*ngIf`](guide/displaying-data) includes the `HeroDetail` component only if a selected hero exists.
-
 **Attribute** directives alter the appearance or behavior of an existing element.
 In templates they look like regular HTML attributes, hence the name.
 
@@ -447,12 +459,14 @@ Of course, you can also write your own directives. Components such as
 `HeroListComponent` are one kind of custom directive.
 <!-- PENDING: link to where to learn more about other kinds! -->
 
+
 <div class='l-hr'>
    
 </div>
 
 
 ## Services
+
 <figure>
   <img src="assets/images/devguide/architecture/service.png" alt="Service" style="float:left; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -479,7 +493,7 @@ Here's an example of a service class that logs to the browser console:
 
 </code-example>
 
-Here's a `HeroService` that uses a !{_PromiseLinked} to fetch heroes.
+Here's a `HeroService` that uses a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to fetch heroes.
 The `HeroService` depends on the `Logger` service and another `BackendService` that handles the server communication grunt work.
 
 
@@ -504,12 +518,14 @@ It won't complain if you write a "kitchen sink" component with 3000 lines.
 Angular does help you *follow* these principles by making it easy to factor your
 application logic into services and make those services available to components through *dependency injection*.
 
+
 <div class='l-hr'>
    
 </div>
 
 
 ## Dependency injection
+
 <figure>
   <img src="assets/images/devguide/architecture/dependency-injection.png" alt="Service" style="float:left; width:200px; margin-left:-40px;margin-right:10px">  </img>
 </figure>
@@ -535,6 +551,7 @@ Angular can call the component's constructor with those services as arguments.
 This is *dependency injection*.
 
 The process of `HeroService` injection looks a bit like this:
+
 <figure>
   <img src="assets/images/devguide/architecture/injector-injects.png" alt="Service">  </img>
 </figure>
@@ -543,7 +560,6 @@ If the injector doesn't have a `HeroService`, how does it know how to make one?
 
 In brief, you must have previously registered a **provider** of the `HeroService` with the injector.
 A provider is something that can create or return a service, typically the service class itself.
-
 You can register providers in modules or in components.
 
 In general, add providers to the [root module](guide/architecture#module) so that
@@ -578,6 +594,7 @@ Points to remember about dependency injection:
 * A *provider* is a recipe for creating a service.
 
 * Register *providers* with injectors.
+
 
 <div class='l-hr'>
    
@@ -628,6 +645,5 @@ by implementing the lifecycle hook interfaces.
 
 > [**Router**](guide/router): Navigate from page to page within the client
   application and never leave the browser.
-
 > [**Testing**](guide/testing): Run unit tests on your application parts as they interact with the Angular framework
 using the _Angular Testing Platform_.

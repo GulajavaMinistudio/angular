@@ -13,6 +13,7 @@ the focus is on testing applications written with Angular.
 
 {@a top}
 # Contents
+
 * [Live examples](guide/testing#live-examples "Live examples of the tests in this guide")
 <br><br>
 * [Introduction to Angular testing](guide/testing#testing-intro)
@@ -107,6 +108,7 @@ The sample application and all tests in this guide are available as live example
 * <live-example embedded-style>The sample application to be tested</live-example>.
 * <live-example plnkr="app-specs" embedded-style>All specs that test the sample application</live-example>.
 * <live-example plnkr="bag-specs" embedded-style>A grab bag of additional specs</live-example>.<a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -143,17 +145,16 @@ Learn more about basic Jasmine testing here
 You can write and run Angular tests with a variety of tools and technologies.
 This guide describes specific choices that are known to work well.
 
+
 <table width="100%">
 
   <col width="20%">
 
   </col>
 
-
   <col width="80%">
 
   </col>
-
 
   <tr>
 
@@ -161,14 +162,11 @@ This guide describes specific choices that are known to work well.
       Technology
     </th>
 
-
     <th>
       Purpose
     </th>
 
-
   </tr>
-
 
   <tr style=top>
 
@@ -176,23 +174,19 @@ This guide describes specific choices that are known to work well.
       Jasmine
     </td>
 
-
     <td>
       The [Jasmine test framework](http://jasmine.github.io/2.4/introduction.html)      
             provides everything needed to write basic tests.      
             It ships with an HTML test runner that executes tests in the browser.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
     <td style="vertical-align: top">
       Angular testing utilities
     </td>
-
 
     <td>
       Angular testing utilities create a test environment      
@@ -201,16 +195,13 @@ This guide describes specific choices that are known to work well.
             interact _within_ the Angular environment.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
     <td style="vertical-align: top">
       Karma
     </td>
-
 
     <td>
       The [karma test runner](https://karma-runner.github.io/1.0/index.html)      
@@ -219,16 +210,13 @@ This guide describes specific choices that are known to work well.
             This guide describes how to set up and run tests with karma.
     </td>
 
-
   </tr>
-
 
   <tr style=top>
 
     <td style="vertical-align: top">
       Protractor
     </td>
-
 
     <td>
       Use protractor to write and run _end-to-end_ (e2e) tests.      
@@ -239,9 +227,7 @@ This guide describes specific choices that are known to work well.
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -288,6 +274,7 @@ A comprehensive review of the Angular testing utilities appears [later in this g
 But first you should write a dummy test to verify that your test environment is set up properly
 and to lock in a few basic testing skills.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -326,6 +313,7 @@ Add the following code to `src/app/1st.spec.ts`.
 {@a run-karma}
 ### Run with karma
 Compile and run it in karma from the command line using the following command:
+
 <code-example format="." language="bash">
   npm test
 </code-example>
@@ -341,12 +329,14 @@ The Angular CLI has different commands to do the same thing. Adjust accordingly.
 ~~~
 
 After a few moments, karma opens a browser and starts writing to the console.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/testing/karma-browser.png' style="width:400px;" alt="Karma browser">  </img>
 </figure>
 
 Hide (don't close!) the browser and focus on the console output, which
 should look something like this:
+
 
 <code-example format="." language="bash">
   > npm test  
@@ -366,6 +356,7 @@ Change the expectation from `true` to `false`.
 
 The _compiler_ watcher detects the change and recompiles.
 
+
 <code-example format="." language="bash">
   [0] 1:49:21 PM - File change detected. Starting incremental compilation...  
     [0] 1:49:25 PM - Compilation complete. Watching for file changes.  
@@ -373,6 +364,7 @@ The _compiler_ watcher detects the change and recompiles.
 </code-example>
 
 The _karma_ watcher detects the change to the compilation output and re-runs the test.
+
 <code-example format="." language="bash">
   [1] Chrome 51.0.2704 1st tests true is true FAILED  
     [1] Expected false to equal true.  
@@ -409,6 +401,7 @@ Debug specs in the browser in the same way that you debug an application.
   1. Set a breakpoint in the test.
   1. Refresh the browser, and it stops at the breakpoint.
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/testing/karma-1st-spec-debug.png' style="width:700px;" alt="Karma debugging">  </img>
 </figure>
@@ -421,6 +414,7 @@ Debug specs in the browser in the same way that you debug an application.
 You can also try this test as a <live-example plnkr="1st-specs" title="First spec" embedded-style></live-example> in plunker.
 All of the tests in this guide are available as [live examples](guide/testing#live-examples "Live examples of these tests").
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -644,6 +638,7 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 ~~~
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -664,6 +659,7 @@ The `TestBed.createComponent` method is synchronous.
 But the Angular template compiler must read the external files from the file system before it can create a component instance.
 That's an asynchronous activity.
 The previous setup for testing the inline component won't work for a component with an external template.
+
 
 
 <div id='async-in-before-each'>
@@ -783,6 +779,7 @@ The tests in this guide only call `compileComponents` when necessary.
 ~~~
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -924,6 +921,7 @@ The remaining tests confirm the logic of the component when the service returns 
 The second test validates the effect of changing the user name.
 The third test checks that the component displays the proper message when there is no logged-in user.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1127,6 +1125,7 @@ For example, you can't call `async` or `fakeAsync` when testing
 code that involves the `intervalTimer`, as is common when
 testing async `Observable` methods.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1288,6 +1287,7 @@ accepted by many handlers including the `RouterLink` directive.
 ~~~ {.callout.is-critical}
 
 
+
 <header>
   click() is not an Angular testing utility
 </header>
@@ -1304,6 +1304,7 @@ Here's the previous test, rewritten using this click helper.
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test-2" linenums="false">
 
 </code-example>
+
 
 
 <div class='l-hr'>
@@ -1360,6 +1361,7 @@ The tests themselves are almost identical to the stand-alone version:
 Only the selected event test differs. It confirms that the selected `DashboardHeroComponent` hero
 really does find its way up through the event binding to the host component.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1426,6 +1428,7 @@ The `inject` function has two parameters:
 
 
 ~~~ {.callout.is-important}
+
 
 
 <header>
@@ -1605,6 +1608,7 @@ Inspect and download _all_ of the guide's application test code with this <live-
 ~~~
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1615,6 +1619,7 @@ Inspect and download _all_ of the guide's application test code with this <live-
 ## Use a _page_ object to simplify setup
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
+
 <figure class='image-display'>
   <img src='assets/images/devguide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">  </img>
 </figure>
@@ -1660,6 +1665,7 @@ Here are a few more `HeroDetailComponent` tests to drive the point home.
 </code-example>
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1739,6 +1745,7 @@ especially when the feature module is small and mostly self-contained, as featur
 ~~~
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -1809,6 +1816,7 @@ Focus on the `overrideComponent` method.
 It takes two arguments: the component type to override (`HeroDetailComponent`) and an override metadata object.
 The [overide metadata object](guide/testing#metadata-override-object) is a generic defined as follows:
 
+
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {  
       add?: T;  
@@ -1821,6 +1829,7 @@ A metadata override object can either add-and-remove elements in metadata proper
 This example resets the component's `providers` metadata.
 
 The type parameter, `T`,  is the kind of metadata you'd pass to the `@Component` decorator:
+
 <code-example format="." language="javascript">
   selector?: string;  
     template?: string;  
@@ -1873,6 +1882,7 @@ for digging into and replacing parts of these other classes.
 
 Explore the options and combinations on your own.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2016,6 +2026,7 @@ tests with the `RouterTestingModule`.
 ~~~
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2045,11 +2056,9 @@ Here is a setup, with `import` statements, that demonstrates the improved simpli
 
   </code-pane>
 
-
   <code-pane title="src/app/app.component.spec.ts (Stubs)" path="testing/src/app/app.component.spec.ts" region="setup-stubs-w-imports">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2068,6 +2077,7 @@ such as misspelled or misused components and directives.
 ~~~
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2118,6 +2128,7 @@ A better solution is to create an artificial test component that demonstrates al
 </code-example>
 
 
+
 <figure class='image-display'>
   <img src='assets/images/devguide/testing/highlight-directive-spec.png' width="200px" alt="HighlightDirective spec in action">  </img>
 </figure>
@@ -2148,6 +2159,7 @@ in `By.css('h2:not([highlight])')` helps find `<h2>` elements that _do not_ have
 The test for the default color uses the injector of the second `<h2>` to get its `HighlightDirective` instance
 and its `defaultColor`.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2176,6 +2188,7 @@ They follow patterns familiar to test developers everywhere:
 
 
 ~~~ {.callout.is-important}
+
 
 
 <header>
@@ -2215,11 +2228,9 @@ Compare these equivalent tests of `FancyService.getTimeoutValue`.
 
   </code-pane>
 
-
   <code-pane title="src/app/bag/bag.spec.ts (with Angular testing utilities)" path="testing/src/app/bag/bag.spec.ts" region="getTimeoutValue">
 
   </code-pane>
-
 
 </code-tabs>
 
@@ -2346,6 +2357,7 @@ On the other hand, isolated unit tests can't confirm that the `ButtonComp` is
 properly bound to its template or even data bound at all.
 Use Angular tests for that.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l-hr'>
 
 </div>
@@ -2362,6 +2374,7 @@ The [_TestBed_](guide/testing#testbed-api-summary) and [_ComponentFixture_](guid
 
 Here's a summary of the stand-alone functions, in order of likely utility:
 
+
 <table>
 
   <tr>
@@ -2370,14 +2383,11 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       Function
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -2385,15 +2395,12 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       <code>async</code>
     </td>
 
-
     <td>
       Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.      
             See [discussion above](guide/testing#async).
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2401,22 +2408,18 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       <code>fakeAsync</code>
     </td>
 
-
     <td>
       Runs the body of a test (`it`) within a special _fakeAsync test zone_, enabling      
             a linear control flow coding style. See [discussion above](guide/testing#fake-async).
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>tick</code>
     </td>
-
 
     <td>
       Simulates the passage of time and the completion of pending asynchronous activities      
@@ -2438,9 +2441,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2448,23 +2449,19 @@ Here's a summary of the stand-alone functions, in order of likely utility:
        <code>inject</code>
     </td>
 
-
     <td>
       Injects one or more services from the current `TestBed` injector into a test function.      
             See [above](guide/testing#inject).      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>discardPeriodicTasks</code>
     </td>
-
 
     <td>
       When a `fakeAsync` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),      
@@ -2476,16 +2473,13 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>flushMicrotasks</code>
     </td>
-
 
     <td>
       When a `fakeAsync` test ends with pending _micro-tasks_ such as unresolved promises,      
@@ -2497,9 +2491,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2507,22 +2499,18 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       <code>ComponentFixtureAutoDetect</code>
     </td>
 
-
     <td>
       A provider token for a service that turns on [automatic change detection](guide/testing#automatic-change-detection).      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>getTestBed</code>
     </td>
-
 
     <td>
       Gets the current instance of the `TestBed`.      
@@ -2532,11 +2520,10 @@ Here's a summary of the stand-alone functions, in order of likely utility:
             
     </td>
 
-
   </tr>
 
-
 </table>
+
 
 
 <div class='l-hr'>
@@ -2554,6 +2541,7 @@ to get the basics before trying to absorb the full API.
 
 The module definition passed to `configureTestingModule`
 is a subset of the `@NgModule` metadata properties.
+
 <code-example format="." language="javascript">
   type TestModuleMetadata = {  
       providers?: any[];  
@@ -2570,6 +2558,7 @@ is a subset of the `@NgModule` metadata properties.
 Each override method takes a `MetadataOverride<T>` where `T` is the kind of metadata
 appropriate to the method, that is, the parameter of an `@NgModule`,
 `@Component`, `@Directive`, or `@Pipe`.
+
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {  
@@ -2591,6 +2580,7 @@ which is also returned by the `getTestBed()` function.
 Call `TestBed` methods _within_ a `beforeEach()` to ensure a fresh start before each individual test.
 
 Here are the most important static methods, in order of likely utility.
+
 <table>
 
   <tr>
@@ -2599,21 +2589,17 @@ Here are the most important static methods, in order of likely utility.
       Methods
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>configureTestingModule</code>
     </td>
-
 
     <td>
       The testing shims (`karma-test-shim`, `browser-test-shim`)      
@@ -2624,16 +2610,13 @@ Here are the most important static methods, in order of likely utility.
             by adding and removing imports, declarations (of components, directives, and pipes), and providers.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>compileComponents</code>
     </td>
-
 
     <td>
       Compile the testing module asynchronously after you've finished configuring it.      
@@ -2645,9 +2628,7 @@ Here are the most important static methods, in order of likely utility.
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2655,15 +2636,12 @@ Here are the most important static methods, in order of likely utility.
       <code>createComponent<T></code>
     </td>
 
-
     <td>
       Create an instance of a component of type `T` based on the current `TestBed` configuration.      
             After calling `compileComponent`, the `TestBed` configuration is frozen for the duration of the current spec.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2671,16 +2649,13 @@ Here are the most important static methods, in order of likely utility.
       <code>overrideModule</code>
     </td>
 
-
     <td>
       Replace metadata for the given `NgModule`. Recall that modules can import other modules.      
             The `overrideModule` method can reach deeply into the current testing module to      
             modify one of these inner modules.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2688,15 +2663,12 @@ Here are the most important static methods, in order of likely utility.
       <code>overrideComponent</code>
     </td>
 
-
     <td>
       Replace metadata for the given component class, which could be nested deeply      
             within an inner module.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2704,15 +2676,12 @@ Here are the most important static methods, in order of likely utility.
       <code>overrideDirective</code>
     </td>
 
-
     <td>
       Replace metadata for the given directive class, which could be nested deeply      
             within an inner module.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2720,15 +2689,12 @@ Here are the most important static methods, in order of likely utility.
       <code>overridePipe</code>
     </td>
 
-
     <td>
       Replace metadata for the given pipe class, which could be nested deeply      
             within an inner module.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2736,7 +2702,6 @@ Here are the most important static methods, in order of likely utility.
       <a id="testbed-get"></a>      
             <code>get</code>
     </td>
-
 
     <td>
       Retrieve a service from the current `TestBed` injector.      
@@ -2748,19 +2713,15 @@ Here are the most important static methods, in order of likely utility.
                   
             The `TestBed.get` method takes an optional second parameter,      
             the object to return if Angular can't find the provider      
-            (`null` in this example):      
-      
+            (`null` in this example):
       <code-example path="testing/src/app/bag/bag.spec.ts" region="testbed-get" linenums="false">
 
       </code-example>
-
       After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2768,7 +2729,6 @@ Here are the most important static methods, in order of likely utility.
       <a id="testbed-initTestEnvironment"></a>      
             <code>initTestEnvironment</code>
     </td>
-
 
     <td>
       Initialize the testing environment for the entire test run.      
@@ -2784,9 +2744,7 @@ Here are the most important static methods, in order of likely utility.
             `@angular/platform-<platform_name>/testing/<platform_name>`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2794,15 +2752,12 @@ Here are the most important static methods, in order of likely utility.
       <code>resetTestEnvironment</code>
     </td>
 
-
     <td>
       Reset the initial test environment, including the default testing module.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -2826,6 +2781,7 @@ its DOM representation, and aspects of its Angular environment.
 
 Here are the most important properties for testers, in order of likely utility.
 
+
 <table>
 
   <tr>
@@ -2834,14 +2790,11 @@ Here are the most important properties for testers, in order of likely utility.
       Properties
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -2849,21 +2802,17 @@ Here are the most important properties for testers, in order of likely utility.
       <code>componentInstance</code>
     </td>
 
-
     <td>
       The instance of the component class created by `TestBed.createComponent`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>debugElement</code>
     </td>
-
 
     <td>
       The `DebugElement` associated with the root element of the component.      
@@ -2872,9 +2821,7 @@ Here are the most important properties for testers, in order of likely utility.
             It's a critical property for testers. The most interesting members are covered [below](guide/testing#debug-element-details).
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2882,21 +2829,17 @@ Here are the most important properties for testers, in order of likely utility.
       <code>nativeElement</code>
     </td>
 
-
     <td>
       The native DOM element at the root of the component.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>changeDetectorRef</code>
     </td>
-
 
     <td>
       The `ChangeDetectorRef` for the component.      
@@ -2907,9 +2850,7 @@ Here are the most important properties for testers, in order of likely utility.
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -2922,6 +2863,7 @@ The _fixture_ methods cause Angular to perform certain tasks on the component tr
 Call these method to trigger Angular behavior in response to simulated user action.
 
 Here are the most useful methods for testers.
+
 <table>
 
   <tr>
@@ -2930,21 +2872,17 @@ Here are the most useful methods for testers.
       Methods
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>detectChanges</code>
     </td>
-
 
     <td>
       Trigger a change detection cycle for the component.      
@@ -2958,16 +2896,13 @@ Here are the most useful methods for testers.
             called as `detectChanges(false)`;
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>autoDetectChanges</code>
     </td>
-
 
     <td>
       Set this to `true` when you want the fixture to detect changes automatically.      
@@ -2983,9 +2918,7 @@ Here are the most useful methods for testers.
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -2993,15 +2926,12 @@ Here are the most useful methods for testers.
       <code>checkNoChanges</code>
     </td>
 
-
     <td>
       Do a change detection run to make sure there are no pending changes.      
             Throws an exceptions if there are.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3009,22 +2939,18 @@ Here are the most useful methods for testers.
       <code>isStable</code>
     </td>
 
-
     <td>
       If the fixture is currently _stable_, returns `true`.      
             If there are async tasks that have not completed, returns `false`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>whenStable</code>
     </td>
-
 
     <td>
       Returns a promise that resolves when the fixture is stable.      
@@ -3034,9 +2960,7 @@ Here are the most useful methods for testers.
             See [above](guide/testing#when-stable).
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3044,15 +2968,12 @@ Here are the most useful methods for testers.
       <code>destroy</code>
     </td>
 
-
     <td>
       Trigger component destruction.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3068,6 +2989,7 @@ you can walk (and query) the fixture's entire element and component subtrees.
 
 Here are the most useful `DebugElement` members for testers, in approximate order of utility:
 
+
 <table>
 
   <tr>
@@ -3076,14 +2998,11 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       Member
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
@@ -3091,14 +3010,11 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>nativeElement</code>
     </td>
 
-
     <td>
       The corresponding DOM element in the browser (null for WebWorkers).
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3106,15 +3022,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>query</code>
     </td>
 
-
     <td>
       Calling `query(predicate: Predicate<DebugElement>)` returns the first `DebugElement`      
             that matches the [predicate](guide/testing#query-predicate) at any depth in the subtree.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3122,15 +3035,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>queryAll</code>
     </td>
 
-
     <td>
       Calling `queryAll(predicate: Predicate<DebugElement>)` returns all `DebugElements`      
             that matches the [predicate](guide/testing#query-predicate) at any depth in subtree.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3138,15 +3048,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>injector</code>
     </td>
 
-
     <td>
       The host dependency injector.      
             For example, the root element's component instance injector.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3154,21 +3061,17 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>componentInstance</code>
     </td>
 
-
     <td>
       The element's own component instance, if it has one.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>context</code>
     </td>
-
 
     <td>
       An object that provides parent context for this element.      
@@ -3179,16 +3082,13 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
             For example, the `hero` in `*ngFor="let hero of heroes"`.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>children</code>
     </td>
-
 
     <td>
       The immediate `DebugElement` children. Walk the tree by descending through `children`.      
@@ -3205,9 +3105,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3215,15 +3113,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>parent</code>
     </td>
 
-
     <td>
       The `DebugElement` parent. Null if this is the root element.      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3231,22 +3126,18 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>name</code>
     </td>
 
-
     <td>
       The element tag name, if it is an element.      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>triggerEventHandler</code>
     </td>
-
 
     <td>
       Triggers the event by its name if there is a corresponding listener      
@@ -3259,9 +3150,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3269,15 +3158,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>listeners</code>
     </td>
 
-
     <td>
       The callbacks attached to the component's `@Output` properties and/or the element's event properties.      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3285,15 +3171,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>providerTokens</code>
     </td>
 
-
     <td>
       This component's injector lookup tokens.      
             Includes the component itself plus the tokens that the component lists in its `providers` metadata.
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3301,15 +3184,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>source</code>
     </td>
 
-
     <td>
       Where to find this element in the source component template.      
             
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3317,16 +3197,13 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
       <code>references</code>
     </td>
 
-
     <td>
       Dictionary of objects associated with template local variables (e.g. `#foo`),      
             keyed by the local variable name.      
             
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3354,6 +3231,7 @@ The Angular `By` class has three static methods for common predicates:
 </code-example>
 
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l' class='hr'>
 
 </div>
@@ -3377,17 +3255,16 @@ is a topic beyond the scope of this guide .
 ~~~
 
 
+
 <table width="100%">
 
   <col width="20%">
 
   </col>
 
-
   <col width="80%">
 
   </col>
-
 
   <tr>
 
@@ -3395,21 +3272,17 @@ is a topic beyond the scope of this guide .
       File
     </th>
 
-
     <th>
       Description
     </th>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>karma.conf.js</code>
     </td>
-
 
     <td>
       The karma configuration file that specifies which plug-ins to use,      
@@ -3422,9 +3295,7 @@ is a topic beyond the scope of this guide .
             * `karma-test-shim.js`
     </td>
 
-
   </tr>
-
 
   <tr>
 
@@ -3432,23 +3303,19 @@ is a topic beyond the scope of this guide .
       <code>karma-test-shim.js</code>
     </td>
 
-
     <td>
       This shim prepares karma specifically for the Angular test environment      
             and launches karma itself.      
             It loads the `systemjs.config.js` file as part of that process.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>systemjs.config.js</code>
     </td>
-
 
     <td>
       [SystemJS](https://github.com/systemjs/systemjs/blob/master/README.md)      
@@ -3457,16 +3324,13 @@ is a topic beyond the scope of this guide .
             It's the same version of `systemjs.config.js` you installed during [setup](guide/testing#setup).
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td style="vertical-align: top">
       <code>systemjs.config.extras.js</code>
     </td>
-
 
     <td>
       An optional file that supplements the SystemJS configuration in `systemjs.config.js` with      
@@ -3479,25 +3343,19 @@ is a topic beyond the scope of this guide .
             to the SystemJs `packages` configuration.
     </td>
 
-
   </tr>
-
 
   <tr>
 
     <td colspan="2">
-      
-      
+
       <code-example path="testing/src/systemjs.config.extras.js" linenums="false">
 
       </code-example>
 
-
     </td>
 
-
   </tr>
-
 
 </table>
 
@@ -3508,15 +3366,16 @@ The two "fast path" setups added the appropriate Jasmine and karma npm packages 
 `devDependencies` section of the `package.json`.
 They're installed when you run `npm install`.
 <a href="#top" class='to-top'>Back to top</a>
+
 <div class='l' class='hr'>
 
   <div id='faq'>
 
   </div>
-
   
     ## FAQ: Frequently Asked Questions
 </div>
+
 
 
 <div id='q-spec-file-location'>
@@ -3533,9 +3392,11 @@ as the application source code files that they test:
 - When you move the source (inevitable), you remember to move the test.
 - When you rename the source file (inevitable), you remember to rename the test file.
 
+
 <div class='l-hr'>
 
 </div>
+
 
 
 <div id='q-specs-in-test-folder'>
