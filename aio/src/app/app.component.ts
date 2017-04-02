@@ -21,6 +21,7 @@ const sideNavView = 'SideNav';
 export class AppComponent implements OnInit {
 
   currentNode: CurrentNode;
+  pageId: string;
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
   isSideBySide = false;
@@ -70,6 +71,7 @@ export class AppComponent implements OnInit {
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
+      this.pageId = this.currentNode.url.replace('/', '-') || 'home';
 
       // Toggle the sidenav if the kind of view changed
       if (this.previousNavView === currentNode.view) { return; }
@@ -79,9 +81,9 @@ export class AppComponent implements OnInit {
     });
 
     this.navigationService.navigationViews.subscribe(views => {
-      this.footerNodes  = views.Footer  || [];
-      this.sideNavNodes = views.SideNav || [];
-      this.topMenuNodes = views.TopBar  || [];
+      this.footerNodes  = views['Footer']  || [];
+      this.sideNavNodes = views['SideNav'] || [];
+      this.topMenuNodes = views['TopBar']  || [];
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
@@ -131,4 +133,5 @@ export class AppComponent implements OnInit {
   sideNavToggle(value?: boolean) {
     this.sidenav.toggle(value);
   }
+
 }

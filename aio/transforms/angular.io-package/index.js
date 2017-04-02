@@ -24,12 +24,12 @@ const API_SOURCE_PATH = path.resolve(PROJECT_ROOT, 'packages');
 const AIO_PATH = path.resolve(PROJECT_ROOT, 'aio');
 const CONTENTS_PATH = path.resolve(AIO_PATH, 'content');
 const TEMPLATES_PATH = path.resolve(AIO_PATH, 'transforms/templates');
-const OUTPUT_PATH = path.resolve(AIO_PATH, 'src/content/docs');
+const OUTPUT_PATH = path.resolve(AIO_PATH, 'src/content');
+const DOCS_OUTPUT_PATH = path.resolve(OUTPUT_PATH, 'docs');
 
 module.exports =
     new Package(
-        'angular.io',
-        [
+        'angular.io', [
           jsdocPackage, nunjucksPackage, typescriptPackage, linksPackage, examplesPackage,
           gitPackage, targetPackage, contentPackage, rhoPackage
         ])
@@ -51,13 +51,14 @@ module.exports =
         .processor(require('./processors/filterIgnoredDocs'))
         .processor(require('./processors/fixInternalDocumentLinks'))
         .processor(require('./processors/processNavigationMap'))
+        .processor(require('./processors/copyContentAssets'))
 
         // overrides base packageInfo and returns the one for the 'angular/angular' repo.
         .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
-
         .factory(require('./readers/json'))
+        .factory(require('./services/copyFolder'))
 
-        .config(function(checkAnchorLinksProcessor, log) {
+        .config(function(checkAnchorLinksProcessor) {
           // TODO: re-enable
           checkAnchorLinksProcessor.$enabled = false;
         })
@@ -149,7 +150,7 @@ module.exports =
             },
             {
               basePath: CONTENTS_PATH,
-              include: CONTENTS_PATH + '/marketing/contributor.json',
+              include: CONTENTS_PATH + '/marketing/contributors.json',
               fileReader: 'jsonFileReader'
             },
           ];
@@ -168,7 +169,7 @@ module.exports =
         })
 
         // Where do we write the output files?
-        .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = OUTPUT_PATH; })
+        .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = DOCS_OUTPUT_PATH; })
 
 
         // Target environments
@@ -255,7 +256,6 @@ module.exports =
             generateKeywordsProcessor) {
 
           const API_SEGMENT = 'api';
-          const GUIDE_SEGMENT = 'guide';
           const APP_SEGMENT = 'app';
 
           generateApiListDoc.outputFolder = API_SEGMENT;
@@ -284,7 +284,7 @@ module.exports =
               outputPathTemplate: '${path}.json'
             },
             {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-            {docTypes: ['contributor-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+            {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 
@@ -292,6 +292,12 @@ module.exports =
           convertToJsonProcessor.docTypes = EXPORT_DOC_TYPES.concat([
             'content', 'decorator', 'directive', 'pipe', 'module'
           ]);
+        })
+
+        .config(function(copyContentAssetsProcessor) {
+          copyContentAssetsProcessor.assetMappings.push(
+            { from: path.resolve(CONTENTS_PATH, 'images'), to: path.resolve(OUTPUT_PATH, 'images') }
+          );
         });
 
 
