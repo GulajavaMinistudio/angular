@@ -23,9 +23,9 @@ const copiedLabel = 'Copied!';
 @Component({
   selector: 'aio-code',
   template: `
-    
+
     <pre class="prettyprint lang-{{language}}">
-      <button class="material-icons copy-button" (click)="doCopy()">content_copy</button>
+      <button *ngIf="code" class="material-icons copy-button" (click)="doCopy()">content_copy</button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>
     `
@@ -70,7 +70,12 @@ export class CodeComponent implements OnChanges {
     private logger: Logger) {}
 
   ngOnChanges() {
-    if (!this.code) { return; }
+    this.code = this.code && this.code.trim();
+
+    if (!this.code) {
+      this.setCodeHtml('<p class="code-missing">The code sample is missing.</p>');
+      return;
+    }
 
     const linenums = this.getLinenums();
 

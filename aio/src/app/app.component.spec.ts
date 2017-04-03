@@ -64,7 +64,7 @@ describe('AppComponent', () => {
 
   describe('onResize', () => {
     it('should update `isSideBySide` accordingly', () => {
-      component.onResize(1000);
+      component.onResize(1033);
       expect(component.isSideBySide).toBe(true);
       component.onResize(500);
       expect(component.isSideBySide).toBe(false);
@@ -129,6 +129,23 @@ describe('AppComponent', () => {
       expect(component.pageId).toEqual('home');
       expect(container.properties['id']).toEqual('home');
     });
+
+    it('should not be affected by changes to the query or hash', () => {
+      const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+
+      locationService.urlSubject.next('guide/pipes');
+      fixture.detectChanges();
+
+      locationService.urlSubject.next('guide/other?search=http');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('guide-other');
+      expect(container.properties['id']).toEqual('guide-other');
+
+      locationService.urlSubject.next('guide/http#anchor-1');
+      fixture.detectChanges();
+      expect(component.pageId).toEqual('guide-http');
+      expect(container.properties['id']).toEqual('guide-http');
+    });
   });
 
   describe('currentDocument', () => {
@@ -151,7 +168,7 @@ describe('AppComponent', () => {
     it('should be called when a document has been rendered', () => {
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
-      component.onDocRendered(null);
+      component.onDocRendered();
       expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
     });
   });

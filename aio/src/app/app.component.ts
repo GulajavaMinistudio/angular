@@ -21,13 +21,16 @@ const sideNavView = 'SideNav';
 export class AppComponent implements OnInit {
 
   currentNode: CurrentNode;
+  dtOn = false;
   pageId: string;
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
   isSideBySide = false;
   private isSideNavDoc = false;
   private previousNavView: string;
-  private readonly sideBySideWidth = 600;
+  // Set to 1032 to account for computed html window size
+  private readonly sideBySideWidth = 1032;
+
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   versionInfo: VersionInfo;
@@ -98,7 +101,7 @@ export class AppComponent implements OnInit {
     this.autoScrollService.scroll(this.docViewer.nativeElement.offsetParent);
   }
 
-  onDocRendered(doc: DocumentContents) {
+  onDocRendered() {
     // This handler is needed because the subscription to the `currentUrl` in `ngOnInit`
     // gets triggered too early before the doc-viewer has finished rendering the doc
     this.autoScroll();
@@ -109,8 +112,8 @@ export class AppComponent implements OnInit {
     this.isSideBySide = width > this.sideBySideWidth;
   }
 
-  @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey'])
-  onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean): boolean {
+  @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
+  onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean, altKey: boolean): boolean {
 
     // Hide the search results if we clicked outside both the search box and the search results
     if (this.searchResults) {
@@ -118,6 +121,10 @@ export class AppComponent implements OnInit {
       if (hits.length === 0) {
         this.searchResults.hideResults();
       }
+    }
+
+    if (eventTarget.tagName === 'FOOTER' && metaKey && altKey) {
+      this.dtOn = !this.dtOn;
     }
 
     // Deal with anchor clicks
@@ -133,5 +140,4 @@ export class AppComponent implements OnInit {
   sideNavToggle(value?: boolean) {
     this.sidenav.toggle(value);
   }
-
 }
