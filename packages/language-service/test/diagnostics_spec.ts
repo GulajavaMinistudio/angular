@@ -201,6 +201,63 @@ describe('diagnostics', () => {
       expect(diagnostic).toEqual([]);
     });
 
+    it('should report an error for invalid providers', () => {
+      addCode(
+          `
+        @Component({
+          template: '',
+          providers: [null]
+       })
+       export class MyComponent {}
+      `,
+          fileName => {
+            const diagnostics = ngService.getDiagnostics(fileName);
+            const expected = diagnostics.find(d => d.message.startsWith('Invalid providers for'));
+            const notExpected = diagnostics.find(d => d.message.startsWith('Cannot read property'));
+            expect(expected).toBeDefined();
+            expect(notExpected).toBeUndefined();
+          });
+    });
+
+    // Issue #15768
+    it('should be able to parse a template reference', () => {
+      addCode(
+          `
+        @Component({
+          selector: 'my-component',
+          template: \`
+            <div *ngIf="comps | async; let comps; else loading">
+            </div>
+            <ng-template #loading>Loading comps...</ng-template>            
+          \`
+        })
+        export class MyComponent {}
+      `,
+          fileName => onlyModuleDiagnostics(ngService.getDiagnostics(fileName)));
+    });
+
+    // Issue #15625
+    it('should not report errors for localization syntax', () => {
+      addCode(
+          `
+          @Component({
+            selector: 'my-component',
+            template: \`
+            <div>
+                {fieldCount, plural, =0 {no fields} =1 {1 field} other {{{fieldCount}} fields}}
+            </div>
+            \`
+          })
+          export class MyComponent {
+            fieldCount: number;
+          }
+      `,
+          fileName => {
+            const diagnostics = ngService.getDiagnostics(fileName);
+            onlyModuleDiagnostics(diagnostics);
+          });
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
@@ -220,7 +277,7 @@ describe('diagnostics', () => {
       if (diagnostics.length > 1) {
         for (const diagnostic of diagnostics) {
           if (diagnostic.message.indexOf('MyComponent') >= 0) continue;
-          console.error(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
+          fail(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
         }
         return;
       }
