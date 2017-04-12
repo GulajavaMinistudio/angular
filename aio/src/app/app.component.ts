@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { MdSidenav } from '@angular/material/sidenav';
+import { MdSidenav } from '@angular/material';
 
 import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
   get homeImageUrl() {
     return this.isSideBySide ?
       'assets/images/logos/standard/logo-nav@2x.png' :
-      'assets/images/logos/standard/logo-nav-small.png';
+      'assets/images/logos/standard/shield-large@2x.png';
   }
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
@@ -76,11 +76,11 @@ export class AppComponent implements OnInit {
       this.currentNode = currentNode;
       this.pageId = this.currentNode.url.replace('/', '-') || 'home';
 
-      // Toggle the sidenav if the kind of view changed
+      // Toggle the sidenav if side-by-side and the kind of view changed
       if (this.previousNavView === currentNode.view) { return; }
       this.previousNavView = currentNode.view;
       this.isSideNavDoc = currentNode.view === sideNavView;
-      this.sideNavToggle(this.isSideNavDoc);
+      this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
     });
 
     this.navigationService.navigationViews.subscribe(views => {

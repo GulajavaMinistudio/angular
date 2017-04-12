@@ -20,57 +20,69 @@ verify that you have the following structure after [The Hero Editor](tutorial/to
 If your structure doesn't match, go back to that page to figure out what you missed.
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -123,7 +135,7 @@ Create a public property in `AppComponent` that exposes the heroes for binding.
 The `heroes` type isn't defined because TypeScript infers it from the `HEROES` array.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -131,7 +143,7 @@ The hero data is separated from the class implementation
 because ultimately the hero names will come from a data service.
 
 
-~~~
+</div>
 
 
 
@@ -151,7 +163,7 @@ Now you can fill the template with hero names.
 
 ### List heroes with ngFor
 
-The goal is to bind the array of `heroes` in the component to the template, iterate over them,
+The goal is to bind the array of heroes in the component to the template, iterate over them,
 and display them individually.
 
 Modify the `<li>` tag by adding the built-in directive `*ngFor`.
@@ -163,7 +175,7 @@ Modify the `<li>` tag by adding the built-in directive `*ngFor`.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -185,7 +197,7 @@ Read more about `ngFor` and template input variables in the
 [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
@@ -243,7 +255,7 @@ In this case, the _master_ is the heroes list and the _detail_ is the selected h
 Next you'll connect the master to the detail through a `selectedHero` component property,
 which is bound to a click event.
 
-### Add a click event
+### Handle click events
 Add a click event binding to the `<li>` like this:
 
 
@@ -259,7 +271,7 @@ The `onSelect(hero)` expression calls the  `AppComponent` method, `onSelect()`,
 passing the template input variable `hero`, as an argument.
 That's the same `hero` variable you defined previously in the `ngFor` directive.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -269,7 +281,7 @@ Learn more about event binding at the
 [Template Syntax](guide/template-syntax) page.
 
 
-~~~
+</div>
 
 
 
@@ -297,7 +309,7 @@ Add an `onSelect()` method that sets the `selectedHero` property to the `hero` t
 
 
 The template still refers to the old `hero` property.
-Bind to the new selectedHero property instead as follows:
+Bind to the new `selectedHero` property instead as follows:
 
 
 
@@ -309,7 +321,8 @@ Bind to the new selectedHero property instead as follows:
 
 ### Hide the empty detail with ngIf
 
-When the app loads, the `selectedHero` is undefined and won't be defined until you click a hero's name.
+When the app loads, `selectedHero` is undefined.
+The selected hero is initialized when the user clicks a hero's name.
 Angular can't display properties of the undefined `selectedHero` and throws the following error,
 visible in the browser's console:
 
@@ -334,28 +347,28 @@ Then add the `ngIf` built-in directive and set it to the `selectedHero` property
 
 
 
-~~~ {.alert.is-critical}
+<div class="alert is-critical">
 
 
 
 Don't forget the asterisk (`*`) in front of `ngIf`.
 
 
-~~~
+</div>
 
 
 
 The app no longer fails and the list of names displays again in the browser.
 
 
-When there is no `selectedHero`, the `ngIf` directive removes the hero detail HTML from the DOM.
+When there is no selected hero, the `ngIf` directive removes the hero detail HTML from the DOM.
 There are no hero detail elements or bindings to worry about.
 
 When the user picks a hero, `selectedHero` becomes defined and
 `ngIf` puts the hero detail content into the DOM and evaluates the nested bindings.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -366,7 +379,7 @@ Read more about `ngIf` and `ngFor` in the
 
 
 
-~~~
+</div>
 
 
 
@@ -399,14 +412,14 @@ When the expression is `false`, Angular removes the `selected` class.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about the `[class]` binding in the [Template Syntax](guide/template-syntax#ngClass "Template syntax: NgClass") guide.
 
 
-~~~
+</div>
 
 
 
@@ -449,5 +462,5 @@ Your app should look like this <live-example></live-example>.
 
 ## The road ahead
 You've expanded the Tour of Heroes app, but it's far from complete.
-You can't put the entire app into a single component.
-In the [next page](tutorial/toh-pt3), you'll split the app into sub-components and make them work together.
+An app shouldn't be one monolithic component.
+In the [next page](tutorial/toh-pt3), you'll split the app into subcomponents and make them work together.

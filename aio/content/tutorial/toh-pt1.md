@@ -14,57 +14,69 @@ named <code>angular-tour-of-heroes</code>.
 The file structure should look like this:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -119,14 +131,14 @@ These interpolation bindings present the component's `title` and `hero` property
 as strings, inside the HTML header tags.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 Read more about interpolation in the [Displaying Data](guide/displaying-data) page.
 
 
-~~~
+</div>
 
 
 
@@ -145,7 +157,7 @@ Add these properties near the top of the `app.component.ts` file, just below the
 
 
 
-In the `Hero` class, refactor the component's `hero` property to be of type `Hero`,
+In the `AppComponent` class, refactor the component's `hero` property to be of type `Hero`,
 then initialize it with an `id` of `1` and the name `Windstorm`.
 
 
@@ -231,7 +243,7 @@ The updated `AppModule` looks like this:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -242,7 +254,7 @@ Read more about `FormsModule` and `ngModel` in the
 [Template Syntax](guide/template-syntax) guide.
 
 
-~~~
+</div>
 
 
 

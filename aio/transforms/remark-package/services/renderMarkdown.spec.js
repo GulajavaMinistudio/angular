@@ -1,6 +1,6 @@
 const renderMarkdownFactory = require('./renderMarkdown');
 
-describe('rho: renderMarkdown service', () => {
+describe('remark: renderMarkdown service', () => {
   let renderMarkdown;
   beforeEach(() => {
     renderMarkdown = renderMarkdownFactory();
@@ -19,15 +19,15 @@ describe('rho: renderMarkdown service', () => {
         '<h1>heading 1</h1>\n' +
         '<p>A paragraph with <strong>bold</strong> and <em>italic</em>.</p>\n' +
         '<ul>\n' +
-        '  <li>List item 1</li>\n' +
-        '  <li>List item 2</li>\n' +
-        '</ul>');
+        '<li>List item 1</li>\n' +
+        '<li>List item 2</li>\n' +
+        '</ul>\n');
   });
 
   it('should not process markdown inside inline tags', () => {
     const content = '# heading {@link some_url_path}';
     const output = renderMarkdown(content);
-    expect(output).toEqual('<h1>heading {@link some_url_path}</h1>');
+    expect(output).toEqual('<h1>heading {@link some_url_path}</h1>\n');
   });
 
   it('should not put block level inline tags inside paragraphs', () => {
@@ -35,19 +35,18 @@ describe('rho: renderMarkdown service', () => {
         '\n' +
         '{@example blah **blah** blah }\n' +
         '\n' +
-        'Another paragraph';
+        'Another paragraph {@link _containing_ } an inline tag';
     const output = renderMarkdown(content);
     expect(output).toEqual(
         '<p>A paragraph.</p>\n' +
-        '<div>{@example blah **blah** blah }</div>\n' +
-        '<p>Another paragraph</p>');
+        '{@example blah **blah** blah }\n' +
+        '<p>Another paragraph {@link _containing_ } an inline tag</p>\n');
   });
 
   it('should not format the contents of tags marked as unformatted ', () => {
-    renderMarkdown.unformattedTags = ['code-example'];
-    const content = '<code-example>\n  abc\n  def\n</code-example>';
+    const content = '<code-example>\n\n  **abc**\n\n  def\n</code-example>\n\n<code-tabs><code-pane>\n\n  **abc**\n\n  def\n</code-pane></code-tabs>';
     const output = renderMarkdown(content);
-    expect(output).toEqual('<code-example>\n  abc\n  def\n</code-example>');
+    expect(output).toEqual('<code-example>\n\n  **abc**\n\n  def\n</code-example>\n<code-tabs><code-pane>\n\n  **abc**\n\n  def\n</code-pane></code-tabs>\n');
   });
 
   it('should not remove spaces after anchor tags', () => {
@@ -58,8 +57,14 @@ describe('rho: renderMarkdown service', () => {
         '<p>' +
         'A aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaaaa aaaaaaaaaaa\n' +
         '<a href="path/to/foo">foo</a> bbb.' +
-        '</p>';
+        '</p>\n';
 
     expect(renderMarkdown(input)).toEqual(output);
+  });
+
+  it('should not format indented text as code', () => {
+    const content = 'some text\n\n    indented text\n\nother text';
+    const output = renderMarkdown(content);
+    expect(output).toEqual('<p>some text</p>\n<p>    indented text</p>\n<p>other text</p>\n');
   });
 });

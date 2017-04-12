@@ -26,57 +26,69 @@ Before getting started on this page, verify that you have the following structur
 If not, go back to the previous pages.
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -205,7 +217,7 @@ preceding it with the `@Input` decorator that you imported earlier.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -213,7 +225,7 @@ Read more about _input_ properties in the
 [Attribute Directives](guide/attribute-directives#why-input) page.
 
 
-~~~
+</div>
 
 
 
@@ -260,14 +272,14 @@ In general, the `declarations` array contains a list of application components, 
 A component must be declared in a module before other components can reference it.
 This module declares only the two application components, `AppComponent` and `HeroDetailComponent`.
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
-Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule) guide.
+Read more about Angular modules in the [NgModules](guide/ngmodule "Angular Modules (NgModule)") guide.
 
 
-~~~
+</div>
 
 
 
@@ -293,7 +305,7 @@ Coordinate the master `AppComponent` with the `HeroDetailComponent`
 by binding the `selectedHero` property of the `AppComponent`
 to the `hero` property of the `HeroDetailComponent`.
 
-<code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" title="app.component.html (excerpt)" linenums="false">
+<code-example path="toh-3/app/app.component.1.html" region="hero-detail-binding" title="app.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -331,65 +343,77 @@ without touching the parent `AppComponent`.
 Verify that you have the following structure:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.ts
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 

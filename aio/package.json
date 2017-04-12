@@ -24,7 +24,8 @@
     "pre~~deploy": "yarn build",
     "~~deploy": "firebase deploy --message \"Commit: $TRAVIS_COMMIT\" --non-interactive --token \"$FIREBASE_TOKEN\"",
     "boilerplate:add": "node ./tools/examples/add-example-boilerplate add",
-    "boilerplate:remove": "node ./tools/examples/add-example-boilerplate remove"
+    "boilerplate:remove": "node ./tools/examples/add-example-boilerplate remove",
+    "generate-plunkers": "node ./tools/plunker-builder/generatePlunkers"
   },
   "private": true,
   "dependencies": {
@@ -34,7 +35,7 @@
     "@angular/core": "next",
     "@angular/forms": "next",
     "@angular/http": "next",
-    "@angular/material": "https://github.com/angular/material2-builds",
+    "@angular/material": "^2.0.0-beta.3",
     "@angular/platform-browser": "next",
     "@angular/platform-browser-dynamic": "next",
     "@angular/platform-server": "next",
@@ -62,6 +63,7 @@
     "html": "^1.0.0",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
+    "jsdom": "^9.12.0",
     "karma": "~1.4.1",
     "karma-chrome-launcher": "~2.0.0",
     "karma-cli": "~1.0.1",
@@ -70,6 +72,8 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "lodash": "^4.17.4",
     "protractor": "~5.1.0",
+    "remark": "^7.0.0",
+    "remark-html": "^6.0.0",
     "rho": "https://github.com/petebacondarwin/rho#master",
     "rimraf": "^2.6.1",
     "shelljs": "^0.7.7",

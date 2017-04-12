@@ -121,7 +121,7 @@ Add the file `in-memory-data.service.ts` in `app` with the following content:
 This file replaces `mock-heroes.ts`, which is now safe to delete.
 
 
-~~~ {.alert.is-helpful}
+<div class="alert is-helpful">
 
 
 
@@ -134,7 +134,7 @@ Read more about the in-memory web API in the
 section of the [HTTP Client](guide/server-communication#in-mem-web-api) page.
 
 
-~~~
+</div>
 
 
 
@@ -203,14 +203,14 @@ That's as easy as importing them from the RxJS library like this:
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
 You'll add more operators, and learn why you must do so, [later in this tutorial](tutorial/toh-pt6#rxjs-imports).
 
 
-~~~
+</div>
 
 
 
@@ -231,7 +231,7 @@ holds the array of heroes that the caller wants.
 So you grab that array and return it as the resolved Promise value.
 
 
-~~~ {.alert.is-important}
+<div class="alert is-important">
 
 
 
@@ -240,7 +240,7 @@ This particular in-memory web API example returns an object with a `data` proper
 Your API might return something else. Adjust the code to match your web API.
 
 
-~~~
+</div>
 
 
 
@@ -503,8 +503,9 @@ The calling component can easily consume a single result in the form of a Promis
 But requests aren't always done only once.
 You may start one request,
 cancel it, and make a different request before the server has responded to the first request.
-A *request-cancel-new-request* sequence is difficult to implement with *Promises*, but
-easy with *Observables*.
+
+A *request-cancel-new-request* sequence is difficult to implement with `Promise`s, but
+easy with `Observable`s.
 
 ### Add the ability to search by name
 You're going to add a *hero search* feature to the Tour of Heroes.
@@ -523,7 +524,7 @@ The `http.get()` call in `HeroSearchService` is similar to the one
 in the `HeroService`, although the URL now has a query string.
 
 More importantly, you no longer call `toPromise()`.
-Instead you return the *Observable* from the the `htttp.get()`,
+Instead you return the *Observable* from the the `http.get()`,
 after chaining it to another RxJS operator, <code>map()</code>,
 to extract heroes from the response data.
 RxJS operator chaining makes response processing easy and readable.
@@ -616,7 +617,7 @@ before passing along the latest string. You'll never make requests more frequent
 It cancels and discards previous search observables, returning only the latest search service observable.
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -637,7 +638,7 @@ Note that until the service supports that feature, _canceling_ the `HeroSearchSe
 doesn't actually abort a pending HTTP request.
 For now, unwanted results are discarded.
 
-~~~
+</div>
 
 
 
@@ -711,129 +712,141 @@ Review the sample source code in the <live-example></live-example> for this page
 Verify that you have the following structure:
 
 
-<aio-filetree>
+<div class='filetree'>
 
-  <aio-folder>
+  <div class='file'>
     angular-tour-of-heroes
-    <aio-folder>
+  </div>
+
+  <div class='children'>
+
+    <div class='file'>
       src
-      <aio-folder>
+    </div>
+
+    <div class='children'>
+
+      <div class='file'>
         app
-        <aio-file>
+      </div>
+
+      <div class='children'>
+
+        <div class='file'>
           app.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           app-routing.module.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           dashboard.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           dashboard.component.html
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           dashboard.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.html
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-detail.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-search.component.html (new)
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-search.component.css (new)
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-search.component.ts (new)
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero-search.service.ts (new)
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           hero.service.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           heroes.component.css
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           heroes.component.html
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           heroes.component.ts
-        </aio-file>
+        </div>
 
-        <aio-file>
+        <div class='file'>
           in-memory-data.service.ts (new)
-        </aio-file>
+        </div>
 
-      </aio-folder>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         main.ts
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         index.html
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         styles.css
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         systemjs.config.js
-      </aio-file>
+      </div>
 
-      <aio-file>
+      <div class='file'>
         tsconfig.json
-      </aio-file>
+      </div>
 
-    </aio-folder>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       node_modules ...
-    </aio-file>
+    </div>
 
-    <aio-file>
+    <div class='file'>
       package.json
-    </aio-file>
+    </div>
 
-  </aio-folder>
+  </div>
 
-</aio-filetree>
+</div>
 
 
 
@@ -915,7 +928,7 @@ Here are the files you added or changed in this page.
 
 
 
-~~~ {.l-sub-section}
+<div class="l-sub-section">
 
 
 
@@ -924,5 +937,5 @@ Here are the files you added or changed in this page.
 Return to the [learning path](guide/learning-angular#architecture), where
 you can read more about the concepts and practices found in this tutorial.
 
-~~~
+</div>
 
