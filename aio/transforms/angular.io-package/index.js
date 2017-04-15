@@ -153,6 +153,11 @@ module.exports =
               include: CONTENTS_PATH + '/marketing/contributors.json',
               fileReader: 'jsonFileReader'
             },
+            {
+              basePath: CONTENTS_PATH,
+              include: CONTENTS_PATH + '/marketing/resources.json',
+              fileReader: 'jsonFileReader'
+            },
           ];
 
           collectExamples.exampleFolders = ['examples', 'examples'];
@@ -207,7 +212,7 @@ module.exports =
 
         // Configure nunjucks rendering of docs via templates
         .config(function(
-            renderDocsProcessor, versionInfo, templateFinder, templateEngine, getInjectables, renderMarkdown) {
+            renderDocsProcessor, versionInfo, templateFinder, templateEngine, getInjectables) {
 
           // Where to find the templates for the doc rendering
           templateFinder.templateFolders = [TEMPLATES_PATH];
@@ -234,12 +239,6 @@ module.exports =
           renderDocsProcessor.helpers.relativePath = function(from, to) {
             return path.relative(from, to);
           };
-
-          // Tell the HTML formatter not to format code-example blocks
-          renderMarkdown.unformattedTags = [
-            'code-example',
-            'code-pane'
-          ];
         })
 
 
@@ -284,7 +283,8 @@ module.exports =
               outputPathTemplate: '${path}.json'
             },
             {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-            {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+            {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
+            {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
           ];
         })
 
