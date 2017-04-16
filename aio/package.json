@@ -20,9 +20,10 @@
     "deploy-staging": "scripts/deploy-staging.sh",
     "check-env": "node ../tools/check-environment.js",
     "predocs": "rimraf src/content",
-    "docs": "dgeni ./transforms/angular.io-package",
-    "docs-lint": "eslint --ignore-path=\"transforms/.eslintignore\" transforms",
-    "docs-test": "node ../dist/tools/cjs-jasmine/index-tools ../../transforms/**/*.spec.js",
+    "docs": "dgeni ./tools/transforms/angular.io-package",
+    "docs-watch": "node tools/transforms/authors-package/watchr.js",
+    "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",
+    "docs-test": "node ../dist/tools/cjs-jasmine/index-tools ../../tools/transforms/**/*.spec.js",
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false",
     "boilerplate:add": "node ./tools/examples/add-example-boilerplate add",
     "boilerplate:remove": "node ./tools/examples/add-example-boilerplate remove",
@@ -84,6 +85,7 @@
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",
     "typescript": "2.2.0",
-    "vrsource-tslint-rules": "^4.0.1"
+    "vrsource-tslint-rules": "^4.0.1",
+    "watchr": "^3.0.1"
   }
 }
