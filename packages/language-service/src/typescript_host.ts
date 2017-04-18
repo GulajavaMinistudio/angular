@@ -7,6 +7,7 @@
  */
 
 import {AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticAndDynamicReflectionCapabilities, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, UrlResolver, analyzeNgModules, componentModuleUrl, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AngularCompilerOptions} from '@angular/compiler-cli';
 import {Type, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,6 +16,7 @@ import * as ts from 'typescript';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {BuiltinType, CompletionKind, Declaration, DeclarationError, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+
 
 
 // In TypeScript 2.1 these flags moved
@@ -386,9 +388,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
       const tsConfigPath = findTsConfig(source.fileName);
       const basePath = path.dirname(tsConfigPath || this.context);
-
-      result = this._reflectorHost = new ReflectorHost(
-          () => this.tsService.getProgram(), this.host, {basePath, genDir: basePath});
+      const options: AngularCompilerOptions = {basePath, genDir: basePath};
+      const compilerOptions = this.host.getCompilationSettings();
+      if (compilerOptions && compilerOptions.baseUrl) {
+        options.baseUrl = compilerOptions.baseUrl;
+      }
+      result = this._reflectorHost =
+          new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
     }
     return result;
   }
@@ -649,8 +655,14 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   }
 
   getNonNullableType(symbol: Symbol): Symbol {
-    // TODO: Replace with typeChecker API when available;
-    return symbol;
+    if (symbol instanceof TypeWrapper && (typeof this.checker.getNonNullableType == 'function')) {
+      const tsType = symbol.tsType;
+      const nonNullableType = this.checker.getNonNullableType(tsType);
+      if (nonNullableType != tsType) {
+        return new TypeWrapper(nonNullableType, symbol.context);
+      }
+    }
+    return this.getBuiltinType(BuiltinType.Any);
   }
 
   getPipes(): SymbolTable {
@@ -694,8 +706,9 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return spanAt(this.source, line, column);
   }
 
-  private getTemplateRefContextType(type: ts.Symbol): ts.Symbol|undefined {
-    const constructor = type.members && type.members !['__constructor'];
+  private getTemplateRefContextType(typeSymbol: ts.Symbol): ts.Symbol|undefined {
+    const type = this.checker.getTypeOfSymbolAtLocation(typeSymbol, this.source);
+    const constructor = type.symbol && type.symbol.members && type.symbol.members['__constructor'];
     if (constructor) {
       const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
@@ -811,10 +824,15 @@ class TypeWrapper implements Symbol {
 }
 
 class SymbolWrapper implements Symbol {
+  private symbol: ts.Symbol;
   private _tsType: ts.Type;
   private _members: SymbolTable;
 
-  constructor(private symbol: ts.Symbol, private context: TypeContext) {}
+  constructor(symbol: ts.Symbol, private context: TypeContext) {
+    this.symbol = symbol && context && (symbol.flags & ts.SymbolFlags.Alias) ?
+        context.checker.getAliasedSymbol(symbol) :
+        symbol;
+  }
 
   get name(): string { return this.symbol.name; }
 
