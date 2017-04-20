@@ -71,6 +71,12 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.subscribe(doc => {
       this.currentDocument = doc;
       this.setDocumentTitle(doc.title);
+      this.pageId = this.currentDocument.url.replace('/', '-');
+
+      // Special case the home page
+      if (this.pageId === 'index') {
+        this.pageId = 'home';
+      }
     });
 
     // scroll even if only the hash fragment changed
@@ -78,7 +84,6 @@ export class AppComponent implements OnInit {
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
-      this.pageId = this.currentNode.url.replace('/', '-') || 'home';
 
       // Toggle the sidenav if side-by-side and the kind of view changed
       if (this.previousNavView === currentNode.view) { return; }
@@ -145,6 +150,10 @@ export class AppComponent implements OnInit {
   }
 
   setDocumentTitle(title) {
-    this.titleService.setTitle(`Angular - ${title}`);
+    if (title.trim()) {
+      this.titleService.setTitle(`Angular - ${title}`);
+    } else {
+      this.titleService.setTitle('Angular');
+    }
   }
 }

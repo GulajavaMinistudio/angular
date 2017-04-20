@@ -1,3 +1,11 @@
+/* API EDIT ICON */
+#api {
+  .info-bar .material-icons {
+    top: 24px;
+    right: 48px;
+  }
+}
+
 /* API LIST STYLES */
 
 aio-api-list {
@@ -13,6 +21,12 @@ aio-api-list {
     .banner {
         border: 1px solid rgba($lightgray, 0.5);
         border-radius: 4px;
+    }
+
+    .api-list-container {
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
     }
 }
 
@@ -318,6 +332,8 @@ $api-symbols: (
       padding: 0 16px 0 0;
       text-decoration: none;
       transition: all .3s;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:hover {
         background: $blue-grey-50;
