@@ -9,7 +9,6 @@ import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
-import { DeviceService } from 'app/shared/device.service';
 import { GaService } from 'app/shared/ga.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
@@ -39,7 +38,6 @@ describe('AppComponent', () => {
       imports: [ AppModule ],
       providers: [
         { provide: APP_BASE_HREF, useValue: '/' },
-        { provide: DeviceService, useClass: TestDeviceService },
         { provide: GaService, useClass: TestGaService },
         { provide: Http, useClass: TestHttp },
         { provide: LocationService, useFactory: () => new MockLocationService(initialUrl) },
@@ -56,6 +54,7 @@ describe('AppComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
+    component.onResize(1033); // wide by default
     docViewer = fixture.debugElement.query(By.css('aio-doc-viewer')).nativeElement;
     hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
     locationService = fixture.debugElement.injector.get(LocationService) as any;
@@ -287,14 +286,14 @@ describe('AppComponent', () => {
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
       locationService.go('some/url#fragment');
-      expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+      expect(scrollService.scroll).toHaveBeenCalledWith();
     });
 
     it('should be called when a document has been rendered', () => {
       const scrollService: AutoScrollService = fixture.debugElement.injector.get(AutoScrollService);
       spyOn(scrollService, 'scroll');
       component.onDocRendered();
-      expect(scrollService.scroll).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+      expect(scrollService.scroll).toHaveBeenCalledWith();
     });
   });
 
@@ -309,11 +308,33 @@ describe('AppComponent', () => {
   describe('click intercepting', () => {
     it('should intercept clicks on anchors and call `location.handleAnchorClick()`',
             inject([LocationService], (location: LocationService) => {
-      const anchorElement: HTMLAnchorElement = document.createElement('a');
-      anchorElement.href = 'some/local/url';
-      fixture.nativeElement.append(anchorElement);
+
+      const el = fixture.nativeElement as Element;
+      el.innerHTML = '<a href="some/local/url">click me</a>';
+      const anchorElement = el.getElementsByTagName('a')[0];
       anchorElement.click();
       expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
+    }));
+
+    it('should intercept clicks on elements deep within an anchor tag',
+            inject([LocationService], (location: LocationService) => {
+
+      const el = fixture.nativeElement as Element;
+      el.innerHTML = '<a href="some/local/url"><div><img></div></a>';
+      const imageElement  = el.getElementsByTagName('img')[0];
+      const anchorElement = el.getElementsByTagName('a')[0];
+      imageElement.click();
+      expect(location.handleAnchorClick).toHaveBeenCalledWith(anchorElement, 0, false, false);
+    }));
+
+    it('should ignore clicks on elements without an anchor ancestor',
+            inject([LocationService], (location: LocationService) => {
+
+      const el = fixture.nativeElement as Element;
+      el.innerHTML = '<div><p><div><img></div></p></div>';
+      const imageElement  = el.getElementsByTagName('img')[0];
+      imageElement.click();
+      expect(location.handleAnchorClick).not.toHaveBeenCalled();
     }));
 
     it('should intercept clicks not on the search elements and hide the search results', () => {
@@ -348,13 +369,6 @@ describe('AppComponent', () => {
 });
 
 //// test helpers ////
-
-class TestDeviceService {
-  // Show sidenav next to the main doc when display width on current device is greater than this.
-  readonly sideBySideWidth = 1032;
-  // Default to "wide", desktop browser.
-  displayWidth = new BehaviorSubject(this.sideBySideWidth + 1);
-}
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
