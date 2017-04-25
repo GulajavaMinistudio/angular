@@ -39,7 +39,7 @@ It helps clearly separate app code from setup and configuration files.
 All samples now have a `src/` folder at the project root.
 The former `app/` folder moves under `src/`. 
 Read about moving your existing project to this structure in 
-<a href="https://github.com/angular/quickstart#updating-to-a-newer-version-of-the-quickstart-repo" target="_blank" target="Migrating samples/quickstart app to the src folder">
+<a href="https://github.com/angular/quickstart#updating-to-a-newer-version-of-the-quickstart-repo" target="Migrating samples/quickstart app to the src folder">
 the QuickStart repo update instructions</a>.
 
 Notably:
@@ -75,7 +75,7 @@ Revised samples are clearer and cover all topics discussed.
 added (optional) instructions on how to remove _non-essential_ files. 
 * No longer consolidate RxJS operator imports in `rxjs-extensions` file; each file should import what it needs.
 * All samples prepend template/style URLs with `./` as a best practice.
-* [Style Guide](guide/style-guide): copy edits and revised rules.
+* [Style Guide](guide/styleguide): copy edits and revised rules.
 
 ## Router: more detail (2016-12-21)
 
@@ -85,7 +85,7 @@ including sections named outlets, wildcard routes, and preload strategies.
 ## HTTP: how to set default request headers (and other request options) (2016-12-14)
 
 Added section on how to set default request headers (and other request options) to 
-[HTTP](guide/server-communication#override-default-request-options) guide.
+[HTTP](guide/http#override-default-request-options) guide.
 
 ## Testing: added component test plunkers (2016-12-02)
 
@@ -154,7 +154,7 @@ re-explains `[(ngModel)]` in terms of the basic `[()]` syntax.
 
 This change supports ES6 developers and aligns better with typical Angular libraries.
 It does not affect the module's API but it does affect how you load and import it.
-See the <a href="https://github.com/angular/in-memory-web-api/blob/master/CHANGELOG.md#0113-2016-10-20" target="_blank">change note</a>
+See the <a href="https://github.com/angular/in-memory-web-api/blob/master/CHANGELOG.md#0113-2016-10-20">change note</a>
 in the `in-memory-web-api` repo.
 
 ## "Router" _preload_ syntax and _:enter_/_:leave_ animations (2016-10-19)
@@ -201,11 +201,11 @@ This library is also useful to you during early development before you have a se
 
 The package name was changed from "angular2-in-memory-web-api" which is still frozen-in-time on npm.
 The new "angular-in-memory-web-api" has new features. 
-<a href="https://github.com/angular/in-memory-web-api/blob/master/README.md" target="_blank">Read about them on github</a>.
+<a href="https://github.com/angular/in-memory-web-api/blob/master/README.md">Read about them on github</a>.
 
 ## "Style Guide" with _NgModules_ (2016-09-27)
 
-[StyleGuide](guide/style-guide) explains recommended conventions for Angular modules (NgModule).
+[StyleGuide](guide/styleguide) explains recommended conventions for Angular modules (NgModule).
 Barrels now are far less useful and have been removed from the style guide;
 they remain valuable but are not a matter of Angular style.
 Also relaxed the rule that discouraged use of the `@Component.host` property.

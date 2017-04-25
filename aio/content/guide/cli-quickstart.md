@@ -13,7 +13,7 @@ as testing, bundling, and deployment.
 
 The goal in this guide is to build and run a simple Angular
 application in TypeScript, using the Angular CLI
-while adhering to the [Style Guide](guide/guide/style-guide) recommendations that
+while adhering to the [Style Guide](guide/guide/styleguide) recommendations that
 benefit _every_ Angular project.
 
 By the end of the chapter, you'll have a basic understanding of development with the CLI
@@ -123,7 +123,7 @@ Your app greets you with a message:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/cli-quickstart/app-works.png' alt="The app works!"></img>
+  <img src='assets/images/guide/cli-quickstart/app-works.png' alt="The app works!"></img>
 </figure>
 
 
@@ -161,7 +161,7 @@ Open `src/app/app.component.css` and give the component some style.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app"></img>
+  <img src='assets/images/guide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app"></img>
 </figure>
 
 

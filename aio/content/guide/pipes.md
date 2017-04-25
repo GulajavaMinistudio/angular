@@ -145,7 +145,7 @@ As you click the button, the displayed date alternates between
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle"></img>
+  <img src='assets/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle"></img>
 </figure>
 
 
@@ -237,7 +237,7 @@ Now you need a component to demonstrate the pipe.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/pipes/power-booster.png' alt="Power Booster"></img>
+  <img src='assets/images/guide/pipes/power-booster.png' alt="Power Booster"></img>
 </figure>
 
 
@@ -285,7 +285,7 @@ your pipe and two-way data binding with `ngModel`.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator"></img>
+  <img src='assets/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator"></img>
 </figure>
 
 
@@ -372,7 +372,7 @@ code with checkbox switches and additional displays to help you experience these
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/pipes/flying-heroes-anim.gif' alt="Flying Heroes"></img>
+  <img src='assets/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes"></img>
 </figure>
 
 
@@ -536,7 +536,7 @@ Remember that impure pipes are called every few milliseconds.
 If you're not careful, this pipe will punish the server with requests.
 
 In the following code, the pipe only calls the server when the request URL changes and it caches the server response.
-The code uses the [Angular http](guide/server-communication) client to retrieve data</span>:
+The code uses the [Angular http](guide/http) client to retrieve data</span>:
 
 
 <code-example path="pipes/src/app/fetch-json.pipe.ts" title="src/app/fetch-json.pipe.ts">
@@ -559,7 +559,7 @@ The component renders as the following:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/pipes/hero-list.png' alt="Hero List"></img>
+  <img src='assets/images/guide/pipes/hero-list.png' alt="Hero List"></img>
 </figure>
 
 

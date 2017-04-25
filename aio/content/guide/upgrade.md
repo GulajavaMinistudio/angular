@@ -34,7 +34,7 @@ make incremental upgrading seamless.
 
 1. [Preparation](guide/upgrade#preparation)
 
-    1. [Follow the Angular Style Guide](guide/upgrade#follow-the-angular-style-guide)
+    1. [Follow the Angular Style Guide](guide/upgrade#follow-the-angular-styleguide)
     2. [Using a Module Loader](guide/upgrade#using-a-module-loader)
     3. [Migrating to TypeScript](guide/upgrade#migrating-to-typescript)
     4. [Using Component Directives](guide/upgrade#using-component-directives)
@@ -336,7 +336,7 @@ everything work seamlessly:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700"></img>
+  <img src="assets/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application" width="700"></img>
 </figure>
 
 
@@ -381,7 +381,7 @@ ways:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500"></img>
+  <img src="assets/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application" width="500"></img>
 </figure>
 
 
@@ -435,7 +435,7 @@ AngularJS and Angular approaches. Here's what happens:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600"></img>
+  <img src="assets/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application" width="600"></img>
 </figure>
 
 
@@ -524,7 +524,7 @@ will result in the same thing:
 
 Now introduce Angular to the project. Inspired by instructions in
 [the Setup](guide/setup), you can selectively copy in material from the
-<a href="https://github.com/angular/quickstart" target="_blank">QuickStart github repository</a>.
+<a href="https://github.com/angular/quickstart">QuickStart github repository</a>.
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 
@@ -569,7 +569,7 @@ existing AngularJS code works as before _and_ you're ready to run Angular code.
 ### Using Angular Components from AngularJS Code
 
 <figure>
-  <img src="assets/images/devguide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
+  <img src="assets/images/guide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -733,7 +733,7 @@ For  example, we can easily make multiple copies of the component using `ng-repe
 ### Using AngularJS Component Directives from Angular Code
 
 <figure>
-  <img src="assets/images/devguide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
+  <img src="assets/images/guide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -936,7 +936,7 @@ and then provide the input and output using Angular template syntax:
 ### Projecting AngularJS Content into Angular Components
 
 <figure>
-  <img src="assets/images/devguide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
+  <img src="assets/images/guide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -983,7 +983,7 @@ remains in "AngularJS land" and is managed by the AngularJS framework.
 ### Transcluding Angular Content into AngularJS Component Directives
 
 <figure>
-  <img src="assets/images/devguide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
+  <img src="assets/images/guide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" align="left" style="width:250px; margin-left:-40px;margin-right:10px"></img>
 </figure>
 
 
@@ -1451,7 +1451,7 @@ In terms of project structure, this is where our work begins:
 This is actually a pretty good starting point. The code uses the AngularJS 1.5
 component API and the organization follows the
 [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md),
-which is an important [preparation step](guide/upgrade#following-the-angular-style-guide) before
+which is an important [preparation step](guide/upgrade#following-the-angular-styleguide) before
 a successful upgrade.
 
 * Each component, service, and filter is in its own source file, as per the
@@ -1803,7 +1803,7 @@ so let's do that next.
 #### Why declare _angular_ as _angular.IAngularStatic_?
 
 `@types/angular` is declared as a UMD module, and due to the way 
-<a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions" target="_blank">UMD typings</a>
+<a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions">UMD typings</a>
 work, once you have an ES6 `import` statement in a file all UMD typed modules must also be
 imported via `import` statements instead of being globally available.
 

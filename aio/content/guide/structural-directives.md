@@ -158,7 +158,7 @@ Confirm that fact using browser developer tools to inspect the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM"></img>
+  <img src='assets/images/guide/structural-directives/element-not-in-dom.png' alt="ngIf=false element not in DOM"></img>
 </figure>
 
 
@@ -186,7 +186,7 @@ While invisible, the element remains in the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM"></img>
+  <img src='assets/images/guide/structural-directives/element-display-in-dom.png' alt="hidden element still in DOM"></img>
 </figure>
 
 
@@ -261,7 +261,7 @@ Only the finished product ends up in the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM"></img>
+  <img src='assets/images/guide/structural-directives/hero-div-in-dom.png' alt="hero div in DOM"></img>
 </figure>
 
 
@@ -498,7 +498,7 @@ Angular erases the middle "Hip!", leaving the cheer a bit less enthusiastic.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/template-rendering.png' width="350" alt="template tag rendering"></img>
+  <img src='assets/images/guide/structural-directives/template-rendering.png' width="350" alt="template tag rendering"></img>
 </figure>
 
 
@@ -564,7 +564,7 @@ The constructed paragraph renders strangely.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style"></img>
+  <img src='assets/images/guide/structural-directives/bad-paragraph.png' alt="spanned paragraph with bad style"></img>
 </figure>
 
 
@@ -588,7 +588,7 @@ the drop down is empty.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/bad-select.png' alt="spanned options don't work"></img>
+  <img src='assets/images/guide/structural-directives/bad-select.png' alt="spanned options don't work"></img>
 </figure>
 
 
@@ -613,7 +613,7 @@ It renders properly.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style"></img>
+  <img src='assets/images/guide/structural-directives/good-paragraph.png' alt="ngcontainer paragraph with proper style"></img>
 </figure>
 
 
@@ -631,7 +631,7 @@ The drop down works properly.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly"></img>
+  <img src='assets/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly"></img>
 </figure>
 
 
@@ -696,7 +696,7 @@ Here's how you might begin:
 
 The directive's _selector_ is typically the directive's **attribute name** in square brackets, `[myUnless]`.
 The brackets define a CSS
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" target="_blank" title="MDN: Attribute selectors">attribute selector</a>.
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" title="MDN: Attribute selectors">attribute selector</a>.
 
 The directive _attribute name_ should be spelled in _lowerCamelCase_ and begin with a prefix.
 Don't use `ng`. That prefix belongs to Angular.
@@ -704,7 +704,7 @@ Pick something short that fits you or your company.
 In this example, the prefix is `my`.
 
 
-The directive _class_ name ends in `Directive` per the [style guide](guide/style-guide#02-03 "Angular Style Guide").
+The directive _class_ name ends in `Directive` per the [style guide](guide/styleguide#02-03 "Angular Style Guide").
 Angular's own directives do not.
 
 ### _TemplateRef_ and _ViewContainerRef_
@@ -788,7 +788,7 @@ When the `condition` is truthy, the top (A) paragraph is removed and the bottom 
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/structural-directives/unless-anim.gif' alt="UnlessDirective in action"></img>
+  <img src='assets/images/guide/structural-directives/unless-anim.gif' alt="UnlessDirective in action"></img>
 </figure>
 
 

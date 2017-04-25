@@ -266,7 +266,7 @@ you need `[formControl]="name"` in the template on the `<input>`.
 
 
 Disregard the `form-control` _CSS_ class. It belongs to the 
-<a href="http://getbootstrap.com/" target="_blank" title="Bootstrap CSS">Bootstrap CSS library</a>,
+<a href="http://getbootstrap.com/" title="Bootstrap CSS">Bootstrap CSS library</a>,
 not Angular.
 It _styles_ the form but in no way impacts the logic of the form.
 
@@ -353,7 +353,7 @@ Now that everything is wired up, the browser should display something like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
+  <img src="assets/images/guide/reactive-forms/just-formcontrol.png" width="400px" alt="Single FormControl"></img>
 </figure>
 
 
@@ -421,7 +421,7 @@ to look for a `FormControl` called `name`.
 
 
 Disregard the `form-group` _CSS_ class. It belongs to the 
-<a href="http://getbootstrap.com/" target="_blank" title="Bootstrap CSS">Bootstrap CSS library</a>,
+<a href="http://getbootstrap.com/" title="Bootstrap CSS">Bootstrap CSS library</a>,
 not Angular.
 Like the `form-control` class, it _styles_ the form 
 but in no way impacts its logic.
@@ -457,7 +457,7 @@ Piping it through the `JsonPipe` renders the model as JSON in the browser:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
+  <img src="assets/images/guide/reactive-forms/json-output.png" width="400px" alt="JSON output"></img>
 </figure>
 
 
@@ -567,7 +567,7 @@ The browser displays the following:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
+  <img src="assets/images/guide/reactive-forms/validators-json-output.png" width="400px" alt="Single FormControl"></img>
 </figure>
 
 
@@ -696,7 +696,7 @@ with the nested address `FormGroup`:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
+  <img src="assets/images/guide/reactive-forms/address-group.png" width="400px" alt="JSON output"></img>
 </figure>
 
 
@@ -1052,7 +1052,7 @@ Together they look a bit like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
+  <img src="assets/images/guide/reactive-forms/hero-list.png" width="420px" alt="HeroListComponent"></img>
 </figure>
 
 
@@ -1265,7 +1265,7 @@ Back in the browser, select the hero named "Magneta".
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
+  <img src="assets/images/guide/reactive-forms/addresses-array.png" width="400px" alt="JSON output of addresses array"></img>
 </figure>
 
 
@@ -1343,7 +1343,7 @@ After you implement both features in this section, the form will look like this:
 
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
+  <img src="assets/images/guide/reactive-forms/save-revert-buttons.png" width="389px" alt="Form with save & revert buttons"></img>
 </figure>
 
 

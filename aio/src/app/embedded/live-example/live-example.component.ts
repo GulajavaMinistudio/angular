@@ -23,6 +23,7 @@ const zipBase = 'content/zips/';
 *      [embedded-style]  // show plnkr in embedded style (default and on narrow screens)
 *      [flat-style]      // show plnkr in flat (original) style
 *      [noDownload]      // no downloadable zip option
+*      [downloadOnly]    // just the zip
 *      [title="..."]>    // text for live example link and tooltip
 *        text            // higher precedence way to specify text for live example link and tooltip
 *  </live-example>
@@ -30,13 +31,13 @@ const zipBase = 'content/zips/';
 *   <p>Run <live-example>Try the live example</live-example></p>.
 *   // ~/resources/live-examples/{page}/plnkr.html
 *
-*   <p>Run <live-example name="toh-1">this example</live-example></p>.
-*   // ~/resources/live-examples/toh-1/plnkr.html
+*   <p>Run <live-example name="toh-pt1">this example</live-example></p>.
+*   // ~/resources/live-examples/toh-pt1/plnkr.html
 *
-*   // Link to the default plunker in the toh-1 sample
+*   // Link to the default plunker in the toh-pt1 sample
 *   // The title overrides default ("live example") with "Tour of Heroes - Part 1"
-*   <p>Run <live-example name="toh-1" title="Tour of Heroes - Part 1"></live-example></p>.
-*   // ~/resources/live-examples/toh-1/plnkr.html
+*   <p>Run <live-example name="toh-pt1" title="Tour of Heroes - Part 1"></live-example></p>.
+*   // ~/resources/live-examples/toh-pt1/plnkr.html
 *
 *   <p>Run <live-example plnkr="minimal"></live-example></p>.
 *   // ~/resources/live-examples/{page}/minimal.plnkr.html
@@ -56,8 +57,8 @@ const zipBase = 'content/zips/';
 *   // ~/resources/live-examples/{page}/plnkr.html
 *
 *   // Displays within the document page as an embedded style plunker editor
-*   <live-example name="toh-1" embedded plnkr="minimal" img="toh>Tour of Heroes - Part 1</live-example>
-*   // ~/resources/live-examples/toh-1/minimal.eplnkr.html
+*   <live-example name="toh-pt1" embedded plnkr="minimal" img="toh>Tour of Heroes - Part 1</live-example>
+*   // ~/resources/live-examples/toh-pt1/minimal.eplnkr.html
 */
 @Component({
   selector: 'live-example',
@@ -99,7 +100,12 @@ export class LiveExampleComponent implements OnInit {
 
     const noDownload = this.getAttrValue(['noDownload', 'nodownload']); // noDownload aliases
     this.enableDownload = !boolFromAtty(noDownload);
+
     this.plnkrImg = imageBase + (attrs.img || defaultPlnkrImg);
+
+    if (boolFromAtty(this.getAttrValue(['downloadOnly', 'downloadonly']))) {
+      this.mode = 'downloadOnly';
+    }
   }
 
   calcPlnkrLink(width: number) {
@@ -154,7 +160,9 @@ export class LiveExampleComponent implements OnInit {
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
-    this.calcPlnkrLink(width);
+    if (this.mode !== 'downloadOnly') {
+      this.calcPlnkrLink(width);
+    }
   }
 
   toggleEmbedded () { this.showEmbedded = !this.showEmbedded; }

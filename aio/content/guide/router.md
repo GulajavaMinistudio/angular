@@ -533,7 +533,7 @@ and the *Heroes* view with its list of heroes.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/hero-list.png' alt="Hero List" width="250"></img>
+  <img src='assets/images/guide/router/hero-list.png' alt="Hero List" width="250"></img>
 </figure>
 
 
@@ -541,7 +541,7 @@ and the *Heroes* view with its list of heroes.
 Select one hero and the app takes you to a hero editing screen.
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/hero-detail.png' alt="Crisis Center Detail" width="250"></img>
+  <img src='assets/images/guide/router/hero-detail.png' alt="Crisis Center Detail" width="250"></img>
 </figure>
 
 
@@ -558,7 +558,7 @@ Now click the *Crisis Center* link for a list of ongoing crises.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/crisis-center-list.png' alt="Crisis Center List" width="250"></img>
+  <img src='assets/images/guide/router/crisis-center-list.png' alt="Crisis Center List" width="250"></img>
 </figure>
 
 
@@ -571,7 +571,7 @@ Notice that the corresponding name in the crisis list does _not_ change.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250"></img>
+  <img src='assets/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail" width="250"></img>
 </figure>
 
 
@@ -587,7 +587,7 @@ Up pops a dialog box.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/confirm-dialog.png' alt="Confirm Dialog" width="250"></img>
+  <img src='assets/images/guide/router/confirm-dialog.png' alt="Confirm Dialog" width="250"></img>
 </figure>
 
 
@@ -609,7 +609,7 @@ Proceed to the first application milestone.
 Begin with a simple version of the app that navigates between two empty views.
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/router-1-anim.gif' alt="App in action" width="250"></img>
+  <img src='assets/images/guide/router/router-1-anim.gif' alt="App in action" width="250"></img>
 </figure>
 
 
@@ -620,7 +620,7 @@ Begin with a simple version of the app that navigates between two empty views.
 ### Set the *&lt;base href>*
 
 The router uses the browser's
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" target="_blank" title="HTML5 browser history push-state">history.pushState</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>
 for navigation. Thanks to `pushState`, you can make in-app URL paths look the way you want them to
 look, e.g. `localhost:3000/crisis-center`. The in-app URLs can be indistinguishable from server URLs.
 
@@ -643,7 +643,7 @@ older hash (#) style, if necessary.
 
 
 You must **add a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" title="base href">&lt;base href&gt; element</a>**
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>**
 to the app's `index.html` for `pushState` routing to work.
 The browser uses the `<base href>` value to prefix *relative* URLs when referencing
 CSS files, scripts, and images.
@@ -765,7 +765,7 @@ and a *router outlet* where the router swaps views on and off the page. Here's w
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/shell-and-outlet.png' alt="Shell" width="300"></img>
+  <img src='assets/images/guide/router/shell-and-outlet.png' alt="Shell" width="300"></img>
 </figure>
 
 
@@ -1244,13 +1244,13 @@ Now you'll learn the following:
 This example recreates the heroes feature in the "Services" episode of the
 [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"),
 and you'll be copying much of the code 
-from the <live-example name="toh-4" title="Tour of Heroes: Services example code"></live-example>.
+from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
 
 Here's how the user will experience this version of the app:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/router-2-anim.gif' alt="App in action"></img>
+  <img src='assets/images/guide/router/router-2-anim.gif' alt="App in action"></img>
 </figure>
 
 
@@ -1277,7 +1277,7 @@ Follow these steps:
 * Delete the placeholder `hero-list.component.ts` that's in the `app` folder.
 * Create a new `hero-list.component.ts` under `src/app/heroes`.
 * Copy into it the contents of the `app.component.ts` from
-  the <live-example name="toh-4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example>.
+  the <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example>.
 * Make a few minor but necessary changes:
 
   * Delete the `selector` (routed components don't need them).
@@ -1880,7 +1880,7 @@ it would be nice if the viewed hero was preselected in the list.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/selected-hero.png' alt="Selected hero"></img>
+  <img src='assets/images/guide/router/selected-hero.png' alt="Selected hero"></img>
 </figure>
 
 
@@ -2098,7 +2098,7 @@ Look for it within the repeated `<li>` tag as shown here:
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/selected-hero.png' alt="Selected List"></img>
+  <img src='assets/images/guide/router/selected-hero.png' alt="Selected List"></img>
 </figure>
 
 
@@ -2370,7 +2370,7 @@ and decide later if the differences are worthwhile.
 
 
 In keeping with the
-<a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" title="Separation of Concerns">*Separation of Concerns* principle</a>,
+<a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" title="Separation of Concerns">*Separation of Concerns* principle</a>,
 changes to the *Crisis Center* won't affect the `AppModule` or
 any other feature's component.
 
@@ -2396,7 +2396,7 @@ If your app had many feature areas, the app component trees might look like this
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/component-tree.png' alt="Component Tree"></img>
+  <img src='assets/images/guide/router/component-tree.png' alt="Component Tree"></img>
 </figure>
 
 
@@ -2695,7 +2695,7 @@ and two buttons, "Send" and "Cancel".
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/router/contact-popup.png' alt="Contact popup" width="250"></img>
+  <img src='assets/images/guide/router/contact-popup.png' alt="Contact popup" width="250"></img>
 </figure>
 
 
@@ -4084,7 +4084,7 @@ This is a strictly local URL. The browser shouldn't send this URL to the server
 and should not reload the page.
 
 Modern HTML5 browsers support
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" target="_blank" title="HTML5 browser history push-state">history.pushState</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>,
 a technique that changes a browser's location and history without triggering a server page request.
 The router can compose a "natural" URL that is indistinguishable from
 one that would otherwise require a page load.
@@ -4159,11 +4159,11 @@ resort to hash routes.
 ### HTML5 URLs and the  *&lt;base href>*
 
 While the router uses the 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" target="_blank" title="Browser history push-state">HTML5 pushState</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a>
 style by default, you *must* configure that strategy with a **base href**.
 
 The preferred way to configure the strategy is to add a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" title="base href">&lt;base href&gt; element</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>
 tag in the `<head>` of the `index.html`.
 
 

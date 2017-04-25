@@ -1067,7 +1067,7 @@ content harmlessly.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
+  <img src='assets/images/guide/template-syntax/evil-title.png' alt="evil title made safe" width='500px'></img>
 </figure>
 
 
@@ -1837,7 +1837,7 @@ Here are all variations in action, including the uppercase version:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
+  <img src='assets/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations"></img>
 </figure>
 
 
@@ -2132,7 +2132,7 @@ Here is an illustration of the _trackBy_ effect.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
+  <img src='assets/images/guide/template-syntax/ng-for-track-by-anim.gif' alt="trackBy"></img>
 </figure>
 
 
@@ -2167,7 +2167,7 @@ Angular puts only the *selected* element into the DOM.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/template-syntax/switch-anim.gif' alt="trackBy"></img>
+  <img src='assets/images/guide/template-syntax/switch-anim.gif' alt="trackBy"></img>
 </figure>
 
 
@@ -2220,7 +2220,7 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 A **template reference variable** is often a reference to a DOM element within a template.
 It can also be a reference to an Angular component or directive or a
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" target="_blank" title="MDN: Web Components">web component</a>.
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
 
 Use the hash symbol (#) to declare a reference variable.
 The `#phone` declares a `phone` variable on an `<input>` element.
@@ -2417,7 +2417,7 @@ The terms _input_ and _output_ reflect the perspective of the target directive.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
+  <img src='assets/images/guide/template-syntax/input-output.png' alt="Inputs and outputs"></img>
 </figure>
 
 

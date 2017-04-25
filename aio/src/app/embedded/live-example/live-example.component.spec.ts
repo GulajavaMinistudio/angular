@@ -120,11 +120,11 @@ describe('LiveExampleComponent', () => {
 
     it('should have expected plunker & download hrefs when has example directory (name)', async(() => {
       testPath = '/guide/somewhere';
-      setHostTemplate('<live-example name="toh-1"></live-example>');
+      setHostTemplate('<live-example name="toh-pt1"></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/toh-1/eplnkr.html');
-        expect(hrefs[1]).toContain('/toh-1/toh-1.zip');
+        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
       });
     }));
 
@@ -167,8 +167,18 @@ describe('LiveExampleComponent', () => {
     it('should not have a download link when `noDownload` atty present', async(() => {
       setHostTemplate('<live-example noDownload></live-example>');
       testComponent(() => {
-        expect(getAnchors().length).toBe(1, 'only the live-example anchor');
+        const hrefs = getHrefs();
+        expect(hrefs.length).toBe(1, 'only the plunker live-example anchor');
+        expect(hrefs[0]).toContain('plnkr.html');
       });
+    }));
+
+    it('should only have a download link when `downloadOnly` atty present', async(() => {
+      setHostTemplate('<live-example downloadOnly>download this</live-example>');
+      testComponent(() => {
+        const hrefs = getHrefs();
+        expect(hrefs.length).toBe(1, 'only the zip anchor');
+        expect(hrefs[0]).toContain('.zip');      });
     }));
 
     it('should have default title when no title attribute or content', async(() => {

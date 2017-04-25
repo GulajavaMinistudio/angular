@@ -9,7 +9,7 @@ Angular calls lifecycle hook methods on directives and components as it creates,
 
 
 <figure>
-  <img src="assets/images/devguide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px"></img>
+  <img src="assets/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" align="left" style="width:200px; margin-left:-40px;margin-right:30px"></img>
 </figure>
 
 
@@ -465,7 +465,7 @@ The peek-a-boo exists to show how Angular calls the hooks in the expected order.
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
 
 <figure class='image-display'>
-  <img src="assets/images/devguide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo"></img>
+  <img src="assets/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo"></img>
 </figure>
 
 
@@ -549,7 +549,7 @@ with an entry in the *Hook Log* as seen here:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive"></img>
+  <img src='assets/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive"></img>
 </figure>
 
 
@@ -593,7 +593,7 @@ created under test or before you decide to display it.
 Constructors should do no more than set the initial local variables to simple values.
 
 An `ngOnInit()` is a good place for a component to fetch its initial data. The
-[Tour of Heroes Tutorial](tutorial/toh-pt4#oninit) and [HTTP Client](guide/server-communication#oninit)
+[Tour of Heroes Tutorial](tutorial/toh-pt4#oninit) and [HTTP Client](guide/http#oninit)
 guides show how.
 
 
@@ -672,7 +672,7 @@ Here's the sample in action as the user makes changes.
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges"></img>
+  <img src='assets/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges"></img>
 </figure>
 
 
@@ -718,7 +718,7 @@ so you can see how often `DoCheck` is called. The results are illuminating:
 
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck"></img>
+  <img src='assets/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck"></img>
 </figure>
 
 
@@ -795,7 +795,7 @@ for one turn of the browser's JavaScript cycle and that's just long enough.
 Here's *AfterView* in action:
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/lifecycle-hooks/after-view-anim.gif' alt="AfterView"></img>
+  <img src='assets/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView"></img>
 </figure>
 
 
@@ -859,7 +859,7 @@ It tells Angular where to insert that content.
 In this case, the projected content is the `<my-child>` from the parent.
 
 <figure class='image-display'>
-  <img src='assets/images/devguide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content"></img>
+  <img src='assets/images/guide/lifecycle-hooks/projected-child-view.png' width="230" alt="Projected Content"></img>
 </figure>
 
 
