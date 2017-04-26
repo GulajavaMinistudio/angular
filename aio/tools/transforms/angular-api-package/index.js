@@ -23,16 +23,18 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/filterMemberDocs'))
   .processor(require('./processors/markBarredODocsAsPrivate'))
   .processor(require('./processors/filterPrivateDocs'))
-  .processor(require('./processors/filterIgnoredDocs'))
 
   // Where do we get the source files?
   .config(function(readTypeScriptModules, readFilesProcessor, collectExamples) {
 
     // API files are typescript
     readTypeScriptModules.basePath = API_SOURCE_PATH;
-    readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]/];
+    readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
     readTypeScriptModules.sourceFiles = [
+      'animations/index.ts',
+      'animations/browser/index.ts',
+      'animations/browser/testing/index.ts',
       'common/index.ts',
       'common/testing/index.ts',
       'core/index.ts',
@@ -41,6 +43,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'http/index.ts',
       'http/testing/index.ts',
       'platform-browser/index.ts',
+      'platform-browser/animations/index.ts',
       'platform-browser/testing/index.ts',
       'platform-browser-dynamic/index.ts',
       'platform-browser-dynamic/testing/index.ts',
@@ -50,8 +53,9 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'platform-webworker-dynamic/index.ts',
       'router/index.ts',
       'router/testing/index.ts',
+      'router/upgrade/index.ts',
       'upgrade/index.ts',
-      'upgrade/static.ts',
+      'upgrade/static/index.ts',
     ];
 
     // API Examples
@@ -63,13 +67,6 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       }
     ];
     collectExamples.exampleFolders.push('examples');
-  })
-
-  // Ignore certain problematic files
-  .config(function(filterIgnoredDocs) {
-    filterIgnoredDocs.ignore = [
-      /\/VERSION$/  // Ignore the `VERSION` const, since it would be written to the same file as the `Version` class
-    ];
   })
 
   // Configure jsdoc-style tag parsing
