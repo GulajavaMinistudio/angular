@@ -1,11 +1,4 @@
-@title
-NgModules
-
-@intro
-Define application modules with @NgModule.
-
-@description
-
+<h1 class="no-toc">NgModules</h1>
 
 
 **NgModules** help organize an application into cohesive blocks of functionality.
@@ -25,32 +18,23 @@ of creating and maintaining a single root `AppModule` for the entire application
 
 This page covers NgModules in greater depth.
 
-## Table of Contents
-
-<!-- CF: The titling for tables of contents in the advanced chapters is inconsistent:
-
-* some are titled "Contents" while others are titled "Table of Contents" (should probably be sentence case as it's an H2
-* some headings are H2, some are H3
-* some pages don't have tables of contents
-
-I didn't make changes here as I'm not sure what the correct style is.
--->
+<!-- CF: See my comment in the "Resolve directive conflicts" section below proposing renaming or reorganizing that section. -->
 
 * [Angular modularity](guide/ngmodule#angular-modularity "Add structure to the app with NgModule")
 * [The application root module](guide/ngmodule#root-module "The startup module that every app requires")
-* [Bootstrap](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point") the root module
+* [Bootstrap the root module](guide/ngmodule#bootstrap "Launch the app in a browser with the root module as the entry point")
 * [Declarations](guide/ngmodule#declarations "Declare the components, directives, and pipes that belong to a module")
 * [Providers](guide/ngmodule#providers "Extend the app with additional services")
 * [Imports](guide/ngmodule#imports "Import components, directives, and pipes for use in component templates")
 * [Resolve conflicts](guide/ngmodule#resolve-conflicts "When two directives have the same selector")
-<!-- CF: See my comment in the "Resolve diretive conflicts" section below proposing renaming or reorganizing that section. -->
 * [Feature modules](guide/ngmodule#feature-modules "Partition the app into feature modules")
-* [Lazy loaded modules](guide/ngmodule#lazy-load "Load modules asynchronously") with the router
+* [Lazy loaded modules with the router](guide/ngmodule#lazy-load "Load modules asynchronously")
 * [Shared modules](guide/ngmodule#shared-module "Create modules for commonly used components, directives, and pipes")
 * [The Core module](guide/ngmodule#core-module "Create a core module with app-wide singleton services and single-use components")
 * [Configure core services with _forRoot_](guide/ngmodule#core-for-root "Configure providers during module import")
-* [Prevent reimport of the _CoreModule_](guide/ngmodule#prevent-reimport "because bad things happen if a lazy loaded module imports Core")
+* [Prevent re-import of the _CoreModule_](guide/ngmodule#prevent-reimport "because bad things happen if a lazy loaded module imports Core")
 * [NgModule metadata properties](guide/ngmodule#ngmodule-properties "A technical summary of the @NgModule metadata properties")
+
 <!-- CF: This link goes to the top of this page. I would expect it to go to an "NgModule metadata properties"
  section at the end of this page, but that section doesn't exist. -->
 
@@ -185,7 +169,7 @@ compiles the application in the browser and then launches the app.
 
 The samples in this page demonstrate the dynamic bootstrapping approach.
 
-<live-example embedded plnkr="minimal.0" img="devguide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="minimal.0" img="guide/ngmodule/minimal-plunker.png">Try the live example.</live-example>
 
 
 ### Static bootstrapping with the ahead-of-time (AOT) compiler
@@ -682,7 +666,7 @@ The app file structure looks like this:
 
 
 Try the example:
-<live-example embedded plnkr="contact.1b" img="devguide/ngmodule/contact-1b-plunker.png"></live-example>
+<live-example embedded plnkr="contact.1b" img="guide/ngmodule/contact-1b-plunker.png"></live-example>
 
 
 {@a resolve-conflicts}
@@ -896,7 +880,7 @@ There's a lot to like in the revised `AppModule`.
 
 Try this `ContactModule` version of the sample.
 
-<live-example embedded plnkr="contact.2" img="devguide/ngmodule/contact-2-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="contact.2" img="guide/ngmodule/contact-2-plunker.png">Try the live example.</live-example>
 
 
 {@a lazy-load}
@@ -915,7 +899,7 @@ Their specifics aren't important to the story and this page doesn't discuss ever
 
 
 Examine and download the complete source for this version from
-the <live-example plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">live example.</live-example>
+the <live-example plnkr="pre-shared.3" img="guide/ngmodule/v3-plunker.png">live example.</live-example>
 
 </div>
 
@@ -1194,7 +1178,7 @@ It imports the `HeroRoutingModule` from `hero-routing.module.ts` just as `Contac
 
 The `CrisisModule` is much the same.
 
-<live-example embedded plnkr="pre-shared.3" img="devguide/ngmodule/v3-plunker.png">Try the live example.</live-example>
+<live-example embedded plnkr="pre-shared.3" img="guide/ngmodule/v3-plunker.png">Try the live example.</live-example>
 
 
 {@a shared-module}
@@ -1549,7 +1533,7 @@ Now `parentModule` exists and the constructor throws the error.
 ### Conclusion
 
 You made it! You can examine and download the complete source for this final version from the live example.
-<live-example embedded  img="devguide/ngmodule/final-plunker.png"></live-example>
+<live-example embedded  img="guide/ngmodule/final-plunker.png"></live-example>
 
 ### Frequently asked questions
 
