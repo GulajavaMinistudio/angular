@@ -96,14 +96,6 @@ md-sidenav-container div.mat-sidenav-content {
   width: 100%;
 }
 
-.mat-icon, .material-icons {
-  display: inline-block;
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  color: $mediumgray;
-}
-
 .heading-children.expanded {
   visibility: visible;
   opacity: 1;
@@ -176,4 +168,14 @@ aio-nav-menu.top-menu {
     border-bottom: 2px solid rgba($mediumgray, 0.5);
   }
 
+}
+
+// Angular version selector
+md-sidenav .doc-version {
+  padding: 10px;
+
+  &:hover {
+    text-shadow: 0 0 5px #ffffff;
+    background-color: $lightgray;
+  }
 }

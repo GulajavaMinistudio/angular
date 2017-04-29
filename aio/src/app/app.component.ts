@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit,
+import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
@@ -25,6 +25,10 @@ export class AppComponent implements OnInit {
   pageId: string;
   currentDocument: DocumentContents;
   footerNodes: NavigationNode[];
+
+  @HostBinding('class.marketing')
+  isMarketing = false;
+
   isStarting = true;
   isSideBySide = false;
   private isSideNavDoc = false;
@@ -33,6 +37,9 @@ export class AppComponent implements OnInit {
   private sideBySideWidth = 1032;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
+
+  currentDocVersion: NavigationNode;
+  docVersions: NavigationNode[];
   versionInfo: VersionInfo;
 
   get homeImageUrl() {
@@ -91,13 +98,17 @@ export class AppComponent implements OnInit {
       if (this.previousNavView === currentNode.view) { return; }
       this.previousNavView = currentNode.view;
       this.isSideNavDoc = currentNode.view === sideNavView;
+      this.isMarketing = !this.isSideNavDoc;
       this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
     });
 
     this.navigationService.navigationViews.subscribe(views => {
+      this.docVersions  = views['docVersions']  || [];
       this.footerNodes  = views['Footer']  || [];
       this.sideNavNodes = views['SideNav'] || [];
       this.topMenuNodes = views['TopBar']  || [];
+
+      this.currentDocVersion = this.docVersions[0];
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
@@ -114,6 +125,13 @@ export class AppComponent implements OnInit {
     // Scroll after the doc-viewer has finished rendering the new doc
     this.autoScroll();
     this.isStarting = false;
+  }
+
+  onDocVersionChange(versionIndex: number) {
+    const version = this.docVersions[versionIndex];
+    if (version.url) {
+      this.locationService.go(version.url);
+    }
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])

@@ -6,8 +6,7 @@
     },
     {
       "url": "docs",
-      "title": "Docs",
-      "hidden": true
+      "title": "Docs"
     },
     {
       "url": "resources",
@@ -88,6 +87,7 @@
 
     {
       "title": "Fundamentals",
+      "url": "guide/fundamentals",
       "tooltip": "The fundamentals of Angular",
       "children": [
 
@@ -260,6 +260,7 @@
 
     {
       "title": "Techniques",
+      "url": "guide/techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
       "children": [
 
@@ -369,6 +370,7 @@
 
     {
       "title": "References",
+      "tooltip": "References on Angular usage and style.",
       "children": [
         {
           "url": "guide/change-log",
@@ -482,5 +484,10 @@
         }
       ]
     }
+  ],
+
+  "docVersions": [
+    { "title": "v4.0.0", "url": null },
+    { "title": "v2",     "url": "https://v2.angular.io" }
   ]
 }
