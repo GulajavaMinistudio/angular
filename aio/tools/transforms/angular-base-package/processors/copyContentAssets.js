@@ -1,7 +1,7 @@
 
 module.exports = function copyContentAssetsProcessor(copyFolder) {
   return {
-    $runAfter: ['files-written'],
+    $runBefore: ['postProcessHtml'],
     assetMappings: [],
     $process() {
       this.assetMappings.forEach(map => {
