@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By, DOCUMENT } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+import { ScrollService } from 'app/shared/scroll.service';
 import { TocComponent } from './toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -31,6 +32,7 @@ describe('TocComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ HostEmbeddedTocComponent, HostNotEmbeddedTocComponent, TocComponent ],
       providers: [
+        { provide: ScrollService, useClass: TestScrollService },
         { provide: TocService, useClass: TestTocService }
       ]
     })
@@ -111,10 +113,12 @@ describe('TocComponent', () => {
     });
 
     describe('when many TocItems', () => {
+      let scrollSpy: jasmine.Spy;
 
       beforeEach(() => {
         fixture.detectChanges();
         page = setPage();
+        scrollSpy = TestBed.get(ScrollService).scrollToTop;
       });
 
       it('should have more than 4 displayed items', () => {
@@ -149,7 +153,7 @@ describe('TocComponent', () => {
         expect(aSecondary.classes.secondary).toEqual(true, 'has secondary class');
       });
 
-      describe('after click expando button', () => {
+      describe('after click tocHeading button', () => {
 
         beforeEach(() => {
           page.tocHeadingButton.nativeElement.click();
@@ -163,6 +167,66 @@ describe('TocComponent', () => {
         it('should not have "closed" class', () => {
           expect(tocComponentDe.children[0].classes.closed).toBeFalsy();
         });
+
+        it('should not scroll', () => {
+          expect(scrollSpy).not.toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking again', () => {
+          page.tocHeadingButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+
+        it('should scroll after clicking again', () => {
+          page.tocHeadingButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(scrollSpy).toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking tocMoreButton', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+      });
+
+      describe('after click tocMore button', () => {
+
+        beforeEach(() => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+        });
+
+        it('should not be "closed"', () => {
+          expect(tocComponent.isClosed).toEqual(false);
+        });
+
+        it('should not have "closed" class', () => {
+          expect(tocComponentDe.children[0].classes.closed).toBeFalsy();
+        });
+
+        it('should not scroll', () => {
+          expect(scrollSpy).not.toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking again', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
+
+        it('should scroll after clicking again', () => {
+          page.tocMoreButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(scrollSpy).toHaveBeenCalled();
+        });
+
+        it('should be "closed" after clicking tocHeadingButton', () => {
+          page.tocHeadingButton.nativeElement.click();
+          fixture.detectChanges();
+          expect(tocComponent.isClosed).toEqual(true);
+        });
       });
     });
   });
@@ -174,6 +238,8 @@ describe('TocComponent', () => {
       fixture = TestBed.createComponent(HostNotEmbeddedTocComponent);
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
+      tocService = TestBed.get(TocService);
+
       fixture.detectChanges();
       page = setPage();
     });
@@ -216,12 +282,15 @@ class HostEmbeddedTocComponent {}
 })
 class HostNotEmbeddedTocComponent {}
 
+class TestScrollService {
+  scrollToTop = jasmine.createSpy('scrollToTop');
+}
+
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
 }
 
 // tslint:disable:quotemark
-
 function getTestTocList() {
   return [
     {

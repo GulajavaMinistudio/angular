@@ -2,12 +2,12 @@ import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
-import { AutoScrollService } from 'app/shared/auto-scroll.service';
 import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { LocationService } from 'app/shared/location.service';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
+import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 
@@ -84,11 +84,11 @@ export class AppComponent implements OnInit {
   sidenav: MdSidenav;
 
   constructor(
-    private autoScrollService: AutoScrollService,
     private documentService: DocumentService,
     private hostElement: ElementRef,
     private locationService: LocationService,
     private navigationService: NavigationService,
+    private scrollService: ScrollService,
     private swUpdateNotifications: SwUpdateNotificationsService
   ) {  }
 
@@ -116,13 +116,18 @@ export class AppComponent implements OnInit {
 
     this.navigationService.currentNode.subscribe(currentNode => {
       this.currentNode = currentNode;
-      this.updateHostClasses();
 
-      // Toggle the sidenav if side-by-side and the kind of view changed
-      if (this.previousNavView === currentNode.view) { return; }
-      this.previousNavView = currentNode.view;
-      this.isSideNavDoc = currentNode.view === sideNavView;
-      this.sideNavToggle(this.isSideNavDoc && this.isSideBySide);
+      // Preserve current sidenav open state by default
+      let openSideNav = this.sidenav.opened;
+
+      if (this.previousNavView !== currentNode.view) {
+        this.previousNavView = currentNode.view;
+        // View type changed. Is it now a sidenav view (e.g, guide or tutorial)?
+        // Open if changed to a sidenav doc; close if changed to a marketing doc.
+        openSideNav = this.isSideNavDoc = currentNode.view === sideNavView;
+      }
+      // May be open or closed when wide; always closed when narrow
+      this.sideNavToggle(this.isSideBySide ? openSideNav : false);
     });
 
     this.navigationService.navigationViews.subscribe(views => {
@@ -141,7 +146,7 @@ export class AppComponent implements OnInit {
 
   // Scroll to the anchor in the hash fragment or top of doc.
   autoScroll() {
-    this.autoScrollService.scroll();
+    this.scrollService.scroll();
   }
 
   onDocRendered() {
@@ -183,8 +188,8 @@ export class AppComponent implements OnInit {
     while (target && !(target instanceof HTMLAnchorElement)) {
       target = target.parentElement;
     }
-    if (target) {
-      return this.locationService.handleAnchorClick(target as HTMLAnchorElement, button, ctrlKey, metaKey);
+    if (target instanceof HTMLAnchorElement) {
+      return this.locationService.handleAnchorClick(target, button, ctrlKey, metaKey);
     }
     return true;
   }
