@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
-import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -215,6 +215,32 @@ describe('compiler (unbundled Angular)', () => {
          });
 
        }));
+
+    it('should be able to supress a null access', async(() => {
+         const FILES: MockDirectory = {
+           app: {
+             'app.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                interface Person { name: string; }
+
+                @Component({
+                  selector: 'my-comp',
+                  template: '{{maybe_person!.name}}'
+                })
+                export class MyComp {
+                  maybe_person?: Person;
+                }
+
+                @NgModule({
+                  declarations: [MyComp]
+                })
+                export class MyModule {}
+              `
+           }
+         };
+         compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
+       }));
   });
 
   it('should add the preamble to generated files', async(() => {
@@ -386,7 +412,7 @@ describe('compiler (unbundled Angular)', () => {
                const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
                const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
                expect(mainNgFactory.source)
-                   .toContain(`${flags},(null as any),0,import1.Extends,[import2.AParam]`);
+                   .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
              });
        }));
 
@@ -438,7 +464,7 @@ describe('compiler (unbundled Angular)', () => {
                const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
                const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
                expect(mainNgFactory.source)
-                   .toContain(`${flags},(null as any),0,import1.Extends,[import2.AParam_2]`);
+                   .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
              });
        }));
 
