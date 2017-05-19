@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
@@ -25,6 +25,7 @@ import { SearchResultsComponent } from 'app/search/search-results/search-results
 import { SearchService } from 'app/search/search.service';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocComponent } from 'app/embedded/toc/toc.component';
+import { MdSidenav } from '@angular/material';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -262,21 +263,56 @@ describe('AppComponent', () => {
   });
 
   describe('hostClasses', () => {
-    it('should set the css classes of the host container based on the current doc and navigation view', () => {
-      const host = fixture.debugElement;
+    let host: DebugElement;
+    beforeEach(() => {
+      host = fixture.debugElement;
+    });
 
+    it('should set the css classes of the host container based on the current doc and navigation view', () => {
       locationService.go('guide/pipes');
       fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-guide-pipes folder-guide view-SideNav');
+
+      checkHostClass('page', 'guide-pipes');
+      checkHostClass('folder', 'guide');
+      checkHostClass('view', 'SideNav');
 
       locationService.go('features');
       fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-features folder-features view-TopBar');
+      checkHostClass('page', 'features');
+      checkHostClass('folder', 'features');
+      checkHostClass('view', 'TopBar');
 
       locationService.go('');
       fixture.detectChanges();
-      expect(host.properties['className']).toEqual('page-home folder-home view-');
+      checkHostClass('page', 'home');
+      checkHostClass('folder', 'home');
+      checkHostClass('view', '');
     });
+
+    it('should set the css class of the host container based on the open/closed state of the side nav', () => {
+      const sideNav = host.query(By.directive(MdSidenav));
+
+      locationService.go('guide/pipes');
+      fixture.detectChanges();
+      checkHostClass('sidenav', 'open');
+
+      sideNav.componentInstance.opened = false;
+      sideNav.triggerEventHandler('close', {});
+      fixture.detectChanges();
+      checkHostClass('sidenav', 'closed');
+
+      sideNav.componentInstance.opened = true;
+      sideNav.triggerEventHandler('open', {});
+      fixture.detectChanges();
+      checkHostClass('sidenav', 'open');
+    });
+
+    function checkHostClass(type, value) {
+      const classes = host.properties['className'];
+      const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
+      expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
+      expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
+    }
   });
 
   describe('currentDocument', () => {
@@ -317,6 +353,7 @@ describe('AppComponent', () => {
   });
 
   describe('auto-scrolling', () => {
+    const scrollDelay = 500;
     let scrollService: ScrollService;
     let scrollSpy: jasmine.Spy;
 
@@ -350,16 +387,20 @@ describe('AppComponent', () => {
       expect(scrollSpy.calls.count()).toBe(2);
     });
 
-    it('should scroll when call onDocRendered directly', () => {
+    it('should scroll after a delay when call onDocRendered directly', fakeAsync(() => {
       component.onDocRendered();
+      expect(scrollSpy).not.toHaveBeenCalled();
+      tick(scrollDelay);
       expect(scrollSpy).toHaveBeenCalled();
-    });
+    }));
 
-    it('should scroll (via onDocRendered) when finish navigating to a new doc', () => {
+    it('should scroll (via onDocRendered) when finish navigating to a new doc', fakeAsync(() => {
       locationService.go('guide/pipes');
       fixture.detectChanges(); // triggers the event that calls onDocRendered
+      expect(scrollSpy).not.toHaveBeenCalled();
+      tick(scrollDelay);
       expect(scrollSpy).toHaveBeenCalled();
-    });
+    }));
   });
 
   describe('initial rendering', () => {

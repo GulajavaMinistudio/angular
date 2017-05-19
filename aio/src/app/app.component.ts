@@ -67,7 +67,7 @@ export class AppComponent implements OnInit {
   get homeImageUrl() {
     return this.isSideBySide ?
       'assets/images/logos/standard/logo-nav@2x.png' :
-      'assets/images/logos/standard/shield-large@2x.png';
+      'assets/images/logos/standard/shield-large.svg';
   }
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
@@ -159,8 +159,9 @@ export class AppComponent implements OnInit {
   }
 
   onDocRendered() {
-    // Scroll after the doc-viewer has finished rendering the new doc
-    this.autoScroll();
+    // Scroll 500ms after the doc-viewer has finished rendering the new doc
+    // The delay is to allow time for async layout to complete
+    setTimeout(() => this.autoScroll(), 500);
     this.isStarting = false;
   }
 
@@ -218,11 +219,12 @@ export class AppComponent implements OnInit {
   }
 
   updateHostClasses() {
+    const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
     const viewClass = `view-${this.currentNode && this.currentNode.view}`;
 
-    this.hostClasses = `${pageClass} ${folderClass} ${viewClass}`;
+    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClass}`;
   }
 
   // Dynamically change height of table of contents container
