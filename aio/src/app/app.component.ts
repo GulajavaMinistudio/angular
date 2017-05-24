@@ -64,8 +64,13 @@ export class AppComponent implements OnInit {
   private sideBySideWidth = 1032;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
+  topMenuNarrowNodes: NavigationNode[];
+
+  showFloatingToc = false;
+  showFloatingTocWidth = 800;
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
+
   versionInfo: VersionInfo;
 
   get homeImageUrl() {
@@ -161,6 +166,7 @@ export class AppComponent implements OnInit {
       this.footerNodes  = views['Footer']  || [];
       this.sideNavNodes = views['SideNav'] || [];
       this.topMenuNodes = views['TopBar']  || [];
+      this.topMenuNarrowNodes = views['TopBarNarrow'] || this.topMenuNodes;
     });
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
@@ -196,6 +202,7 @@ export class AppComponent implements OnInit {
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
+    this.showFloatingToc = width > this.showFloatingTocWidth;
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
