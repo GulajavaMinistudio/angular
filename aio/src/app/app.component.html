@@ -5,7 +5,7 @@
 <md-toolbar color="primary" class="app-toolbar">
   <button class="hamburger" md-button
     (click)="sidenav.toggle()" title="Docs menu">
-    <md-icon svgIcon="menu"></md-icon>
+    <md-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></md-icon>
   </button>
   <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
@@ -17,7 +17,7 @@
 <md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
 
   <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
-    <aio-nav-menu *ngIf="!isSideBySide" class="top-menu" [nodes]="topMenuNarrowNodes" [currentNode]="currentNode"></aio-nav-menu>
+    <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNode"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
 
     <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
