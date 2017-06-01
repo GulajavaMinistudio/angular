@@ -144,6 +144,10 @@ section#intro {
     border-radius: 48px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 30px;
+    justify-content: center;
 
     &:hover {
       .material-icons {
@@ -289,6 +293,10 @@ aio-shell {
       }
     }
 
+    .feature-section img {
+      max-width: 70px;
+    }
+
     @media (max-width: 600px) {
       md-sidenav-container.sidenav-container {
         padding-top: 0;
@@ -326,6 +334,13 @@ aio-shell {
     .text-headline {
       text-align: center;
     }
+  }
+
+  .feature-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 8px 0px;
+    clear: both;
   }
 }
 
