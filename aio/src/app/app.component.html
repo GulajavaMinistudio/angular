@@ -12,15 +12,14 @@
   <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox (search)="doSearch($event)"></aio-search-box>
-  <span class="fill-remaining-space"></span>
 </md-toolbar>
 <aio-search-results #searchResults *ngIf="showSearchResults" (resultSelected)="hideSearchResults()"></aio-search-results>
 
 <md-sidenav-container class="sidenav-container" [class.starting]="isStarting" role="main">
 
   <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
-    <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNode"></aio-nav-menu>
-    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNode" ></aio-nav-menu>
+    <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow"></aio-nav-menu>
+    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" ></aio-nav-menu>
 
     <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
       <select (change)="onDocVersionChange($event.target.selectedIndex)">

@@ -263,7 +263,7 @@ button.hero-cta {
 }
 
 aio-shell {
-  &.page-resources, &.page-events {
+  &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute {
     section {
       padding: 0rem 0rem 3rem;
     }
@@ -275,7 +275,7 @@ aio-shell {
     }
   }
 
-  &.page-home, &.page-resources, &.page-events {
+  &.page-home, &.page-resources, &.page-events, &.page-contribute {
     article {
       padding: 32px;
 
@@ -300,16 +300,6 @@ aio-shell {
     @media (max-width: 600px) {
       md-sidenav-container.sidenav-container {
         padding-top: 0;
-      }
-    }
-
-    @media (min-width: 992px) {
-      md-toolbar {
-        padding-left: 24px;
-        
-        button.hamburger {
-          display: none;
-        }
       }
     }
   }
@@ -465,4 +455,7 @@ header.bckground-sky.l-relative {
       display: none;
     }
   }
+}
+.page-features .marketing-banner {
+  margin-bottom: 20px;
 }
