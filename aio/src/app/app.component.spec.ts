@@ -3,7 +3,7 @@ import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angu
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { Http } from '@angular/http';
-import { MdProgressBar } from '@angular/material';
+import { MdProgressBar, MdSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -27,7 +27,7 @@ import { SearchService } from 'app/search/search.service';
 import { SelectComponent, Option } from 'app/shared/select/select.component';
 import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
 import { TocComponent } from 'app/embedded/toc/toc.component';
-import { MdSidenav } from '@angular/material';
+import { TocItem, TocService } from 'app/shared/toc.service';
 
 const sideBySideBreakPoint = 992;
 const hideToCBreakPoint = 800;
@@ -40,6 +40,7 @@ describe('AppComponent', () => {
   let hamburger: HTMLButtonElement;
   let locationService: MockLocationService;
   let sidenav: HTMLElement;
+  let tocService: TocService;
 
   const initializeTest = () => {
     fixture = TestBed.createComponent(AppComponent);
@@ -48,10 +49,12 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     component.onResize(sideBySideBreakPoint + 1); // wide by default
 
-    docViewer = fixture.debugElement.query(By.css('aio-doc-viewer')).nativeElement;
-    hamburger = fixture.debugElement.query(By.css('.hamburger')).nativeElement;
-    locationService = fixture.debugElement.injector.get(LocationService) as any;
-    sidenav = fixture.debugElement.query(By.css('md-sidenav')).nativeElement;
+    const de = fixture.debugElement;
+    docViewer = de.query(By.css('aio-doc-viewer')).nativeElement;
+    hamburger = de.query(By.css('.hamburger')).nativeElement;
+    locationService = de.injector.get(LocationService) as any as MockLocationService;
+    sidenav = de.query(By.css('md-sidenav')).nativeElement;
+    tocService = de.injector.get(TocService);
   };
 
   describe('with proper DocViewer', () => {
@@ -72,19 +75,74 @@ describe('AppComponent', () => {
       });
     });
 
-    describe('onResize', () => {
-      it('should update `isSideBySide` accordingly', () => {
-        component.onResize(sideBySideBreakPoint + 1);
-        expect(component.isSideBySide).toBe(true);
-        component.onResize(sideBySideBreakPoint - 1);
-        expect(component.isSideBySide).toBe(false);
+    describe('hasFloatingToc', () => {
+      it('should initially be true', () => {
+        const fixture2 = TestBed.createComponent(AppComponent);
+        const component2 = fixture2.componentInstance;
+
+        expect(component2.hasFloatingToc).toBe(true);
       });
 
-      it('should update `showFloatingToc` accordingly', () => {
-        component.onResize(hideToCBreakPoint + 1);
-        expect(component.showFloatingToc).toBe(true);
+      it('should be false on narrow screens', () => {
         component.onResize(hideToCBreakPoint - 1);
-        expect(component.showFloatingToc).toBe(false);
+
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        expect(component.hasFloatingToc).toBe(false);
+
+        tocService.tocList.next([]);
+        expect(component.hasFloatingToc).toBe(false);
+
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        expect(component.hasFloatingToc).toBe(false);
+      });
+
+      it('should be true on wide screens unless the toc is empty', () => {
+        component.onResize(hideToCBreakPoint + 1);
+
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        expect(component.hasFloatingToc).toBe(true);
+
+        tocService.tocList.next([]);
+        expect(component.hasFloatingToc).toBe(false);
+
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+        expect(component.hasFloatingToc).toBe(true);
+      });
+
+      it('should be false when toc is empty', () => {
+        tocService.tocList.next([]);
+
+        component.onResize(hideToCBreakPoint + 1);
+        expect(component.hasFloatingToc).toBe(false);
+
+        component.onResize(hideToCBreakPoint - 1);
+        expect(component.hasFloatingToc).toBe(false);
+
+        component.onResize(hideToCBreakPoint + 1);
+        expect(component.hasFloatingToc).toBe(false);
+      });
+
+      it('should be true when toc is not empty unless the screen is narrow', () => {
+        tocService.tocList.next([{}, {}, {}] as TocItem[]);
+
+        component.onResize(hideToCBreakPoint + 1);
+        expect(component.hasFloatingToc).toBe(true);
+
+        component.onResize(hideToCBreakPoint - 1);
+        expect(component.hasFloatingToc).toBe(false);
+
+        component.onResize(hideToCBreakPoint + 1);
+        expect(component.hasFloatingToc).toBe(true);
+      });
+    });
+
+    describe('isSideBySide', () => {
+      it('should be updated on resize', () => {
+        component.onResize(sideBySideBreakPoint - 1);
+        expect(component.isSideBySide).toBe(false);
+
+        component.onResize(sideBySideBreakPoint + 1);
+        expect(component.isSideBySide).toBe(true);
       });
     });
 
@@ -472,18 +530,82 @@ describe('AppComponent', () => {
       }));
     });
 
+    describe('restrainScrolling()', () => {
+      const preventedScrolling = (currentTarget: object, deltaY: number) => {
+        const evt = {
+          deltaY,
+          currentTarget,
+          defaultPrevented: false,
+          preventDefault() { this.defaultPrevented = true; }
+        } as any as WheelEvent;
+
+        component.restrainScrolling(evt);
+
+        return evt.defaultPrevented;
+      };
+
+      it('should prevent scrolling up if already at the top', () => {
+        const elem = {scrollTop: 0};
+
+        expect(preventedScrolling(elem, -100)).toBe(true);
+        expect(preventedScrolling(elem, +100)).toBe(false);
+        expect(preventedScrolling(elem, -10)).toBe(true);
+      });
+
+      it('should prevent scrolling down if already at the bottom', () => {
+        const elem = {scrollTop: 100, scrollHeight: 150, clientHeight: 50};
+
+        expect(preventedScrolling(elem, +10)).toBe(true);
+        expect(preventedScrolling(elem, -10)).toBe(false);
+        expect(preventedScrolling(elem, +5)).toBe(true);
+
+        elem.clientHeight -= 10;
+        expect(preventedScrolling(elem, +5)).toBe(false);
+
+        elem.scrollHeight -= 20;
+        expect(preventedScrolling(elem, +5)).toBe(true);
+
+        elem.scrollTop -= 30;
+        expect(preventedScrolling(elem, +5)).toBe(false);
+      });
+
+      it('should not prevent scrolling if neither at the top nor at the bottom', () => {
+        const elem = {scrollTop: 50, scrollHeight: 150, clientHeight: 50};
+
+        expect(preventedScrolling(elem, +100)).toBe(false);
+        expect(preventedScrolling(elem, -100)).toBe(false);
+      });
+    });
+
     describe('aio-toc', () => {
       let tocDebugElement: DebugElement;
       let tocContainer: DebugElement;
 
-      beforeEach(() => {
+      const setHasFloatingToc = hasFloatingToc => {
+        component.hasFloatingToc = hasFloatingToc;
+        fixture.detectChanges();
+
         tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
-        tocContainer = tocDebugElement.parent;
+        tocContainer = tocDebugElement && tocDebugElement.parent;
+      };
+
+      beforeEach(() => setHasFloatingToc(true));
+
+
+      it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
+        expect(tocDebugElement).toBeTruthy();
+        expect(tocContainer).toBeTruthy();
+
+        setHasFloatingToc(false);
+        expect(tocDebugElement).toBeFalsy();
+        expect(tocContainer).toBeFalsy();
+
+        setHasFloatingToc(true);
+        expect(tocDebugElement).toBeTruthy();
+        expect(tocContainer).toBeTruthy();
       });
 
-
       it('should have a non-embedded `<aio-toc>` element', () => {
-        expect(tocDebugElement).toBeDefined();
         expect(tocDebugElement.classes['embedded']).toBeFalsy();
       });
 
@@ -494,6 +616,16 @@ describe('AppComponent', () => {
         fixture.detectChanges();
 
         expect(tocContainer.styles['max-height']).toBe('100px');
+      });
+
+      it('should restrain scrolling inside the ToC container', () => {
+        const restrainScrolling = spyOn(component, 'restrainScrolling');
+        const evt = {};
+
+        expect(restrainScrolling).not.toHaveBeenCalled();
+
+        tocContainer.triggerEventHandler('mousewheel', evt);
+        expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
     });
 
