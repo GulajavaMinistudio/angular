@@ -879,101 +879,6 @@ export function main() {
 
     describe('validation directives', () => {
 
-      // TODO(kara): activate when we start exporting max validator dir
-      xit('should should validate max', fakeAsync(() => {
-            const fixture = initTest(NgModelMaxValidator);
-            fixture.componentInstance.max = 10;
-            fixture.detectChanges();
-            tick();
-
-            const max = fixture.debugElement.query(By.css('input'));
-            const form = fixture.debugElement.children[0].injector.get(NgForm);
-
-            max.nativeElement.value = '';
-            dispatchEvent(max.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(true);
-
-            max.nativeElement.value = 11;
-            dispatchEvent(max.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(false);
-
-            max.nativeElement.value = 9;
-            dispatchEvent(max.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(true);
-          }));
-
-      // TODO(kara): activate when we start exporting max validator dir
-      xit('should validate max for strings', fakeAsync(() => {
-            const fixture = initTest(NgModelMaxValidator);
-            fixture.componentInstance.max = 10;
-            fixture.detectChanges();
-            tick();
-
-            const max = fixture.debugElement.query(By.css('input'));
-            const form = fixture.debugElement.children[0].injector.get(NgForm);
-
-            max.nativeElement.value = '11';
-            dispatchEvent(max.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(false);
-
-            max.nativeElement.value = '9';
-            dispatchEvent(max.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(true);
-          }));
-
-      // TODO(kara): activate when we start exporting min validator dir
-      xit('should should validate min', fakeAsync(() => {
-            const fixture = initTest(NgModelMinValidator);
-            fixture.componentInstance.min = 10;
-            fixture.detectChanges();
-            tick();
-
-            const min = fixture.debugElement.query(By.css('input'));
-            const form = fixture.debugElement.children[0].injector.get(NgForm);
-
-            min.nativeElement.value = '';
-            dispatchEvent(min.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(true);
-
-            min.nativeElement.value = 11;
-            dispatchEvent(min.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(true);
-
-            min.nativeElement.value = 9;
-            dispatchEvent(min.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(false);
-          }));
-
-      // TODO(kara): activate when we start exporting min validator dir
-      xit('should should validate min for strings', fakeAsync(() => {
-            const fixture = initTest(NgModelMinValidator);
-            fixture.componentInstance.min = 10;
-            fixture.detectChanges();
-            tick();
-
-            const min = fixture.debugElement.query(By.css('input'));
-            const form = fixture.debugElement.children[0].injector.get(NgForm);
-
-            min.nativeElement.value = '11';
-            dispatchEvent(min.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(true);
-
-            min.nativeElement.value = '9';
-            dispatchEvent(min.nativeElement, 'input');
-            fixture.detectChanges();
-            expect(form.valid).toEqual(false);
-          }));
-
-
       it('required validator should validate checkbox', fakeAsync(() => {
            const fixture = initTest(NgModelCheckboxRequiredValidator);
            fixture.detectChanges();
@@ -1632,22 +1537,6 @@ class NgModelMultipleValidators {
   required: boolean;
   minLen: number;
   pattern: string|RegExp;
-}
-
-@Component({
-  selector: 'ng-model-max',
-  template: `<form><input name="tovalidate" type="number" ngModel [max]="max"></form>`
-})
-class NgModelMaxValidator {
-  max: number;
-}
-
-@Component({
-  selector: 'ng-model-min',
-  template: `<form><input name="tovalidate" type="number" ngModel [min]="min"></form>`
-})
-class NgModelMinValidator {
-  min: number;
 }
 
 @Component({
