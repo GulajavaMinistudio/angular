@@ -4,10 +4,11 @@
 set +x -eu -o pipefail
 
 readonly thisDir=$(cd $(dirname $0); pwd)
+readonly parentDir=$(dirname $thisDir)
 readonly TOKEN=${ANGULAR_PAYLOAD_FIREBASE_TOKEN:-}
 readonly PROJECT_NAME="angular-payload-size"
 
-source scripts/_payload-limits.sh
+source ${thisDir}/_payload-limits.sh
 
 failed=false
 payloadData=""
@@ -43,8 +44,8 @@ payloadData="$payloadData\"timestamp\": $timestamp, "
 
 # Add change source: application, dependencies, or 'application+dependencies'
 yarnChanged=false
-allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $thisDir | wc -l)
-allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $thisDir)
+allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | wc -l)
+allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir)
 
 if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
   yarnChanged=true
@@ -68,7 +69,9 @@ payloadData="{${payloadData}}"
 echo $payloadData
 
 if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" /payload/aio/$TRAVIS_BRANCH/$TRAVIS_COMMIT
+  readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
+  readonly dbPath=/payload/aio/$safeBranchName/$TRAVIS_COMMIT
+  firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$TOKEN" $dbPath
 fi
 
 if [[ $failed = true ]]; then
