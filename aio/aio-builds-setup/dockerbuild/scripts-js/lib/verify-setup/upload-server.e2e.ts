@@ -1,6 +1,7 @@
 // Imports
 import * as fs from 'fs';
 import * as path from 'path';
+import * as c from './constants';
 import {CmdResult, helper as h} from './helper';
 
 // Tests
@@ -25,13 +26,13 @@ describe('upload-server (on HTTP)', () => {
 
     it('should disallow non-GET requests', done => {
       const url = `http://${host}/create-build/${pr}/${sha9}`;
-      const bodyRegex = /^Unsupported method/;
+      const bodyRegex = /^Unknown resource/;
 
       Promise.all([
-        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX POST ${url}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(405, bodyRegex)),
+        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX POST ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(404, bodyRegex)),
       ]).then(done);
     });
 
@@ -63,7 +64,7 @@ describe('upload-server (on HTTP)', () => {
 
 
     it('should reject requests for which the PR verification fails', done => {
-      const headers = `--header "Authorization: FAKE_VERIFICATION_ERROR" ${xFileHeader}`;
+      const headers = `--header "Authorization: ${c.BV_verify_error}" ${xFileHeader}`;
       const url = `http://${host}/create-build/${pr}/${sha9}`;
       const bodyRegex = new RegExp(`Error while verifying upload for PR ${pr}: Test`);
 
@@ -107,7 +108,7 @@ describe('upload-server (on HTTP)', () => {
 
     [true, false].forEach(isPublic => describe(`(for ${isPublic ? 'public' : 'hidden'} builds)`, () => {
       const authorizationHeader2 = isPublic ?
-        authorizationHeader : '--header "Authorization: FAKE_VERIFIED_NOT_TRUSTED"';
+        authorizationHeader : `--header "Authorization: ${c.BV_verify_verifiedNotTrusted}"`;
       const cmdPrefix = curl('', `${authorizationHeader2} ${xFileHeader}`);
 
 
@@ -373,27 +374,194 @@ describe('upload-server (on HTTP)', () => {
   });
 
 
+  describe(`${host}/pr-updated`, () => {
+    const url = `http://${host}/pr-updated`;
+
+    // Helpers
+    const curl = (payload?: {number: number, action?: string}) => {
+      const payloadStr = payload && JSON.stringify(payload) || '';
+      return `curl -iLX POST --header "Content-Type: application/json" --data '${payloadStr}' ${url}`;
+    };
+
+
+    it('should disallow non-POST requests', done => {
+      const bodyRegex = /^Unknown resource in request/;
+
+      Promise.all([
+        h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(404, bodyRegex)),
+      ]).then(done);
+    });
+
+
+    it('should respond with 400 for requests without a payload', done => {
+      const bodyRegex = /^Missing or empty 'number' field in request/;
+
+      h.runCmd(curl()).
+        then(h.verifyResponse(400, bodyRegex)).
+        then(done);
+    });
+
+
+    it('should respond with 400 for requests without a \'number\' field', done => {
+      const bodyRegex = /^Missing or empty 'number' field in request/;
+
+      Promise.all([
+        h.runCmd(curl({} as any)).then(h.verifyResponse(400, bodyRegex)),
+        h.runCmd(curl({number: null} as any)).then(h.verifyResponse(400, bodyRegex)),
+      ]).then(done);
+    });
+
+
+    it('should reject requests for which checking the PR visibility fails', done => {
+      h.runCmd(curl({number: c.BV_getPrIsTrusted_error})).
+        then(h.verifyResponse(500, /Test/)).
+        then(done);
+    });
+
+
+    it('should respond with 404 for unknown paths', done => {
+      const mockPayload = JSON.stringify({number: +pr});
+      const cmdPrefix = `curl -iLX POST --data "${mockPayload}" http://${host}`;
+
+      Promise.all([
+        h.runCmd(`${cmdPrefix}/foo/pr-updated`).then(h.verifyResponse(404)),
+        h.runCmd(`${cmdPrefix}/foo-pr-updated`).then(h.verifyResponse(404)),
+        h.runCmd(`${cmdPrefix}/foonpr-updated`).then(h.verifyResponse(404)),
+        h.runCmd(`${cmdPrefix}/pr-updated/foo`).then(h.verifyResponse(404)),
+        h.runCmd(`${cmdPrefix}/pr-updated-foo`).then(h.verifyResponse(404)),
+        h.runCmd(`${cmdPrefix}/pr-updatednfoo`).then(h.verifyResponse(404)),
+      ]).then(done);
+    });
+
+
+    it('should do nothing if PR\'s visibility is already up-to-date', done => {
+      const publicPr = pr;
+      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+      const checkVisibilities = () => {
+        // Public build is already public.
+        expect(h.buildExists(publicPr, '', false)).toBe(false);
+        expect(h.buildExists(publicPr, '', true)).toBe(true);
+        // Hidden build is already hidden.
+        expect(h.buildExists(hiddenPr, '', false)).toBe(true);
+        expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+      };
+
+      h.createDummyBuild(publicPr, sha9, true);
+      h.createDummyBuild(hiddenPr, sha9, false);
+      checkVisibilities();
+
+      Promise.
+        all([
+          h.runCmd(curl({number: +publicPr, action: 'foo'})).then(h.verifyResponse(200)),
+          h.runCmd(curl({number: +hiddenPr, action: 'foo'})).then(h.verifyResponse(200)),
+        ]).
+        // Visibilities should not have changed, because the specified action could not have triggered a change.
+        then(checkVisibilities).
+        then(done);
+    });
+
+
+    it('should do nothing if \'action\' implies no visibility change', done => {
+      const publicPr = pr;
+      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+      const checkVisibilities = () => {
+        // Public build is hidden atm.
+        expect(h.buildExists(publicPr, '', false)).toBe(true);
+        expect(h.buildExists(publicPr, '', true)).toBe(false);
+        // Hidden build is public atm.
+        expect(h.buildExists(hiddenPr, '', false)).toBe(false);
+        expect(h.buildExists(hiddenPr, '', true)).toBe(true);
+      };
+
+      h.createDummyBuild(publicPr, sha9, false);
+      h.createDummyBuild(hiddenPr, sha9, true);
+      checkVisibilities();
+
+      Promise.
+        all([
+          h.runCmd(curl({number: +publicPr, action: 'foo'})).then(h.verifyResponse(200)),
+          h.runCmd(curl({number: +hiddenPr, action: 'foo'})).then(h.verifyResponse(200)),
+        ]).
+        // Visibilities should not have changed, because the specified action could not have triggered a change.
+        then(checkVisibilities).
+        then(done);
+    });
+
+
+    describe('when the visiblity has changed', () => {
+      const publicPr = pr;
+      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+
+      beforeEach(() => {
+        // Create initial PR builds with opposite visibilities as the ones that will be reported:
+        // - The now public PR was previously hidden.
+        // - The now hidden PR was previously public.
+        h.createDummyBuild(publicPr, sha9, false);
+        h.createDummyBuild(hiddenPr, sha9, true);
+
+        expect(h.buildExists(publicPr, '', false)).toBe(true);
+        expect(h.buildExists(publicPr, '', true)).toBe(false);
+        expect(h.buildExists(hiddenPr, '', false)).toBe(false);
+        expect(h.buildExists(hiddenPr, '', true)).toBe(true);
+      });
+      afterEach(() => {
+        // Expect PRs' visibility to have been updated:
+        // - The public PR should be actually public (previously it was hidden).
+        // - The hidden PR should be actually hidden (previously it was public).
+        expect(h.buildExists(publicPr, '', false)).toBe(false);
+        expect(h.buildExists(publicPr, '', true)).toBe(true);
+        expect(h.buildExists(hiddenPr, '', false)).toBe(true);
+        expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+
+        h.deletePrDir(publicPr, true);
+        h.deletePrDir(hiddenPr, false);
+      });
+
+
+      it('should update the PR\'s visibility (action: undefined)', done => {
+        Promise.all([
+          h.runCmd(curl({number: +publicPr})).then(h.verifyResponse(200)),
+          h.runCmd(curl({number: +hiddenPr})).then(h.verifyResponse(200)),
+        ]).then(done);
+      });
+
+
+      it('should update the PR\'s visibility (action: labeled)', done => {
+        Promise.all([
+          h.runCmd(curl({number: +publicPr, action: 'labeled'})).then(h.verifyResponse(200)),
+          h.runCmd(curl({number: +hiddenPr, action: 'labeled'})).then(h.verifyResponse(200)),
+        ]).then(done);
+      });
+
+
+      it('should update the PR\'s visibility (action: unlabeled)', done => {
+        Promise.all([
+          h.runCmd(curl({number: +publicPr, action: 'unlabeled'})).then(h.verifyResponse(200)),
+          h.runCmd(curl({number: +hiddenPr, action: 'unlabeled'})).then(h.verifyResponse(200)),
+        ]).then(done);
+      });
+
+    });
+
+  });
+
+
   describe(`${host}/*`, () => {
 
-    it('should respond with 404 for GET requests to unknown URLs', done => {
+    it('should respond with 404 for requests to unknown URLs', done => {
       const bodyRegex = /^Unknown resource/;
 
       Promise.all([
         h.runCmd(`curl -iL http://${host}/index.html`).then(h.verifyResponse(404, bodyRegex)),
         h.runCmd(`curl -iL http://${host}/`).then(h.verifyResponse(404, bodyRegex)),
         h.runCmd(`curl -iL http://${host}`).then(h.verifyResponse(404, bodyRegex)),
-      ]).then(done);
-    });
-
-
-    it('should respond with 405 for non-GET requests to any URL', done => {
-      const bodyRegex = /^Unsupported method/;
-
-      Promise.all([
-        h.runCmd(`curl -iLX PUT http://${host}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX POST http://${host}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH http://${host}`).then(h.verifyResponse(405, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE http://${host}`).then(h.verifyResponse(405, bodyRegex)),
+        h.runCmd(`curl -iLX PUT http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX POST http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PATCH http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX DELETE http://${host}`).then(h.verifyResponse(404, bodyRegex)),
       ]).then(done);
     });
 
