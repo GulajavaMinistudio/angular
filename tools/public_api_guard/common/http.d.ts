@@ -13,6 +13,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
@@ -20,90 +21,15 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<Object>;
-    delete<T>(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<T>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<Object>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<string>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<Blob>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<ArrayBuffer>>;
-    delete<T>(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<T>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<Object>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<string>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<Blob>>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<ArrayBuffer>>;
     delete(url: string, options: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<string>;
-    delete(url: string, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<ArrayBuffer>;
@@ -111,232 +37,353 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<Blob>;
-    get<T>(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<T>>;
-    get(url: string, options: {
+    delete(url: string, options: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<string>;
-    get(url: string, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<Blob>;
-    get(url: string, options: {
+    delete(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpEvent<ArrayBuffer>>;
-    get(url: string, options: {
+    delete(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
-    get(url: string, options: {
+    delete(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpEvent<string>>;
+    delete(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<Object>>;
+    delete<T>(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<T>>;
+    delete(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<ArrayBuffer>>;
+    delete(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Blob>>;
+    delete(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<string>>;
+    delete(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Object>>;
+    delete<T>(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<T>>;
     get(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<Object>>;
-    get(url: string, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<ArrayBuffer>;
-    get(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<ArrayBuffer>>;
-    get(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<Blob>>;
-    get(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<string>>;
-    get(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<Object>>;
-    get<T>(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<T>>;
+    }): Observable<HttpEvent<string>>;
     get(url: string, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<Object>;
+    get(url: string, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<ArrayBuffer>;
+    get(url: string, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<Blob>;
+    get(url: string, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<string>;
+    get(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<ArrayBuffer>>;
+    get(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<Blob>>;
     get<T>(url: string, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
-    head(url: string, options: {
+    get(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<ArrayBuffer>>;
-    head(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<string>>;
-    head(url: string, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Object>>;
-    head<T>(url: string, options: {
+    get<T>(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<T>>;
-    head(url: string, options: {
+    get(url: string, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpResponse<ArrayBuffer>>;
-    head(url: string, options: {
+    get(url: string, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Blob>>;
-    head(url: string, options: {
+    get(url: string, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpResponse<string>>;
-    head(url: string, options: {
+    get(url: string, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
-    head<T>(url: string, options: {
+    get<T>(url: string, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<T>>;
-    head(url: string, options?: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<Object>;
     head<T>(url: string, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
-    head(url: string, options: {
+    head(url: string, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<Object>;
+    head<T>(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<T>>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Object>>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
-    }): Observable<string>;
+    }): Observable<HttpResponse<string>>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Blob>>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<ArrayBuffer>>;
+    head<T>(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<T>>;
     head(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<Object>>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<string>>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
     head(url: string, options: {
         headers?: HttpHeaders;
-        observe?: 'body';
+        observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<ArrayBuffer>;
+    }): Observable<HttpEvent<ArrayBuffer>>;
     head(url: string, options: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<string>;
+    head(url: string, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<Blob>;
-    jsonp(url: string, callbackParam: string): Observable<any>;
-    jsonp<T>(url: string, callbackParam: string): Observable<T>;
-    options(url: string, options: {
+    head(url: string, options: {
         headers?: HttpHeaders;
-        observe: 'response';
+        observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    }): Observable<ArrayBuffer>;
+    jsonp<T>(url: string, callbackParam: string): Observable<T>;
+    jsonp(url: string, callbackParam: string): Observable<Object>;
+    options(url: string, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<Object>>;
     options(url: string, options: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<ArrayBuffer>;
@@ -344,6 +391,15 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<Blob>;
+    options(url: string, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<string>;
@@ -351,6 +407,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpEvent<ArrayBuffer>>;
@@ -358,6 +415,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
@@ -365,34 +423,39 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpEvent<string>>;
-    options(url: string, options: {
+    options<T>(url: string, options?: {
         headers?: HttpHeaders;
-        observe: 'events';
+        observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<Object>>;
+    }): Observable<T>;
     options<T>(url: string, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<T>>;
     options(url: string, options: {
         headers?: HttpHeaders;
-        observe?: 'body';
+        observe: 'response';
         params?: HttpParams;
-        responseType: 'blob';
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<Blob>;
+    }): Observable<HttpResponse<ArrayBuffer>>;
     options(url: string, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Blob>>;
@@ -400,6 +463,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpResponse<string>>;
@@ -407,6 +471,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
@@ -414,6 +479,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<T>>;
@@ -421,55 +487,15 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<Object>;
-    options<T>(url: string, options?: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<T>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<Object>>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<ArrayBuffer>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<Blob>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<string>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<ArrayBuffer>>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
@@ -477,174 +503,239 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpEvent<string>>;
-    patch<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<T>>;
     patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<ArrayBuffer>>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<Blob>>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<string>>;
-    patch(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<Object>>;
-    patch<T>(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'response';
-        params?: HttpParams;
-        responseType?: 'json';
-        withCredentials?: boolean;
-    }): Observable<HttpResponse<T>>;
-    patch(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
-        responseType?: 'json';
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<Object>;
+    }): Observable<ArrayBuffer>;
+    patch(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<Blob>;
+    patch(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<string>;
+    patch(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<ArrayBuffer>>;
     patch<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
-    post<T>(url: string, body: any | null, options: {
+    patch(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
-        observe: 'events';
+        observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<T>>;
-    post(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<ArrayBuffer>;
-    post(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<string>;
-    post(url: string, body: any | null, options: {
+    }): Observable<Object>;
+    patch(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<ArrayBuffer>>;
-    post(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'blob';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<Blob>>;
-    post(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
-        responseType: 'text';
-        withCredentials?: boolean;
-    }): Observable<HttpEvent<string>>;
-    post(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
-        observe: 'events';
-        params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Object>>;
-    post(url: string, body: any | null, options: {
+    patch<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders;
-        observe?: 'body';
+        observe: 'events';
         params?: HttpParams;
-        responseType: 'blob';
+        reportProgress?: boolean;
+        responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<Blob>;
-    post(url: string, body: any | null, options: {
+    }): Observable<HttpEvent<T>>;
+    patch(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpResponse<ArrayBuffer>>;
-    post(url: string, body: any | null, options: {
+    patch(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Blob>>;
-    post(url: string, body: any | null, options: {
+    patch(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpResponse<string>>;
-    post(url: string, body: any | null, options: {
+    patch(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
-    post<T>(url: string, body: any | null, options: {
+    patch<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<T>>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<string>>;
     post(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<Object>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<ArrayBuffer>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<Blob>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<string>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<ArrayBuffer>>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<Blob>>;
     post<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<Object>>;
+    post<T>(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<T>>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<ArrayBuffer>>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'blob';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Blob>>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<string>>;
+    post(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Object>>;
+    post<T>(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe: 'response';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<T>>;
     put(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<Object>;
@@ -652,6 +743,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<T>>;
@@ -659,6 +751,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
@@ -666,6 +759,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpResponse<string>>;
@@ -673,6 +767,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Blob>>;
@@ -680,6 +775,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpResponse<ArrayBuffer>>;
@@ -691,15 +787,9 @@ export declare class HttpClient {
     }): Observable<HttpEvent<T>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders;
-        observe?: 'body';
-        params?: HttpParams;
-        responseType: 'arraybuffer';
-        withCredentials?: boolean;
-    }): Observable<ArrayBuffer>;
-    put(url: string, body: any | null, options: {
-        headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Object>>;
@@ -707,6 +797,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpEvent<string>>;
@@ -714,6 +805,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
@@ -721,6 +813,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpEvent<ArrayBuffer>>;
@@ -728,6 +821,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<string>;
@@ -735,30 +829,42 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<Blob>;
+    put(url: string, body: any | null, options: {
+        headers?: HttpHeaders;
+        observe?: 'body';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'arraybuffer';
+        withCredentials?: boolean;
+    }): Observable<ArrayBuffer>;
     put<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<T>;
     request(method: string, url: string, options: {
         body?: any;
         headers?: HttpHeaders;
+        reportProgress?: boolean;
         observe: 'events';
         params?: HttpParams;
-        responseType: 'text';
+        responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<string>>;
+    }): Observable<HttpEvent<any>>;
     request<R>(method: string, url: string, options?: {
         body?: any;
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
         responseType?: 'json';
+        reportProgress?: boolean;
         withCredentials?: boolean;
     }): Observable<R>;
     request(method: string, url: string, options: {
@@ -766,6 +872,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<ArrayBuffer>;
@@ -774,6 +881,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<Blob>;
@@ -782,6 +890,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe?: 'body';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<string>;
@@ -790,6 +899,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         params?: HttpParams;
         observe: 'events';
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpEvent<ArrayBuffer>>;
@@ -798,13 +908,24 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'events';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpEvent<Blob>>;
+    request(method: string, url: string, options: {
+        body?: any;
+        headers?: HttpHeaders;
+        observe: 'events';
+        params?: HttpParams;
+        reportProgress?: boolean;
+        responseType: 'text';
+        withCredentials?: boolean;
+    }): Observable<HttpEvent<string>>;
     request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
     request<R>(method: string, url: string, options: {
         body?: any;
         headers?: HttpHeaders;
+        reportProgress?: boolean;
         observe: 'events';
         params?: HttpParams;
         responseType?: 'json';
@@ -815,6 +936,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
     }): Observable<HttpResponse<ArrayBuffer>>;
@@ -823,6 +945,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Blob>>;
@@ -831,12 +954,23 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         observe: 'response';
         params?: HttpParams;
+        reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
     }): Observable<HttpResponse<string>>;
+    request(method: string, url: string, options: {
+        body?: any;
+        headers?: HttpHeaders;
+        reportProgress?: boolean;
+        observe: 'response';
+        params?: HttpParams;
+        responseType?: 'json';
+        withCredentials?: boolean;
+    }): Observable<HttpResponse<Object>>;
     request<R>(method: string, url: string, options: {
         body?: any;
         headers?: HttpHeaders;
+        reportProgress?: boolean;
         observe: 'response';
         params?: HttpParams;
         responseType?: 'json';
@@ -848,6 +982,7 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams;
         responseType?: 'json';
+        reportProgress?: boolean;
         withCredentials?: boolean;
     }): Observable<Object>;
     request(method: string, url: string, options?: {
@@ -855,6 +990,7 @@ export declare class HttpClient {
         headers?: HttpHeaders;
         params?: HttpParams;
         observe?: HttpObserve;
+        reportProgress?: boolean;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     }): Observable<any>;
@@ -866,6 +1002,15 @@ export declare class HttpClientJsonpModule {
 
 /** @experimental */
 export declare class HttpClientModule {
+}
+
+/** @experimental */
+export declare class HttpClientXsrfModule {
+    static disable(): ModuleWithProviders;
+    static withOptions(options?: {
+        cookieName?: string;
+        headerName?: string;
+    }): ModuleWithProviders;
 }
 
 /** @experimental */
@@ -1108,6 +1253,11 @@ export interface HttpUserEvent<T> {
 export declare class HttpXhrBackend implements HttpBackend {
     constructor(xhrFactory: XhrFactory);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+}
+
+/** @experimental */
+export declare abstract class HttpXsrfTokenExtractor {
+    abstract getToken(): string | null;
 }
 
 /** @experimental */
