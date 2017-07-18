@@ -50,7 +50,10 @@ The `get()` method on `HttpClient` makes accessing this data straightforward.
 
 ```javascript
 @Component(...)
-export class MyComponent implements NgOnInit {
+export class MyComponent implements OnInit {
+
+  results: string[];
+
   // Inject HttpClient into your component or service.
   constructor(private http: HttpClient) {}
   
@@ -268,12 +271,12 @@ has a single `intercept()` method. Here is a simple interceptor which does nothi
 
 ```javascript
 import {Injectable} from '@angular/core';
-import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest) from '@angular/common/http';
+import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest} from '@angular/common/http';
 
 @Injectable()
 export class NoopInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(Req);
+    return next.handle(req);
   }
 }
 ```
@@ -357,7 +360,7 @@ export class AuthInterceptor implements HttpInterceptor {
  
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Get the auth header from the service.
-    const authHeader: this.auth.getAuthorizationHeader();
+    const authHeader = this.auth.getAuthorizationHeader();
     // Clone the request to add the new header.
     const authReq = req.clone({headers: req.headers.set('Authorization', authHeader)});
     // Pass on the cloned request instead of the original request.
@@ -389,12 +392,12 @@ export class TimingInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
  
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  	const elapsed = Date.now();
+  	const started = Date.now();
     return next
       .handle(req)
       .do(event => {
         if (event instanceof HttpResponse) {
-          const time = Date.now() - started;
+          const elapsed = Date.now() - started;
           console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`); 
         }
       });
@@ -598,7 +601,7 @@ it('expects a GET request', inject([HttpClient, HttpTestingController], (http: H
     
   // At this point, the request is pending, and no response has been
   // sent. The next step is to expect that the request happened.
-  const req = httpMock.expectOne('/test');
+  const req = httpMock.expectOne('/data');
   
   // If no request with that URL was made, or if multiple requests match,
   // expectOne() would throw. However this test makes only one request to
