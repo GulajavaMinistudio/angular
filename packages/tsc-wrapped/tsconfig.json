@@ -6,25 +6,17 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../dist/tools/",
+    "outDir": "../../dist/all/@angular/tsc-wrapped",
+    "strictNullChecks": true,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {},
+    "paths": {
+    },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "lib": ["es6", "dom"],
     "target": "es5",
     "skipLibCheck": true
-  },
-  "exclude": [
-    "node_modules",
-    "ngc-wrapped",
-    "typings-test",
-    "public_api_guard",
-    "docs"
-  ]
+  }
 }
