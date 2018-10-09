@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '../core';
 
-import {CompilerInjectable} from '../injectable';
 import {isNgContainer, isNgContent} from '../ml_parser/tags';
 import {dashCaseToCamelCase} from '../util';
 
@@ -241,7 +240,6 @@ const _ATTR_TO_PROP: {[name: string]: string} = {
   'tabindex': 'tabIndex',
 };
 
-@CompilerInjectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema: {[element: string]: {[property: string]: string}} = {};
 
@@ -344,11 +342,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     // property names do not have a security impact.
     tagName = tagName.toLowerCase();
     propName = propName.toLowerCase();
-    let ctx = SECURITY_SCHEMA[tagName + '|' + propName];
+    let ctx = SECURITY_SCHEMA()[tagName + '|' + propName];
     if (ctx) {
       return ctx;
     }
-    ctx = SECURITY_SCHEMA['*|' + propName];
+    ctx = SECURITY_SCHEMA()['*|' + propName];
     return ctx ? ctx : SecurityContext.NONE;
   }
 

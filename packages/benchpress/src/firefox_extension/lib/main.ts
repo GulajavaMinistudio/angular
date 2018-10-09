@@ -12,8 +12,10 @@ const ParserUtil = require('./parser_util');
 
 class Profiler {
   private _profiler: any;
-  private _markerEvents: any[];
-  private _profilerStartTime: number;
+  // TODO(issue/24571): remove '!'.
+  private _markerEvents !: any[];
+  // TODO(issue/24571): remove '!'.
+  private _profilerStartTime !: number;
 
   constructor() { this._profiler = Cc['@mozilla.org/tools/profiler;1'].getService(Ci.nsIProfiler); }
 
@@ -53,7 +55,7 @@ class Profiler {
 function forceGC() {
   Cu.forceGC();
   os.notifyObservers(null, 'child-gc-request', null);
-};
+}
 
 const mod = require('sdk/page-mod');
 const data = require('sdk/self').data;

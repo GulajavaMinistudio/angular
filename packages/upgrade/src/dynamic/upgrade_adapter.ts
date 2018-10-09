@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, Provider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
 import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
-import {Deferred, controllerKey, onError} from '../common/util';
+import {Deferred, LazyModuleRef, controllerKey, onError} from '../common/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
@@ -30,7 +30,8 @@ let upgradeCount: number = 0;
  * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
  *    coexisting in a single application.
  *
- * ## Mental Model
+ * @usageNotes
+ * ### Mental Model
  *
  * When reasoning about how a hybrid application works it is useful to have a mental model which
  * describes what is happening and explains what is happening at the lowest level.
@@ -96,7 +97,8 @@ let upgradeCount: number = 0;
  *
  * ```
  *
- * @stable
+ * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
+ * [Ahead-of-Time compilation](guide/aot-compiler).
  */
 export class UpgradeAdapter {
   private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
@@ -110,11 +112,14 @@ export class UpgradeAdapter {
    * @internal
    */
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
-  private upgradedProviders: Provider[] = [];
-  private ngZone: NgZone;
-  private ng1Module: angular.IModule;
+  private upgradedProviders: StaticProvider[] = [];
+  // TODO(issue/24571): remove '!'.
+  private ngZone !: NgZone;
+  // TODO(issue/24571): remove '!'.
+  private ng1Module !: angular.IModule;
   private moduleRef: NgModuleRef<any>|null = null;
-  private ng2BootstrapDeferred: Deferred<angular.IInjectorService>;
+  // TODO(issue/24571): remove '!'.
+  private ng2BootstrapDeferred !: Deferred<angular.IInjectorService>;
 
   constructor(private ng2AppModule: Type<any>, private compilerOptions?: CompilerOptions) {
     if (!ng2AppModule) {
@@ -130,7 +135,8 @@ export class UpgradeAdapter {
    * Angular Component. The adapter will bootstrap Angular component from within the
    * AngularJS template.
    *
-   * ## Mental Model
+   * @usageNotes
+   * ### Mental Model
    *
    * 1. The component is instantiated by being listed in AngularJS template. This means that the
    *    host element is controlled by AngularJS, but the component's view will be controlled by
@@ -142,7 +148,7 @@ export class UpgradeAdapter {
    *    by way of the `ControlValueAccessor` interface from @angular/forms. Only components that
    *    implement this interface are eligible.
    *
-   * ## Supported Features
+   * ### Supported Features
    *
    * - Bindings:
    *   - Attribute: `<comp name="World">`
@@ -195,13 +201,14 @@ export class UpgradeAdapter {
    * directive. The adapter will bootstrap AngularJS component from within the Angular
    * template.
    *
-   * ## Mental Model
+   * @usageNotes
+   * ### Mental Model
    *
    * 1. The component is instantiated by being listed in Angular template. This means that the
    *    host element is controlled by Angular, but the component's view will be controlled by
    *    AngularJS.
    *
-   * ## Supported Features
+   * ### Supported Features
    *
    * - Bindings:
    *   - Attribute: `<comp name="World">`
@@ -279,6 +286,7 @@ export class UpgradeAdapter {
    * Use this instead of `angular.mock.module()` to load the upgrade module into
    * the AngularJS testing injector.
    *
+   * @usageNotes
    * ### Example
    *
    * ```
@@ -312,7 +320,7 @@ export class UpgradeAdapter {
    * ```
    *
    * @param modules any AngularJS modules that the upgrade module should depend upon
-   * @returns an {@link UpgradeAdapterRef}, which lets you register a `ready()` callback to
+   * @returns an `UpgradeAdapterRef`, which lets you register a `ready()` callback to
    * run assertions once the Angular components are ready to test through AngularJS.
    */
   registerForNg1Tests(modules?: string[]): UpgradeAdapterRef {
@@ -335,6 +343,7 @@ export class UpgradeAdapter {
    * [`bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method. Unlike
    * AngularJS, this bootstrap is asynchronous.
    *
+   * @usageNotes
    * ### Example
    *
    * ```
@@ -388,8 +397,9 @@ export class UpgradeAdapter {
         const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
         windowAngular.resumeBootstrap = function() {
           windowAngular.resumeBootstrap = originalResumeBootstrap;
-          windowAngular.resumeBootstrap.apply(this, arguments);
+          const r = windowAngular.resumeBootstrap.apply(this, arguments);
           resolve();
+          return r;
         };
       } else {
         resolve();
@@ -398,7 +408,7 @@ export class UpgradeAdapter {
 
     Promise.all([this.ng2BootstrapDeferred.promise, ng1BootstrapPromise]).then(([ng1Injector]) => {
       angular.element(element).data !(controllerKey(INJECTOR_KEY), this.moduleRef !.injector);
-      this.moduleRef !.injector.get(NgZone).run(
+      this.moduleRef !.injector.get<NgZone>(NgZone).run(
           () => { (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector); });
     }, onError);
     return upgrade;
@@ -407,7 +417,7 @@ export class UpgradeAdapter {
   /**
    * Allows AngularJS service to be accessible from Angular.
    *
-   *
+   * @usageNotes
    * ### Example
    *
    * ```
@@ -447,7 +457,7 @@ export class UpgradeAdapter {
   /**
    * Allows Angular service to be accessible from AngularJS.
    *
-   *
+   * @usageNotes
    * ### Example
    *
    * ```
@@ -476,6 +486,7 @@ export class UpgradeAdapter {
    * @param modules The AngularJS modules that this upgrade module should depend upon.
    * @returns The AngularJS upgrade module that is declared by this method
    *
+   * @usageNotes
    * ### Example
    *
    * ```
@@ -497,7 +508,10 @@ export class UpgradeAdapter {
     ng1Module.factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
         .factory(
             LAZY_MODULE_REF,
-            [INJECTOR_KEY, (injector: Injector) => ({injector, needsInNgZone: false})])
+            [
+              INJECTOR_KEY,
+              (injector: Injector) => ({ injector, needsNgZone: false } as LazyModuleRef)
+            ])
         .constant(NG_ZONE_KEY, this.ngZone)
         .factory(COMPILER_KEY, () => this.moduleRef !.injector.get(Compiler))
         .config([
@@ -549,24 +563,28 @@ export class UpgradeAdapter {
       (ng1Injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
         UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, ng1Injector)
             .then(() => {
+              // Note: There is a bug in TS 2.4 that prevents us from
+              // inlining this into @NgModule
+              // TODO(tbosch): find or file a bug against TypeScript for this.
+              const ngModule = {
+                providers: [
+                  {provide: $INJECTOR, useFactory: () => ng1Injector},
+                  {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
+                  this.upgradedProviders
+                ],
+                imports: [this.ng2AppModule],
+                entryComponents: this.downgradedComponents
+              };
               // At this point we have ng1 injector and we have prepared
               // ng1 components to be upgraded, we now can bootstrap ng2.
-              const DynamicNgUpgradeModule =
-                  NgModule({
-                    providers: [
-                      {provide: $INJECTOR, useFactory: () => ng1Injector},
-                      {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
-                      this.upgradedProviders
-                    ],
-                    imports: [this.ng2AppModule],
-                    entryComponents: this.downgradedComponents
-                  }).Class({
-                    constructor: function DynamicNgUpgradeModule() {},
-                    ngDoBootstrap: function() {}
-                  });
-              (platformRef as any)
-                  ._bootstrapModuleWithZone(
-                      DynamicNgUpgradeModule, this.compilerOptions, this.ngZone)
+              @NgModule({jit: true, ...ngModule})
+              class DynamicNgUpgradeModule {
+                constructor() {}
+                ngDoBootstrap() {}
+              }
+              platformRef
+                  .bootstrapModule(
+                      DynamicNgUpgradeModule, [this.compilerOptions !, {ngZone: this.ngZone}])
                   .then((ref: NgModuleRef<any>) => {
                     this.moduleRef = ref;
                     this.ngZone.run(() => {
@@ -599,7 +617,8 @@ export class UpgradeAdapter {
  * to preserve the synchronous nature of AngularJS's $compile.
  */
 class ParentInjectorPromise {
-  private injector: Injector;
+  // TODO(issue/24571): remove '!'.
+  private injector !: Injector;
   private callbacks: ((injector: Injector) => any)[] = [];
 
   constructor(private element: angular.IAugmentedJQuery) {
@@ -634,7 +653,8 @@ class ParentInjectorPromise {
 /**
  * Use `UpgradeAdapterRef` to control a hybrid AngularJS / Angular application.
  *
- * @stable
+ * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
+ * [Ahead-of-Time compilation](guide/aot-compiler).
  */
 export class UpgradeAdapterRef {
   /* @internal */

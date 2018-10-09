@@ -11,9 +11,9 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {FormArray} from '../src/model';
+import {FormArray} from '@angular/forms/src/model';
 
-export function main() {
+(function() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: FormControl) => {
       let resolve: (result: any) => void = undefined !;
@@ -80,17 +80,84 @@ export function main() {
 
       it('should default to on change', () => {
         const c = new FormControl('');
-        expect(c._updateOn).toEqual('change');
+        expect(c.updateOn).toEqual('change');
       });
 
       it('should default to on change with an options obj', () => {
         const c = new FormControl('', {validators: Validators.required});
-        expect(c._updateOn).toEqual('change');
+        expect(c.updateOn).toEqual('change');
       });
 
       it('should set updateOn when updating on blur', () => {
         const c = new FormControl('', {updateOn: 'blur'});
-        expect(c._updateOn).toEqual('blur');
+        expect(c.updateOn).toEqual('blur');
+      });
+
+      describe('in groups and arrays', () => {
+        it('should default to group updateOn when not set in control', () => {
+          const g =
+              new FormGroup({one: new FormControl(), two: new FormControl()}, {updateOn: 'blur'});
+
+          expect(g.get('one') !.updateOn).toEqual('blur');
+          expect(g.get('two') !.updateOn).toEqual('blur');
+        });
+
+        it('should default to array updateOn when not set in control', () => {
+          const a = new FormArray([new FormControl(), new FormControl()], {updateOn: 'blur'});
+
+          expect(a.get([0]) !.updateOn).toEqual('blur');
+          expect(a.get([1]) !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with nested groups', () => {
+          const g = new FormGroup(
+              {
+                group: new FormGroup({one: new FormControl(), two: new FormControl()}),
+              },
+              {updateOn: 'blur'});
+
+          expect(g.get('group.one') !.updateOn).toEqual('blur');
+          expect(g.get('group.two') !.updateOn).toEqual('blur');
+          expect(g.get('group') !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with nested arrays', () => {
+          const g = new FormGroup(
+              {
+                arr: new FormArray([new FormControl(), new FormControl()]),
+              },
+              {updateOn: 'blur'});
+
+          expect(g.get(['arr', 0]) !.updateOn).toEqual('blur');
+          expect(g.get(['arr', 1]) !.updateOn).toEqual('blur');
+          expect(g.get('arr') !.updateOn).toEqual('blur');
+        });
+
+        it('should allow control updateOn to override group updateOn', () => {
+          const g = new FormGroup(
+              {one: new FormControl('', {updateOn: 'change'}), two: new FormControl()},
+              {updateOn: 'blur'});
+
+          expect(g.get('one') !.updateOn).toEqual('change');
+          expect(g.get('two') !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with complex setup', () => {
+          const g = new FormGroup({
+            group: new FormGroup(
+                {one: new FormControl('', {updateOn: 'change'}), two: new FormControl()},
+                {updateOn: 'blur'}),
+            groupTwo: new FormGroup({one: new FormControl()}, {updateOn: 'submit'}),
+            three: new FormControl()
+          });
+
+          expect(g.get('group.one') !.updateOn).toEqual('change');
+          expect(g.get('group.two') !.updateOn).toEqual('blur');
+          expect(g.get('groupTwo.one') !.updateOn).toEqual('submit');
+          expect(g.get('three') !.updateOn).toEqual('change');
+        });
+
+
       });
 
     });
@@ -1072,7 +1139,59 @@ export function main() {
           expect(fn).toThrowError(`Expected validator to return Promise or Observable.`);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          g.valueChanges.subscribe(() => logger.push('group'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          g.statusChanges.subscribe(() => logger.push('form'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+      });
+    });
+    describe('pending', () => {
+      let c: FormControl;
+
+      beforeEach(() => { c = new FormControl('value'); });
+
+      it('should be false after creating a control', () => { expect(c.pending).toEqual(false); });
+
+      it('should be true after changing the value of the control', () => {
+        c.markAsPending();
+        expect(c.pending).toEqual(true);
+      });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          c.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
     });
   });
-}
+})();

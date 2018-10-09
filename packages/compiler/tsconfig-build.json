@@ -7,13 +7,13 @@
     "experimentalDecorators": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "module": "es2015",
     "moduleResolution": "node",
     "outDir": "../../dist/packages/compiler",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/core/testing": ["../../dist/packages/core/testing"]
+      "@angular/core": ["../../dist/packages/core"]
     },
     "rootDir": ".",
     "sourceMap": true,
@@ -28,7 +28,10 @@
     "index.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
+
   "angularCompilerOptions": {
-    "annotateForClosureCompiler": true
+    "annotateForClosureCompiler": true,
+    "skipMetadataEmit": true,
+    "skipTemplateCodegen": true
   }
 }

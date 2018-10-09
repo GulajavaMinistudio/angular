@@ -11,16 +11,17 @@ import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {getBodyNode} from '../../src/render/shared';
 import {TransitionAnimationEngine} from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 
-export function main() {
+(function() {
   const driver = new MockAnimationDriver();
 
   // these tests are only mean't to be run within the DOM
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('TransitionAnimationEngine', () => {
     let element: any;
@@ -34,8 +35,8 @@ export function main() {
     afterEach(() => { document.body.removeChild(element); });
 
     function makeEngine(normalizer?: AnimationStyleNormalizer) {
-      const engine =
-          new TransitionAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
+      const engine = new TransitionAnimationEngine(
+          getBodyNode(), driver, normalizer || new NoopAnimationStyleNormalizer());
       engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
       return engine;
     }
@@ -299,7 +300,8 @@ export function main() {
           phaseName: 'start',
           fromState: '123',
           toState: '456',
-          totalTime: 1234
+          totalTime: 1234,
+          disabled: false
         });
 
         capture = null !;
@@ -313,7 +315,8 @@ export function main() {
           phaseName: 'done',
           fromState: '123',
           toState: '456',
-          totalTime: 1234
+          totalTime: 1234,
+          disabled: false
         });
       });
     });
@@ -411,8 +414,10 @@ export function main() {
          () => {
            const engine = makeEngine();
            const trig = trigger('something', [
-             state('x', style({opacity: 0})), state('y', style({opacity: .5})),
-             state('z', style({opacity: 1})), transition('* => *', animate(1000))
+             state('x', style({opacity: 0})),
+             state('y', style({opacity: .5})),
+             state('z', style({opacity: 1})),
+             transition('* => *', animate(1000)),
            ]);
 
            registerTrigger(element, engine, trig);
@@ -428,7 +433,7 @@ export function main() {
 
            const player2 = engine.players[0];
 
-           expect(parseFloat(element.style.opacity)).toEqual(.5);
+           expect(parseFloat(element.style.opacity)).not.toEqual(.5);
 
            player2.finish();
            expect(parseFloat(element.style.opacity)).toEqual(1);
@@ -612,9 +617,33 @@ export function main() {
         expect(element.contains(child1)).toBe(true);
         expect(element.contains(child2)).toBe(true);
       });
+
+      it('should not throw an error if a missing namespace is used', () => {
+        const engine = makeEngine();
+        const ID = 'foo';
+        const TRIGGER = 'fooTrigger';
+        expect(() => { engine.trigger(ID, element, TRIGGER, 'something'); }).not.toThrow();
+      });
+
+      it('should still apply state-styling to an element even if it is not yet inserted into the DOM',
+         () => {
+           const engine = makeEngine();
+           const orphanElement = document.createElement('div');
+           orphanElement.classList.add('orphan');
+
+           registerTrigger(
+               orphanElement, engine, trigger('trig', [
+                 state('go', style({opacity: 0.5})), transition('* => go', animate(1000))
+               ]));
+
+           setProperty(orphanElement, engine, 'trig', 'go');
+           engine.flush();
+           expect(engine.players.length).toEqual(0);
+           expect(orphanElement.style.opacity).toEqual('0.5');
+         });
     });
   });
-}
+})();
 
 class SuffixNormalizer extends AnimationStyleNormalizer {
   constructor(private _suffix: string) { super(); }
@@ -655,8 +684,9 @@ function registerTrigger(
     element: any, engine: TransitionAnimationEngine, metadata: AnimationTriggerMetadata,
     id: string = DEFAULT_NAMESPACE_ID) {
   const errors: any[] = [];
+  const driver = new MockAnimationDriver();
   const name = metadata.name;
-  const ast = buildAnimationAst(metadata as AnimationMetadata, errors) as TriggerAst;
+  const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
   if (errors.length) {
   }
   const trigger = buildTrigger(name, ast);

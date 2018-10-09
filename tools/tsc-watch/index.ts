@@ -7,10 +7,9 @@
  */
 
 /* tslint:disable:no-console  */
-import {spawn} from 'child_process';
-import {existsSync, mkdirSync, writeFileSync} from 'fs';
+import {existsSync, mkdirSync} from 'fs';
 
-import {TSC, TscWatch, reportError} from './tsc_watch';
+import {TscWatch} from './tsc_watch';
 
 export * from './tsc_watch';
 import 'reflect-metadata';
@@ -29,20 +28,22 @@ function md(dir: string, folders: string[]) {
 let tscWatch: TscWatch = null;
 const platform = process.argv.length >= 3 ? process.argv[2] : null;
 const runMode: string = process.argv.length >= 4 ? process.argv[3] : null;
+const debugMode = process.argv.some(arg => arg === '--debug');
 const BaseConfig = {
   start: 'File change detected. Starting incremental compilation...',
-  error: 'error',
-  complete: 'Compilation complete. Watching for file changes.'
+  // This regex uses a negative lookbehind group (?<! 0 ), which causes it to not match a string
+  // containing " 0 error" but to match anything else containing "error". It requires the --harmony
+  // flag to run under node versions < 9.
+  error: /(?<! 0 )error/,
+  complete: 'Found 0 errors. Watching for file changes.',
 };
 
 if (platform == 'node') {
+  const specFiles = ['@angular/**/*_spec.js'];
   tscWatch = new TscWatch(Object.assign(
       {
         tsconfig: 'packages/tsconfig.json',
-        onChangeCmds: [[
-          'node', 'dist/tools/cjs-jasmine', '--', '@angular/**/*_spec.js',
-          '@angular/compiler-cli/test/**/*_spec.js', '@angular/benchpress/test/**/*_spec.js'
-        ]]
+        onChangeCmds: [createNodeTestCommand(specFiles, debugMode)]
       },
       BaseConfig));
 } else if (platform == 'browser') {
@@ -93,16 +94,6 @@ if (platform == 'node') {
         ]
       },
       BaseConfig));
-} else if (platform == 'tools') {
-  tscWatch = new TscWatch(Object.assign(
-      {
-        tsconfig: 'tools/tsconfig.json',
-        onChangeCmds: [[
-          'node', 'dist/tools/cjs-jasmine/index-tools', '--',
-          '@angular/tsc-wrapped/**/*{_,.}spec.js'
-        ]]
-      },
-      BaseConfig));
 } else {
   throw new Error(`unknown platform: ${platform}`);
 }
@@ -113,4 +104,11 @@ if (runMode === 'watch') {
   tscWatch.runCmdsOnly();
 } else {
   tscWatch.run();
+}
+
+function createNodeTestCommand(specFiles: string[], debugMode: boolean) {
+  return ['node']
+      .concat(debugMode ? ['--inspect'] : [])
+      .concat('dist/tools/cjs-jasmine', '--')
+      .concat(specFiles);
 }

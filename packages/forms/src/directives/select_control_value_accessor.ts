@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer2, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_VALUE_ACCESSOR: Provider = {
+export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectControlValueAccessor),
   multi: true
@@ -26,17 +27,18 @@ function _extractId(valueString: string): string {
 }
 
 /**
- * @whatItDoes Writes values and listens to changes on a select element.
+ * @description
  *
- * Used by {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName}
- * to keep the view synced with the {@link FormControl} model.
+ * Writes values and listens to changes on a select element.
  *
- * @howToUse
+ * Used by `NgModel`, `FormControlDirective`, and `FormControlName`
+ * to keep the view synced with the `FormControl` model.
  *
- * If you have imported the {@link FormsModule} or the {@link ReactiveFormsModule}, this
+ * If you have imported the `FormsModule` or the `ReactiveFormsModule`, this
  * value accessor will be active on any select control that has a form directive. You do
  * **not** need to add a special selector to activate it.
  *
+ * @usageNotes
  * ### How to use select controls with form directives
  *
  * To use a select in a template-driven form, simply add an `ngModel` and a `name`
@@ -65,7 +67,7 @@ function _extractId(valueString: string): string {
  * `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
  * If `compareWith` is given, Angular selects option by the return value of the function.
  *
- * #### Syntax
+ * ### Syntax
  *
  * ```
  * <select [compareWith]="compareFn"  [(ngModel)]="selectedCountries">
@@ -84,9 +86,8 @@ function _extractId(valueString: string): string {
  * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
  * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
  *
- * * **npm package**: `@angular/forms`
- *
- * @stable
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:
@@ -128,8 +129,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
-      this.value = valueString;
-      fn(this._getOptionValue(valueString));
+      this.value = this._getOptionValue(valueString);
+      fn(this.value);
     };
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
@@ -157,17 +158,19 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 }
 
 /**
- * @whatItDoes Marks `<option>` as dynamic, so Angular can be notified when options change.
+ * @description
  *
- * @howToUse
+ * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * See docs for {@link SelectControlValueAccessor} for usage examples.
+ * See docs for `SelectControlValueAccessor` for usage examples.
  *
- * @stable
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {
-  id: string;
+  // TODO(issue/24571): remove '!'.
+  id !: string;
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,

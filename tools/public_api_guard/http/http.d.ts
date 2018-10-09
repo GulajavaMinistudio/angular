@@ -1,38 +1,38 @@
-/** @experimental */
+/** @deprecated */
 export declare class BaseRequestOptions extends RequestOptions {
     constructor();
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class BaseResponseOptions extends ResponseOptions {
     constructor();
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class BrowserXhr {
     constructor();
     build(): any;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare abstract class Connection {
     readyState: ReadyState;
     request: Request;
     response: any;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare abstract class ConnectionBackend {
     abstract createConnection(request: any): Connection;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class CookieXSRFStrategy implements XSRFStrategy {
     constructor(_cookieName?: string, _headerName?: string);
     configureRequest(req: Request): void;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class Headers {
     constructor(headers?: Headers | {
         [name: string]: any;
@@ -53,7 +53,7 @@ export declare class Headers {
     static fromResponseHeaderString(headersString: string): Headers;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class Http {
     protected _backend: ConnectionBackend;
     protected _defaultOptions: RequestOptions;
@@ -68,49 +68,50 @@ export declare class Http {
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class HttpModule {
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class Jsonp extends Http {
     constructor(backend: ConnectionBackend, defaultOptions: RequestOptions);
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response>;
 }
 
-/** @experimental */
-export declare abstract class JSONPBackend extends ConnectionBackend {
+/** @deprecated */
+export declare class JSONPBackend extends ConnectionBackend {
+    createConnection(request: Request): JSONPConnection;
 }
 
-/** @experimental */
-export declare abstract class JSONPConnection implements Connection {
+/** @deprecated */
+export declare class JSONPConnection implements Connection {
     readyState: ReadyState;
     request: Request;
     response: Observable<Response>;
-    abstract finished(data?: any): void;
+    finished(data?: any): void;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class JsonpModule {
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class QueryEncoder {
-    encodeKey(k: string): string;
-    encodeValue(v: string): string;
+    encodeKey(key: string): string;
+    encodeValue(value: string): string;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare enum ReadyState {
     Unsent = 0,
     Open = 1,
     HeadersReceived = 2,
     Loading = 3,
     Done = 4,
-    Cancelled = 5,
+    Cancelled = 5
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class Request extends Body {
     headers: Headers;
     method: RequestMethod;
@@ -123,7 +124,7 @@ export declare class Request extends Body {
     getBody(): any;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare enum RequestMethod {
     Get = 0,
     Post = 1,
@@ -131,10 +132,10 @@ export declare enum RequestMethod {
     Delete = 3,
     Options = 4,
     Head = 5,
-    Patch = 6,
+    Patch = 6
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class RequestOptions {
     body: any;
     headers: Headers | null;
@@ -148,7 +149,7 @@ export declare class RequestOptions {
     merge(options?: RequestOptionsArgs): RequestOptions;
 }
 
-/** @experimental */
+/** @deprecated */
 export interface RequestOptionsArgs {
     body?: any;
     headers?: Headers | null;
@@ -164,7 +165,7 @@ export interface RequestOptionsArgs {
     withCredentials?: boolean | null;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class Response extends Body {
     bytesLoaded: number;
     headers: Headers | null;
@@ -178,15 +179,15 @@ export declare class Response extends Body {
     toString(): string;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare enum ResponseContentType {
     Text = 0,
     Json = 1,
     ArrayBuffer = 2,
-    Blob = 3,
+    Blob = 3
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class ResponseOptions {
     body: string | Object | ArrayBuffer | Blob | null;
     headers: Headers | null;
@@ -196,7 +197,7 @@ export declare class ResponseOptions {
     merge(options?: ResponseOptionsArgs): ResponseOptions;
 }
 
-/** @experimental */
+/** @deprecated */
 export interface ResponseOptionsArgs {
     body?: string | Object | FormData | ArrayBuffer | Blob | null;
     headers?: Headers | null;
@@ -206,16 +207,16 @@ export interface ResponseOptionsArgs {
     url?: string | null;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare enum ResponseType {
     Basic = 0,
     Cors = 1,
     Default = 2,
     Error = 3,
-    Opaque = 4,
+    Opaque = 4
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class URLSearchParams {
     paramsMap: Map<string, string[]>;
     rawParams: string;
@@ -233,25 +234,25 @@ export declare class URLSearchParams {
     toString(): string;
 }
 
-/** @stable */
+/** @deprecated */
 export declare const VERSION: Version;
 
-/** @experimental */
+/** @deprecated */
 export declare class XHRBackend implements ConnectionBackend {
     constructor(_browserXHR: BrowserXhr, _baseResponseOptions: ResponseOptions, _xsrfStrategy: XSRFStrategy);
     createConnection(request: Request): XHRConnection;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare class XHRConnection implements Connection {
     readyState: ReadyState;
     request: Request;
     response: Observable<Response>;
     constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions);
-    setDetectedContentType(req: any, _xhr: any): void;
+    setDetectedContentType(req: any /** TODO Request */, _xhr: any /** XMLHttpRequest */): void;
 }
 
-/** @experimental */
+/** @deprecated */
 export declare abstract class XSRFStrategy {
     abstract configureRequest(req: Request): void;
 }

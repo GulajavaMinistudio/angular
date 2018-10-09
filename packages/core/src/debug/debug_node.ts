@@ -9,24 +9,21 @@
 import {Injector} from '../di';
 import {DebugContext} from '../view/index';
 
-export class EventListener { constructor(public name: string, public callback: Function){}; }
+export class EventListener {
+  constructor(public name: string, public callback: Function) {}
+}
 
 /**
  * @experimental All debugging apis are currently experimental.
  */
 export class DebugNode {
-  nativeNode: any;
-  listeners: EventListener[];
-  parent: DebugElement|null;
+  listeners: EventListener[] = [];
+  parent: DebugElement|null = null;
 
-  constructor(nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
-    this.nativeNode = nativeNode;
+  constructor(public nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
     if (parent && parent instanceof DebugElement) {
       parent.addChild(this);
-    } else {
-      this.parent = null;
     }
-    this.listeners = [];
   }
 
   get injector(): Injector { return this._debugContext.injector; }
@@ -38,32 +35,22 @@ export class DebugNode {
   get references(): {[key: string]: any} { return this._debugContext.references; }
 
   get providerTokens(): any[] { return this._debugContext.providerTokens; }
-
-  /**
-   * @deprecated since v4
-   */
-  get source(): string { return 'Deprecated since v4'; }
 }
 
 /**
  * @experimental All debugging apis are currently experimental.
  */
 export class DebugElement extends DebugNode {
-  name: string;
-  properties: {[key: string]: any};
-  attributes: {[key: string]: string | null};
-  classes: {[key: string]: boolean};
-  styles: {[key: string]: string | null};
-  childNodes: DebugNode[];
+  name !: string;
+  properties: {[key: string]: any} = {};
+  attributes: {[key: string]: string | null} = {};
+  classes: {[key: string]: boolean} = {};
+  styles: {[key: string]: string | null} = {};
+  childNodes: DebugNode[] = [];
   nativeElement: any;
 
   constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
     super(nativeNode, parent, _debugContext);
-    this.properties = {};
-    this.attributes = {};
-    this.classes = {};
-    this.styles = {};
-    this.childNodes = [];
     this.nativeElement = nativeNode;
   }
 

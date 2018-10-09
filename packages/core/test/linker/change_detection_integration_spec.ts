@@ -6,18 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {DomElementSchemaRegistry, ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
+import {MockResourceLoader, MockSchemaRegistry} from '@angular/compiler/testing';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {DomElementSchemaRegistry} from '../../../compiler/index';
-import {MockSchemaRegistry} from '../../../compiler/testing/index';
+export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
+  return new UrlResolver();
+}
 
-export function main() {
+const TEST_COMPILER_PROVIDERS: Provider[] = [
+  {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
+  {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
+  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
+];
+
+
+(function() {
   let elSchema: MockSchemaRegistry;
   let renderLog: RenderLog;
   let directiveLog: DirectiveLog;
@@ -1144,16 +1152,23 @@ export function main() {
              ]);
            }));
       });
-
     });
 
     describe('enforce no new changes', () => {
       it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           const ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
-           ctx.componentInstance.a = 1;
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
+
+           const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+
+           ctx.componentInstance.b = 1;
 
            expect(() => ctx.checkNoChanges())
-               .toThrowError(/Expression has changed after it was checked./g);
+               .toThrowError(/Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
          }));
 
       it('should warn when the view has been created in a cd hook', fakeAsync(() => {
@@ -1295,8 +1310,10 @@ export function main() {
            @Component({template: '<ng-template #vc>{{name}}</ng-template>'})
            class Comp {
              name = 'Tom';
-             @ViewChild('vc', {read: ViewContainerRef}) vc: ViewContainerRef;
-             @ViewChild(TemplateRef) template: TemplateRef<any>;
+             // TODO(issue/24571): remove '!'.
+             @ViewChild('vc', {read: ViewContainerRef}) vc !: ViewContainerRef;
+             // TODO(issue/24571): remove '!'.
+             @ViewChild(TemplateRef) template !: TemplateRef<any>;
            }
 
            TestBed.configureTestingModule({declarations: [Comp]});
@@ -1336,8 +1353,9 @@ export function main() {
               `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`
         })
         class OuterComp {
+          // TODO(issue/24571): remove '!'.
           @ContentChild(TemplateRef)
-          tpl: TemplateRef<any>;
+          tpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`outer-${id}`); }
@@ -1349,11 +1367,13 @@ export function main() {
               `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`
         })
         class InnerComp {
+          // TODO(issue/24571): remove '!'.
           @ContentChild(TemplateRef)
-          tpl: TemplateRef<any>;
+          tpl !: TemplateRef<any>;
 
+          // TODO(issue/24571): remove '!'.
           @Input()
-          outerTpl: TemplateRef<any>;
+          outerTpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`inner-${id}`); }
@@ -1455,8 +1475,154 @@ export function main() {
         expect(divEl.nativeElement).toHaveCssClass('foo');
       });
     });
+
+    describe('lifecycle asserts', () => {
+      let logged: string[];
+
+      function log(value: string) { logged.push(value); }
+      function clearLog() { logged = []; }
+
+      function expectOnceAndOnlyOnce(log: string) {
+        expect(logged.indexOf(log) >= 0)
+            .toBeTruthy(`'${log}' not logged. Log was ${JSON.stringify(logged)}`);
+        expect(logged.lastIndexOf(log) === logged.indexOf(log))
+            .toBeTruthy(`'${log}' logged more than once. Log was ${JSON.stringify(logged)}`);
+      }
+
+      beforeEach(() => { clearLog(); });
+
+      enum LifetimeMethods {
+        None = 0,
+        ngOnInit = 1 << 0,
+        ngOnChanges = 1 << 1,
+        ngAfterViewInit = 1 << 2,
+        ngAfterContentInit = 1 << 3,
+        ngDoCheck = 1 << 4,
+        InitMethods = ngOnInit | ngAfterViewInit | ngAfterContentInit,
+        InitMethodsAndChanges = InitMethods | ngOnChanges,
+        All = InitMethodsAndChanges | ngDoCheck,
+      }
+
+      function forEachMethod(methods: LifetimeMethods, cb: (method: LifetimeMethods) => void) {
+        if (methods & LifetimeMethods.ngOnInit) cb(LifetimeMethods.ngOnInit);
+        if (methods & LifetimeMethods.ngOnChanges) cb(LifetimeMethods.ngOnChanges);
+        if (methods & LifetimeMethods.ngAfterContentInit) cb(LifetimeMethods.ngAfterContentInit);
+        if (methods & LifetimeMethods.ngAfterViewInit) cb(LifetimeMethods.ngAfterViewInit);
+        if (methods & LifetimeMethods.ngDoCheck) cb(LifetimeMethods.ngDoCheck);
+      }
+
+      interface Options {
+        childRecursion: LifetimeMethods;
+        childThrows: LifetimeMethods;
+      }
+
+      describe('calling init', () => {
+        function initialize(options: Options) {
+          @Component({selector: 'my-child', template: ''})
+          class MyChild {
+            private thrown = LifetimeMethods.None;
+
+            // TODO(issue/24571): remove '!'.
+            @Input() inp !: boolean;
+            @Output() outp = new EventEmitter<any>();
+
+            constructor() {}
+
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngOnChanges() { this.check(LifetimeMethods.ngOnChanges); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+
+            private check(method: LifetimeMethods) {
+              log(`MyChild::${LifetimeMethods[method]}()`);
+
+              if ((options.childRecursion & method) !== 0) {
+                if (logged.length < 20) {
+                  this.outp.emit(null);
+                } else {
+                  fail(`Unexpected MyChild::${LifetimeMethods[method]} recursion`);
+                }
+              }
+              if ((options.childThrows & method) !== 0) {
+                if ((this.thrown & method) === 0) {
+                  this.thrown |= method;
+                  log(`<THROW from MyChild::${LifetimeMethods[method]}>()`);
+                  throw new Error(`Throw from MyChild::${LifetimeMethods[method]}`);
+                }
+              }
+            }
+          }
+
+          @Component({
+            selector: 'my-component',
+            template: `<my-child [inp]='true' (outp)='onOutp()'></my-child>`
+          })
+          class MyComponent {
+            constructor(private changeDetectionRef: ChangeDetectorRef) {}
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+            onOutp() {
+              log('<RECURSION START>');
+              this.changeDetectionRef.detectChanges();
+              log('<RECURSION DONE>');
+            }
+
+            private check(method: LifetimeMethods) {
+              log(`MyComponent::${LifetimeMethods[method]}()`);
+            }
+          }
+
+          TestBed.configureTestingModule({declarations: [MyChild, MyComponent]});
+
+          return createCompFixture(`<my-component></my-component>`);
+        }
+
+        function ensureOneInit(options: Options) {
+          const ctx = initialize(options);
+
+
+          const throws = options.childThrows != LifetimeMethods.None;
+          if (throws) {
+            log(`<CYCLE 0 START>`);
+            expect(() => {
+              // Expect child to throw.
+              ctx.detectChanges();
+            }).toThrow();
+            log(`<CYCLE 0 END>`);
+            log(`<CYCLE 1 START>`);
+          }
+          ctx.detectChanges();
+          if (throws) log(`<CYCLE 1 DONE>`);
+          expectOnceAndOnlyOnce('MyComponent::ngOnInit()');
+          expectOnceAndOnlyOnce('MyChild::ngOnInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterContentInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterContentInit()');
+        }
+
+        forEachMethod(LifetimeMethods.InitMethodsAndChanges, method => {
+          it(`should ensure that init hooks are called once an only once with recursion in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               ensureOneInit({childRecursion: method, childThrows: LifetimeMethods.None});
+             });
+        });
+        forEachMethod(LifetimeMethods.All, method => {
+          it(`should ensure that init hooks are called once an only once with a throw in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               // the first cycle throws but the next cycle should complete the inits.
+               ensureOneInit({childRecursion: LifetimeMethods.None, childThrows: method});
+             });
+        });
+      });
+    });
   });
-}
+})();
 
 @Injectable()
 class RenderLog {
@@ -1531,13 +1697,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state++}`; }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})
@@ -1633,13 +1799,16 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
-  changes: SimpleChanges;
+  // TODO(issue/24571): remove '!'.
+  changes !: SimpleChanges;
   event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
-  @Input('testDirective') name: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('testDirective') name !: string;
 
-  @Input() throwOn: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() throwOn !: string;
 
   constructor(public log: DirectiveLog) {}
 
@@ -1715,7 +1884,8 @@ class OnDestroyDirective implements OnDestroy {
 
 @Directive({selector: '[orderCheck0]'})
 class OrderCheckDirective0 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck0')
   set name(value: string) {
@@ -1728,7 +1898,8 @@ class OrderCheckDirective0 {
 
 @Directive({selector: '[orderCheck1]'})
 class OrderCheckDirective1 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck1')
   set name(value: string) {
@@ -1741,7 +1912,8 @@ class OrderCheckDirective1 {
 
 @Directive({selector: '[orderCheck2]'})
 class OrderCheckDirective2 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck2')
   set name(value: string) {
@@ -1763,12 +1935,15 @@ class TestLocals {
   }
 }
 
-@Component({selector: 'root', template: 'emtpy'})
+@Component({selector: 'root', template: 'empty'})
 class Person {
-  age: number;
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  age !: number;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   address: Address|null = null;
-  phones: number[];
+  // TODO(issue/24571): remove '!'.
+  phones !: number[];
 
   init(name: string, address: Address|null = null) {
     this.name = name;
@@ -1816,18 +1991,21 @@ class Uninitialized {
 
 @Component({selector: 'root', template: 'empty'})
 class TestData {
-  public a: any;
+  a: any;
+  b: any;
 }
 
 @Component({selector: 'root', template: 'empty'})
 class TestDataWithGetter {
-  public fn: Function;
+  // TODO(issue/24571): remove '!'.
+  public fn !: Function;
 
   get a() { return this.fn(); }
 }
 
 class Holder<T> {
-  value: T;
+  // TODO(issue/24571): remove '!'.
+  value !: T;
 }
 
 @Component({selector: 'root', template: 'empty'})

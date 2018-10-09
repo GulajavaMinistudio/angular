@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ReflectiveInjector} from '@angular/core';
+import {Injector, StaticProvider} from '@angular/core';
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index';
 
-export function main() {
+(function() {
   let wdAdapter: MockDriverAdapter;
 
   function createMetric(
@@ -25,12 +25,12 @@ export function main() {
       userMetrics = {};
     }
     wdAdapter = new MockDriverAdapter();
-    const providers: Provider[] = [
+    const providers: StaticProvider[] = [
       Options.DEFAULT_PROVIDERS, UserMetric.PROVIDERS,
       {provide: Options.USER_METRICS, useValue: userMetrics},
       {provide: WebDriverAdapter, useValue: wdAdapter}
     ];
-    return ReflectiveInjector.resolveAndCreate(providers).get(UserMetric);
+    return Injector.create(providers).get(UserMetric);
   }
 
   describe('user metric', () => {
@@ -48,13 +48,11 @@ export function main() {
            const metric = createMetric(
                [[]], new PerfLogFeatures(),
                {userMetrics: {'loadTime': 'time to load', 'content': 'time to see content'}});
-           metric.beginMeasure()
-               .then((_) => metric.endMeasure(true))
-               .then((values: {[key: string]: string}) => {
-                 expect(values['loadTime']).toBe(25);
-                 expect(values['content']).toBe(250);
-                 async.done();
-               });
+           metric.beginMeasure().then(() => metric.endMeasure(true)).then(values => {
+             expect(values['loadTime']).toBe(25);
+             expect(values['content']).toBe(250);
+             async.done();
+           });
 
            wdAdapter.data['loadTime'] = 25;
            // Wait before setting 2nd property.
@@ -63,7 +61,7 @@ export function main() {
          }), 600);
     });
   });
-}
+})();
 
 class MockDriverAdapter extends WebDriverAdapter {
   data: any = {};

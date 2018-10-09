@@ -12,7 +12,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from '../shared';
+import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
@@ -23,23 +23,25 @@ export const formDirectiveProvider: any = {
 };
 
 /**
- * @whatItDoes Binds an existing {@link FormGroup} to a DOM element.
+ * @description
  *
- * @howToUse
+ * Binds an existing `FormGroup` to a DOM element.
  *
- * This directive accepts an existing {@link FormGroup} instance. It will then use this
- * {@link FormGroup} instance to match any child {@link FormControl}, {@link FormGroup},
- * and {@link FormArray} instances to child {@link FormControlName}, {@link FormGroupName},
- * and {@link FormArrayName} directives.
+ * This directive accepts an existing `FormGroup` instance. It will then use this
+ * `FormGroup` instance to match any child `FormControl`, `FormGroup`,
+ * and `FormArray` instances to child `FormControlName`, `FormGroupName`,
+ * and `FormArrayName` directives.
  *
+ * @usageNotes
  * **Set value**: You can set the form's initial value when instantiating the
- * {@link FormGroup}, or you can set it programmatically later using the {@link FormGroup}'s
- * {@link AbstractControl#setValue} or {@link AbstractControl#patchValue} methods.
+ * `FormGroup`, or you can set it programmatically later using the `FormGroup`'s
+ * {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}
+ * methods.
  *
  * **Listen to value**: If you want to listen to changes in the value of the form, you can subscribe
- * to the {@link FormGroup}'s {@link AbstractControl#valueChanges} event.  You can also listen to
- * its {@link AbstractControl#statusChanges} event to be notified when the validation status is
- * re-calculated.
+ * to the `FormGroup`'s {@link AbstractControl#valueChanges valueChanges} event.  You can also
+ * listen to its {@link AbstractControl#statusChanges statusChanges} event to be notified when the
+ * validation status is re-calculated.
  *
  * Furthermore, you can listen to the directive's `ngSubmit` event to be notified when the user has
  * triggered a form submission. The `ngSubmit` event will be emitted with the original form
@@ -51,11 +53,7 @@ export const formDirectiveProvider: any = {
  *
  * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
  *
- * **npm package**: `@angular/forms`
- *
- * **NgModule**: {@link ReactiveFormsModule}
- *
- *  @stable
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector: '[formGroup]',
@@ -65,8 +63,10 @@ export const formDirectiveProvider: any = {
 })
 export class FormGroupDirective extends ControlContainer implements Form,
     OnChanges {
-  private _submitted: boolean = false;
-  private _oldForm: FormGroup;
+  public readonly submitted: boolean = false;
+
+  // TODO(issue/24571): remove '!'.
+  private _oldForm !: FormGroup;
   directives: FormControlName[] = [];
 
   @Input('formGroup') form: FormGroup = null !;
@@ -87,8 +87,6 @@ export class FormGroupDirective extends ControlContainer implements Form,
     }
   }
 
-  get submitted(): boolean { return this._submitted; }
-
   get formDirective(): Form { return this; }
 
   get control(): FormGroup { return this.form; }
@@ -105,7 +103,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
 
-  removeControl(dir: FormControlName): void { remove(this.directives, dir); }
+  removeControl(dir: FormControlName): void { removeDir<FormControlName>(this.directives, dir); }
 
   addFormGroup(dir: FormGroupName): void {
     const ctrl: any = this.form.get(dir.path);
@@ -133,7 +131,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
   }
 
   onSubmit($event: Event): boolean {
-    this._submitted = true;
+    (this as{submitted: boolean}).submitted = true;
+    syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
     return false;
   }
@@ -142,17 +141,18 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    this._submitted = false;
+    (this as{submitted: boolean}).submitted = false;
   }
+
 
   /** @internal */
   _updateDomValue() {
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
-      if (dir._control !== newCtrl) {
-        cleanUpControl(dir._control, dir);
+      if (dir.control !== newCtrl) {
+        cleanUpControl(dir.control, dir);
         if (newCtrl) setUpControl(newCtrl, dir);
-        dir._control = newCtrl;
+        (dir as{control: FormControl}).control = newCtrl;
       }
     });
 
@@ -177,12 +177,5 @@ export class FormGroupDirective extends ControlContainer implements Form,
     if (!this.form) {
       ReactiveErrors.missingFormException();
     }
-  }
-}
-
-function remove<T>(list: T[], el: T): void {
-  const index = list.indexOf(el);
-  if (index > -1) {
-    list.splice(index, 1);
   }
 }

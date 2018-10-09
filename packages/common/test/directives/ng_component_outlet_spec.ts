@@ -8,11 +8,11 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, StaticProvider, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, async, fakeAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('insert/remove', () => {
 
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
@@ -96,7 +96,7 @@ export function main() {
 
          const uniqueValue = {};
          fixture.componentInstance.currentComponent = InjectedComponent;
-         fixture.componentInstance.injector = ReflectiveInjector.resolveAndCreate(
+         fixture.componentInstance.injector = Injector.create(
              [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
          fixture.detectChanges();
@@ -166,12 +166,12 @@ export function main() {
          fixture.componentInstance.currentComponent = Module2InjectedComponent;
          fixture.detectChanges();
 
-         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
          spyOn(moduleRef, 'destroy').and.callThrough();
 
-         expect(moduleRef !.destroy).not.toHaveBeenCalled();
+         expect(moduleRef.destroy).not.toHaveBeenCalled();
          fixture.destroy();
-         expect(moduleRef !.destroy).toHaveBeenCalled();
+         expect(moduleRef.destroy).toHaveBeenCalled();
        }));
 
     it('should not re-create moduleRef when it didn\'t actually change', async(() => {
@@ -224,16 +224,22 @@ const TEST_CMP_TEMPLATE =
     `<ng-template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></ng-template>`;
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
-  currentComponent: Type<any>|null;
-  injector: Injector;
-  projectables: any[][];
-  module: NgModuleFactory<any>;
+  // TODO(issue/24571): remove '!'.
+  currentComponent !: Type<any>| null;
+  // TODO(issue/24571): remove '!'.
+  injector !: Injector;
+  // TODO(issue/24571): remove '!'.
+  projectables !: any[][];
+  // TODO(issue/24571): remove '!'.
+  module !: NgModuleFactory<any>;
 
   get cmpRef(): ComponentRef<any>|null { return this.ngComponentOutlet['_componentRef']; }
   set cmpRef(value: ComponentRef<any>|null) { this.ngComponentOutlet['_componentRef'] = value; }
 
-  @ViewChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
-  @ViewChild(NgComponentOutlet) ngComponentOutlet: NgComponentOutlet;
+  // TODO(issue/24571): remove '!'.
+  @ViewChildren(TemplateRef) tplRefs !: QueryList<TemplateRef<any>>;
+  // TODO(issue/24571): remove '!'.
+  @ViewChild(NgComponentOutlet) ngComponentOutlet !: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
 }

@@ -10,7 +10,8 @@ import {HttpHeaders} from '../src/headers';
 import {XhrFactory} from '../src/xhr';
 
 export class MockXhrFactory implements XhrFactory {
-  mock: MockXMLHttpRequest;
+  // TODO(issue/24571): remove '!'.
+  mock !: MockXMLHttpRequest;
 
   build(): XMLHttpRequest { return (this.mock = new MockXMLHttpRequest()) as any; }
 }
@@ -30,8 +31,10 @@ export class MockXMLHttpRequestUpload {
 export class MockXMLHttpRequest {
   // Set by method calls.
   body: any;
-  method: string;
-  url: string;
+  // TODO(issue/24571): remove '!'.
+  method !: string;
+  // TODO(issue/24571): remove '!'.
+  url !: string;
   mockHeaders: {[key: string]: string} = {};
   mockAborted: boolean = false;
 
@@ -79,8 +82,8 @@ export class MockXMLHttpRequest {
     return new HttpHeaders(this.mockResponseHeaders).get(header);
   }
 
-  mockFlush(status: number, statusText: string, body: any|null) {
-    if (this.responseType === 'text') {
+  mockFlush(status: number, statusText: string, body?: string) {
+    if (typeof body === 'string') {
       this.responseText = body;
     } else {
       this.response = body;

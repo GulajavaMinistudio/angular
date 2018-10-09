@@ -20,14 +20,14 @@ fi
 if [[ $TRAVIS_BRANCH == master ]]; then
   readonly deployEnv=next
 elif [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]; then
-    readonly deployEnv=stable
+  readonly deployEnv=stable
 else
   # Extract the major versions from the branches, e.g. the 4 from 4.3.x
   readonly majorVersion=${TRAVIS_BRANCH%%.*}
   readonly majorVersionStable=${STABLE_BRANCH%%.*}
 
   # Do not deploy if the major version is not less than the stable branch major version
-  if [[ $majorVersion -ge $majorVersionStable ]]; then
+  if [[ !( "$majorVersion" < "$majorVersionStable" ) ]]; then
     echo "Skipping deploy of branch \"${TRAVIS_BRANCH}\" to firebase."
     echo "We only deploy archive branches with the major version less than the stable branch: \"${STABLE_BRANCH}\""
     exit 0
@@ -67,7 +67,7 @@ case $deployEnv in
     readonly firebaseToken=$FIREBASE_TOKEN
     ;;
   archive)
-    readonly projectId=angular-io-${majorVersion}
+    readonly projectId=v${majorVersion}-angular-io
     readonly deployedUrl=https://v${majorVersion}.angular.io/
     readonly firebaseToken=$FIREBASE_TOKEN
     ;;
@@ -78,7 +78,7 @@ echo "Build/deploy mode : $deployEnv"
 echo "Firebase project  : $projectId"
 echo "Deployment URL    : $deployedUrl"
 
-if [[ $1 == "--dry-run" ]]; then
+if [[ ${1:-} == "--dry-run" ]]; then
   exit 0
 fi
 
@@ -87,10 +87,14 @@ fi
   cd "`dirname $0`/.."
 
   # Build the app
-  yarn build -- --env=$deployEnv
+  yarn build-for $deployEnv
 
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
+
+  # Set deployedUrl as parameter in the opensearch description
+  # deployedUrl must end with /
+  yarn set-opensearch-url $deployedUrl
 
   # Check payload size
   yarn payload-size
@@ -100,5 +104,5 @@ fi
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
-  yarn test-pwa-score -- "$deployedUrl" "$MIN_PWA_SCORE"
+  yarn test-pwa-score "$deployedUrl" "$AIO_MIN_PWA_SCORE"
 )

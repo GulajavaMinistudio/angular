@@ -2,22 +2,28 @@ var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('mergeDecoratorDocs processor', () => {
-  var dgeni, injector, processor, moduleDoc, decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc;
+  let processor, moduleDoc, decoratorDoc, metadataDoc, otherDoc;
 
   beforeEach(() => {
-    dgeni = new Dgeni([testPackage('angular-api-package')]);
-    injector = dgeni.configureInjector();
+    const dgeni = new Dgeni([testPackage('angular-api-package')]);
+    const injector = dgeni.configureInjector();
     processor = injector.get('mergeDecoratorDocs');
+
+    // Note that we do not include usageNotes in the tests.
+    processor.propertiesToMerge = ['description', 'shortDescription'];
 
     moduleDoc = {};
 
     decoratorDoc = {
       name: 'Component',
       docType: 'const',
-      description: 'A description of the metadata for the Component decorator',
-      declaration: {initializer: {expression: {text: 'makeDecorator'}, arguments: [{text: 'X'}]}},
+      shortDescription: 'decorator - short description',
+      description: 'decorator - description',
+      symbol: {
+        valueDeclaration: { initializer: { expression: { text: 'makeDecorator' }, arguments: [{ text: 'X' }] } }
+      },
       members: [
-        { name: 'templateUrl', description: 'A description of the templateUrl property' }
+        { name: 'templateUrl', description: 'templateUrl - description' }
       ],
       moduleDoc
     };
@@ -25,60 +31,61 @@ describe('mergeDecoratorDocs processor', () => {
     metadataDoc = {
       name: 'ComponentDecorator',
       docType: 'interface',
-      description: 'A description of the interface for the call signature for the Component decorator',
+      description: 'call interface - description',
       members: [
         {
           isCallMember: true,
-          description: 'The actual description of the call signature',
-          whatItDoes: 'Does something cool...',
-          howToUse: 'Use it like this...'
+          description: 'call interface - call member - description',
+          usageNotes: 'call interface - call member - usageNotes',
         },
         {
-          description: 'Some other member'
+          description: 'call interface - non call member - description'
         }
       ],
       moduleDoc
     };
 
-    decoratorDocWithTypeAssertion = {
-      name: 'Y',
-      docType: 'const',
-      declaration: { initializer: { expression: {type: {}, expression: {text: 'makeDecorator'}, arguments: [{text: 'Y'}]} } },
-      moduleDoc
-    };
     otherDoc = {
       name: 'Y',
       docType: 'const',
-      declaration: {initializer: {expression: {text: 'otherCall'}, arguments: [{text: 'param1'}]}},
+      symbol: {
+        valueDeclaration: { initializer: { expression: { text: 'otherCall' }, arguments: [{ text: 'param1' }] } }
+      },
       moduleDoc
     };
 
-    moduleDoc.exports = [decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc];
+    moduleDoc.exports = [decoratorDoc, metadataDoc, otherDoc];
   });
 
 
-  it('should change the docType of only the docs that are initialied by a call to makeDecorator', () => {
-    processor.$process([decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc]);
+  it('should change the docType of only the docs that are initialized by a call to makeDecorator', () => {
+    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
     expect(decoratorDoc.docType).toEqual('decorator');
-    expect(decoratorDocWithTypeAssertion.docType).toEqual('decorator');
     expect(otherDoc.docType).toEqual('const');
   });
 
   it('should extract the "type" of the decorator meta data', () => {
-    processor.$process([decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc]);
+    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
     expect(decoratorDoc.decoratorType).toEqual('X');
-    expect(decoratorDocWithTypeAssertion.decoratorType).toEqual('Y');
   });
 
-  it('should copy across properties from the call signature doc', () => {
-    processor.$process([decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc]);
-    expect(decoratorDoc.description).toEqual('The actual description of the call signature');
-    expect(decoratorDoc.whatItDoes).toEqual('Does something cool...');
-    expect(decoratorDoc.howToUse).toEqual('Use it like this...');
+  it('should copy across specified properties from the call signature doc', () => {
+    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
+    expect(decoratorDoc.description).toEqual('call interface - call member - description');
+    // Since usageNotes is not in `propertiesToMerge` it will not get copied over in these tests.
+    expect(decoratorDoc.usageNotes).toBeUndefined();
+    // Since `shortDescription` does not exist on the call-member this will not get overridden.
+    expect(decoratorDoc.shortDescription).toEqual('decorator - short description');
   });
 
   it('should remove the metadataDoc from the module exports', () => {
-    processor.$process([decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc]);
+    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
     expect(moduleDoc.exports).not.toContain(metadataDoc);
+  });
+
+  it('should cope with decorators that have type params', () => {
+    decoratorDoc.symbol.valueDeclaration.initializer.expression.type = {};
+    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
+    expect(decoratorDoc.docType).toEqual('decorator');
   });
 });

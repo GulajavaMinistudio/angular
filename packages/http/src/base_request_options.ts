@@ -37,7 +37,7 @@ import {URLSearchParams} from './url_search_params';
  * console.log('options.url:', options.url); // https://google.com
  * ```
  *
- * @experimental
+ * @deprecated see https://angular.io/guide/http
  */
 export class RequestOptions {
   /**
@@ -200,7 +200,7 @@ export class RequestOptions {
  * console.log('req.url:', req.url); // https://google.com
  * ```
  *
- * @experimental
+ * @deprecated see https://angular.io/guide/http
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {

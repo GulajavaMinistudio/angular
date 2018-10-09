@@ -1,12 +1,10 @@
 language: node_js
 sudo: false
-# force trusty as Google Chrome addon is not supported on Precise
 dist: trusty
 node_js:
-  - '6.9.5'
+  - '10.9.0'
 
 addons:
-  chrome: stable
 #  firefox: "38.0"
   apt:
     sources:
@@ -15,11 +13,7 @@ addons:
     packages:
       # needed to install g++ that is used by npms's native modules
       - g++-4.8
-  # https://docs.travis-ci.com/user/jwt
-  jwt:
-    # SAUCE_ACCESS_KEY<=secret for NGBUILDS_IO_KEY to work around travis-ci/travis-ci#7223, unencrypted value in valentine as NGBUILDS_IO_KEY>
-    # we alias NGBUILDS_IO_KEY to $SAUCE_ACCESS_KEY in env.sh and set the SAUCE_ACCESS_KEY there
-    - secure: "L7nrZwkAtFtYrP2DykPXgZvEKjkv0J/TwQ/r2QGxFTaBq4VZn+2Dw0YS7uCxoMqYzDwH0aAOqxoutibVpk8Z/16nE3tNmU5RzltMd6Xmt3qU2f/JDQLMo6PSlBodnjOUsDHJgmtrcbjhqrx/znA237BkNUu6UZRT7mxhXIZpn0U="
+
 branches:
   except:
     - g3
@@ -47,17 +41,17 @@ env:
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - CI_MODE=e2e
-    - CI_MODE=e2e_2
     - CI_MODE=js
     - CI_MODE=saucelabs_required
-    - CI_MODE=browserstack_required
+    # deactivated, see #19768
+    # - CI_MODE=browserstack_required
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
     - CI_MODE=aio_tools_test
     - CI_MODE=aio
+    - CI_MODE=aio_local
     - CI_MODE=aio_e2e AIO_SHARD=0
     - CI_MODE=aio_e2e AIO_SHARD=1
-    - CI_MODE=bazel
 
 matrix:
   fast_finish: true

@@ -13,6 +13,7 @@
  * The only known difference between this `Headers` implementation and the spec is the
  * lack of an `entries` method.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -32,7 +33,7 @@
  * console.log(thirdHeaders.get('X-My-Custom-Header')); //'Angular'
  * ```
  *
- * @experimental
+ * @deprecated see https://angular.io/guide/http
  */
 export class Headers {
   /** @internal header names are lower case */

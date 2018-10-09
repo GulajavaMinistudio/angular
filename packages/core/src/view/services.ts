@@ -6,21 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
+import {InjectableDef, getInjectableDef} from '../di/defs';
+import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
+import {isDevMode} from '../is_dev_mode';
+import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer} from '../security';
+import {Sanitizer} from '../sanitization/security';
 import {Type} from '../type';
+import {tokenKey} from '../view/util';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
-import {createInjector, createNgModuleRef} from './refs';
-import {ArgumentType, BindingFlags, CheckType, DebugContext, DepDef, ElementData, NgModuleDefinition, NgModuleProviderDef, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
-import {NOOP, isComponentView, renderNode, splitDepsDsl, viewParentEl} from './util';
+import {createInjector, createNgModuleRef, getComponentViewDefinitionFactory} from './refs';
+import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NgModuleDefinition, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
+import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createComponentView, createEmbeddedView, createRootView, destroyView} from './view';
 
 
@@ -38,7 +42,8 @@ export function initServicesIfNeeded() {
   Services.createComponentView = services.createComponentView;
   Services.createNgModuleRef = services.createNgModuleRef;
   Services.overrideProvider = services.overrideProvider;
-  Services.clearProviderOverrides = services.clearProviderOverrides;
+  Services.overrideComponentView = services.overrideComponentView;
+  Services.clearOverrides = services.clearOverrides;
   Services.checkAndUpdateView = services.checkAndUpdateView;
   Services.checkNoChangesView = services.checkNoChangesView;
   Services.destroyView = services.destroyView;
@@ -58,7 +63,8 @@ function createProdServices() {
     createComponentView: createComponentView,
     createNgModuleRef: createNgModuleRef,
     overrideProvider: NOOP,
-    clearProviderOverrides: NOOP,
+    overrideComponentView: NOOP,
+    clearOverrides: NOOP,
     checkAndUpdateView: checkAndUpdateView,
     checkNoChangesView: checkNoChangesView,
     destroyView: destroyView,
@@ -84,7 +90,8 @@ function createDebugServices() {
     createComponentView: debugCreateComponentView,
     createNgModuleRef: debugCreateNgModuleRef,
     overrideProvider: debugOverrideProvider,
-    clearProviderOverrides: debugClearProviderOverrides,
+    overrideComponentView: debugOverrideComponentView,
+    clearOverrides: debugClearOverrides,
     checkAndUpdateView: debugCheckAndUpdateView,
     checkNoChangesView: debugCheckNoChangesView,
     destroyView: debugDestroyView,
@@ -139,10 +146,15 @@ function debugCreateEmbeddedView(
 
 function debugCreateComponentView(
     parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData {
-  const defWithOverride = applyProviderOverridesToView(viewDef);
+  const overrideComponentView =
+      viewDefOverrides.get(nodeDef.element !.componentProvider !.provider !.token);
+  if (overrideComponentView) {
+    viewDef = overrideComponentView;
+  } else {
+    viewDef = applyProviderOverridesToView(viewDef);
+  }
   return callWithDebugContext(
-      DebugAction.create, createComponentView, null,
-      [parentView, nodeDef, defWithOverride, hostElement]);
+      DebugAction.create, createComponentView, null, [parentView, nodeDef, viewDef, hostElement]);
 }
 
 function debugCreateNgModuleRef(
@@ -153,13 +165,28 @@ function debugCreateNgModuleRef(
 }
 
 const providerOverrides = new Map<any, ProviderOverride>();
+const providerOverridesWithScope = new Map<InjectableType<any>, ProviderOverride>();
+const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
+  let injectableDef: InjectableDef<any>|null;
+  if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
+      typeof injectableDef.providedIn === 'function') {
+    providerOverridesWithScope.set(override.token as InjectableType<any>, override);
+  }
 }
 
-function debugClearProviderOverrides() {
+function debugOverrideComponentView(comp: any, compFactory: ComponentFactory<any>) {
+  const hostViewDef = resolveDefinition(getComponentViewDefinitionFactory(compFactory));
+  const compViewDef = resolveDefinition(hostViewDef.nodes[0].element !.componentView !);
+  viewDefOverrides.set(comp, compViewDef);
+}
+
+function debugClearOverrides() {
   providerOverrides.clear();
+  providerOverridesWithScope.clear();
+  viewDefOverrides.clear();
 }
 
 // Notes about the algorithm:
@@ -194,7 +221,7 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
       }
       if (lastElementDef && nodeDef.flags & NodeFlags.CatProviderNoDirective &&
           providerOverrides.has(nodeDef.provider !.token)) {
-        elIndicesWithOverwrittenProviders.push(lastElementDef !.index);
+        elIndicesWithOverwrittenProviders.push(lastElementDef !.nodeIndex);
         lastElementDef = null;
       }
     }
@@ -209,9 +236,6 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
         return;
       }
       if (nodeDef.flags & NodeFlags.CatProviderNoDirective) {
-        // Make all providers lazy, so that we don't get into trouble
-        // with ordering problems of providers on the same element
-        nodeDef.flags |= NodeFlags.LazyProvider;
         const provider = nodeDef.provider !;
         const override = providerOverrides.get(provider.token);
         if (override) {
@@ -228,7 +252,8 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
 // We only create new datastructures if we need to, to keep perf impact
 // reasonable.
 function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefinition {
-  if (providerOverrides.size === 0 || !hasOverrrides(def)) {
+  const {hasOverrides, hasDeprecatedOverrides} = calcHasOverrides(def);
+  if (!hasOverrides) {
     return def;
   }
   // clone the whole view definition,
@@ -237,18 +262,40 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
   applyProviderOverrides(def);
   return def;
 
-  function hasOverrrides(def: NgModuleDefinition): boolean {
-    return def.providers.some(
-        node =>
-            !!(node.flags & NodeFlags.CatProviderNoDirective) && providerOverrides.has(node.token));
+  function calcHasOverrides(def: NgModuleDefinition):
+      {hasOverrides: boolean, hasDeprecatedOverrides: boolean} {
+    let hasOverrides = false;
+    let hasDeprecatedOverrides = false;
+    if (providerOverrides.size === 0) {
+      return {hasOverrides, hasDeprecatedOverrides};
+    }
+    def.providers.forEach(node => {
+      const override = providerOverrides.get(node.token);
+      if ((node.flags & NodeFlags.CatProviderNoDirective) && override) {
+        hasOverrides = true;
+        hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
+      }
+    });
+    def.modules.forEach(module => {
+      providerOverridesWithScope.forEach((override, token) => {
+        if (getInjectableDef(token) !.providedIn === module) {
+          hasOverrides = true;
+          hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
+        }
+      });
+    });
+    return {hasOverrides, hasDeprecatedOverrides};
   }
 
   function applyProviderOverrides(def: NgModuleDefinition) {
     for (let i = 0; i < def.providers.length; i++) {
       const provider = def.providers[i];
-      // Make all providers lazy, so that we don't get into trouble
-      // with ordering problems of providers on the same element
-      provider.flags |= NodeFlags.LazyProvider;
+      if (hasDeprecatedOverrides) {
+        // We had a bug where me made
+        // all providers lazy. Keep this logic behind a flag
+        // for migrating existing users.
+        provider.flags |= NodeFlags.LazyProvider;
+      }
       const override = providerOverrides.get(provider.token);
       if (override) {
         provider.flags = (provider.flags & ~NodeFlags.CatProviderNoDirective) | override.flags;
@@ -256,26 +303,43 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
         provider.value = override.value;
       }
     }
+    if (providerOverridesWithScope.size > 0) {
+      let moduleSet = new Set<any>(def.modules);
+      providerOverridesWithScope.forEach((override, token) => {
+        if (moduleSet.has(getInjectableDef(token) !.providedIn)) {
+          let provider = {
+            token: token,
+            flags:
+                override.flags | (hasDeprecatedOverrides ? NodeFlags.LazyProvider : NodeFlags.None),
+            deps: splitDepsDsl(override.deps),
+            value: override.value,
+            index: def.providers.length,
+          };
+          def.providers.push(provider);
+          def.providersByKey[tokenKey(token)] = provider;
+        }
+      });
+    }
   }
 }
 
 function prodCheckAndUpdateNode(
-    view: ViewData, nodeIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
+    view: ViewData, checkIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
     v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
-  const nodeDef = view.def.nodes[nodeIndex];
+  const nodeDef = view.def.nodes[checkIndex];
   checkAndUpdateNode(view, nodeDef, argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
   return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-      asPureExpressionData(view, nodeIndex).value :
+      asPureExpressionData(view, checkIndex).value :
       undefined;
 }
 
 function prodCheckNoChangesNode(
-    view: ViewData, nodeIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
+    view: ViewData, checkIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
     v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
-  const nodeDef = view.def.nodes[nodeIndex];
+  const nodeDef = view.def.nodes[checkIndex];
   checkNoChangesNode(view, nodeDef, argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
   return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-      asPureExpressionData(view, nodeIndex).value :
+      asPureExpressionData(view, checkIndex).value :
       undefined;
 }
 
@@ -333,7 +397,7 @@ function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
       debugSetCurrentNode(view, nextDirectiveWithBinding(view, nodeIndex));
     }
     return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-        asPureExpressionData(view, nodeDef.index).value :
+        asPureExpressionData(view, nodeDef.nodeIndex).value :
         undefined;
   }
 }
@@ -357,7 +421,7 @@ function debugUpdateRenderer(view: ViewData, checkType: CheckType) {
       debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
     }
     return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-        asPureExpressionData(view, nodeDef.index).value :
+        asPureExpressionData(view, nodeDef.nodeIndex).value :
         undefined;
   }
 }
@@ -378,7 +442,7 @@ function debugCheckAndUpdateNode(
         }
       }
       const elDef = nodeDef.parent !;
-      const el = asElementData(view, elDef.index).renderElement;
+      const el = asElementData(view, elDef.nodeIndex).renderElement;
       if (!elDef.element !.name) {
         // a comment.
         view.renderer.setValue(el, `bindings=${JSON.stringify(bindingValues, null, 2)}`);
@@ -447,6 +511,7 @@ class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elView: ViewData;
   private elDef: NodeDef;
+
   constructor(public view: ViewData, public nodeIndex: number|null) {
     if (nodeIndex == null) {
       this.nodeIndex = nodeIndex = 0;
@@ -466,17 +531,23 @@ class DebugContext_ implements DebugContext {
     this.elDef = elDef;
     this.elView = elView;
   }
+
   private get elOrCompView() {
     // Has to be done lazily as we use the DebugContext also during creation of elements...
-    return asElementData(this.elView, this.elDef.index).componentView || this.view;
+    return asElementData(this.elView, this.elDef.nodeIndex).componentView || this.view;
   }
+
   get injector(): Injector { return createInjector(this.elView, this.elDef); }
+
   get component(): any { return this.elOrCompView.component; }
+
   get context(): any { return this.elOrCompView.context; }
+
   get providerTokens(): any[] {
     const tokens: any[] = [];
     if (this.elDef) {
-      for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
+      for (let i = this.elDef.nodeIndex + 1; i <= this.elDef.nodeIndex + this.elDef.childCount;
+           i++) {
         const childDef = this.elView.def.nodes[i];
         if (childDef.flags & NodeFlags.CatProvider) {
           tokens.push(childDef.provider !.token);
@@ -486,12 +557,14 @@ class DebugContext_ implements DebugContext {
     }
     return tokens;
   }
+
   get references(): {[key: string]: any} {
     const references: {[key: string]: any} = {};
     if (this.elDef) {
       collectReferences(this.elView, this.elDef, references);
 
-      for (let i = this.elDef.index + 1; i <= this.elDef.index + this.elDef.childCount; i++) {
+      for (let i = this.elDef.nodeIndex + 1; i <= this.elDef.nodeIndex + this.elDef.childCount;
+           i++) {
         const childDef = this.elView.def.nodes[i];
         if (childDef.flags & NodeFlags.CatProvider) {
           collectReferences(this.elView, childDef, references);
@@ -501,23 +574,26 @@ class DebugContext_ implements DebugContext {
     }
     return references;
   }
+
   get componentRenderElement() {
     const elData = findHostElement(this.elOrCompView);
     return elData ? elData.renderElement : undefined;
   }
+
   get renderNode(): any {
     return this.nodeDef.flags & NodeFlags.TypeText ? renderNode(this.view, this.nodeDef) :
                                                      renderNode(this.elView, this.elDef);
   }
+
   logError(console: Console, ...values: any[]) {
     let logViewDef: ViewDefinition;
     let logNodeIndex: number;
     if (this.nodeDef.flags & NodeFlags.TypeText) {
       logViewDef = this.view.def;
-      logNodeIndex = this.nodeDef.index;
+      logNodeIndex = this.nodeDef.nodeIndex;
     } else {
       logViewDef = this.elView.def;
-      logNodeIndex = this.elDef.index;
+      logNodeIndex = this.elDef.nodeIndex;
     }
     // Note: we only generate a log function for text and element nodes
     // to make the generated code as small as possible.
@@ -555,7 +631,7 @@ function findHostElement(view: ViewData): ElementData|null {
     view = view.parent !;
   }
   if (view.parent) {
-    return asElementData(view.parent, viewParentEl(view) !.index);
+    return asElementData(view.parent, viewParentEl(view) !.nodeIndex);
   }
   return null;
 }
@@ -589,8 +665,7 @@ export function getCurrentDebugContext(): DebugContext|null {
   return _currentView ? new DebugContext_(_currentView, _currentNodeIndex) : null;
 }
 
-
-class DebugRendererFactory2 implements RendererFactory2 {
+export class DebugRendererFactory2 implements RendererFactory2 {
   constructor(private delegate: RendererFactory2) {}
 
   createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
@@ -616,11 +691,22 @@ class DebugRendererFactory2 implements RendererFactory2 {
   }
 }
 
+export class DebugRenderer2 implements Renderer2 {
+  readonly data: {[key: string]: any};
 
-class DebugRenderer2 implements Renderer2 {
-  constructor(private delegate: Renderer2) {}
+  /**
+   * Factory function used to create a `DebugContext` when a node is created.
+   *
+   * The `DebugContext` allows to retrieve information about the nodes that are useful in tests.
+   *
+   * The factory is configurable so that the `DebugRenderer2` could instantiate either a View Engine
+   * or a Render context.
+   */
+  debugContextFactory: () => DebugContext | null = getCurrentDebugContext;
 
-  get data() { return this.delegate.data; }
+  private get debugContext() { return this.debugContextFactory(); }
+
+  constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
   destroyNode(node: any) {
     removeDebugNodeFromIndex(getDebugNode(node) !);
@@ -633,7 +719,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       const debugEl = new DebugElement(el, null, debugCtx);
       debugEl.name = name;
@@ -644,7 +730,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createComment(value: string): any {
     const comment = this.delegate.createComment(value);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       indexDebugNode(new DebugNode(comment, null, debugCtx));
     }
@@ -653,7 +739,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createText(value: string): any {
     const text = this.delegate.createText(value);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       indexDebugNode(new DebugNode(text, null, debugCtx));
     }
@@ -689,8 +775,8 @@ class DebugRenderer2 implements Renderer2 {
     this.delegate.removeChild(parent, oldChild);
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
-    const el = this.delegate.selectRootElement(selectorOrNode);
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
+    const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
     const debugCtx = getCurrentDebugContext();
     if (debugCtx) {
       indexDebugNode(new DebugElement(el, null, debugCtx));

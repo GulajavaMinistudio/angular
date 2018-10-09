@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 /**
  * @module
  * @description
- * Entry point for all public APIs of the platform-server package.
+ * Entry point for all public APIs of this package.
  */
 export * from './src/platform-server';
 
