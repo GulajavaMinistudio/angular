@@ -6,17 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ClassMemberKind, Decorator, ReflectionHost} from '../../host';
-import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
+import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
+import {ForeignFunctionResolver} from '../../partial_evaluator';
+import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost, TypeValueReference} from '../../reflection';
+
+export enum ConstructorDepErrorKind {
+  NO_SUITABLE_TOKEN,
+}
+
+export type ConstructorDeps = {
+  deps: R3DependencyMetadata[];
+} |
+{
+  deps: null;
+  errors: ConstructorDepError[];
+};
+
+export interface ConstructorDepError {
+  index: number;
+  param: CtorParameter;
+  kind: ConstructorDepErrorKind;
+}
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
-    null {
-  const useType: R3DependencyMetadata[] = [];
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): ConstructorDeps|null {
+  const deps: R3DependencyMetadata[] = [];
+  const errors: ConstructorDepError[] = [];
   let ctorParams = reflector.getConstructorParameters(clazz);
   if (ctorParams === null) {
     if (reflector.hasBaseClass(clazz)) {
@@ -26,76 +45,116 @@ export function getConstructorDependencies(
     }
   }
   ctorParams.forEach((param, idx) => {
-    let tokenExpr = param.type;
+    let token = valueReferenceToExpression(param.typeValueReference);
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
-      if (dec.name === 'Inject') {
+      const name = isCore || dec.import === null ? dec.name : dec.import !.name;
+      if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
               ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Inject().`);
         }
-        tokenExpr = dec.args[0];
-      } else if (dec.name === 'Optional') {
+        token = new WrappedNodeExpr(dec.args[0]);
+      } else if (name === 'Optional') {
         optional = true;
-      } else if (dec.name === 'SkipSelf') {
+      } else if (name === 'SkipSelf') {
         skipSelf = true;
-      } else if (dec.name === 'Self') {
+      } else if (name === 'Self') {
         self = true;
-      } else if (dec.name === 'Host') {
+      } else if (name === 'Host') {
         host = true;
-      } else if (dec.name === 'Attribute') {
+      } else if (name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
               ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Attribute().`);
         }
-        tokenExpr = dec.args[0];
+        token = new WrappedNodeExpr(dec.args[0]);
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_UNEXPECTED, dec.node,
-            `Unexpected decorator ${dec.name} on parameter.`);
+            ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
       }
     });
-    if (tokenExpr === null) {
-      throw new FatalDiagnosticError(
-          ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-          `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
+    if (token === null) {
+      errors.push({
+        index: idx,
+        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
+      });
+    } else {
+      deps.push({token, optional, self, skipSelf, host, resolved});
     }
-    if (ts.isIdentifier(tokenExpr)) {
-      const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
-      if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
-        switch (importedSymbol.name) {
-          case 'Injector':
-            resolved = R3ResolvedDependencyType.Injector;
-            break;
-          case 'Renderer2':
-            resolved = R3ResolvedDependencyType.Renderer2;
-            break;
-          default:
-            // Leave as a Token or Attribute.
-        }
-      }
-    }
-    const token = new WrappedNodeExpr(tokenExpr);
-    useType.push({token, optional, self, skipSelf, host, resolved});
   });
-  return useType;
+  if (errors.length === 0) {
+    return {deps};
+  } else {
+    return {deps: null, errors};
+  }
 }
 
-export function toR3Reference(ref: Reference, context: ts.SourceFile): R3Reference {
-  const value = ref.toExpression(context, ImportMode.UseExistingImport);
-  const type = ref.toExpression(context, ImportMode.ForceNewImport);
+/**
+ * Convert a `TypeValueReference` to an `Expression` which refers to the type as a value.
+ *
+ * Local references are converted to a `WrappedNodeExpr` of the TypeScript expression, and non-local
+ * references are converted to an `ExternalExpr`. Note that this is only valid in the context of the
+ * file in which the `TypeValueReference` originated.
+ */
+export function valueReferenceToExpression(valueRef: TypeValueReference): Expression;
+export function valueReferenceToExpression(valueRef: null): null;
+export function valueReferenceToExpression(valueRef: TypeValueReference | null): Expression|null;
+export function valueReferenceToExpression(valueRef: TypeValueReference | null): Expression|null {
+  if (valueRef === null) {
+    return null;
+  } else if (valueRef.local) {
+    return new WrappedNodeExpr(valueRef.expression);
+  } else {
+    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
+    return new ExternalExpr(valueRef as{moduleName: string, name: string});
+  }
+}
+
+export function getValidConstructorDependencies(
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
+    null {
+  return validateConstructorDependencies(
+      clazz, getConstructorDependencies(clazz, reflector, isCore));
+}
+
+export function validateConstructorDependencies(
+    clazz: ts.ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
+  if (deps === null) {
+    return null;
+  } else if (deps.deps !== null) {
+    return deps.deps;
+  } else {
+    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
+    const {param, index} = (deps as{errors: ConstructorDepError[]}).errors[0];
+    // There is at least one error.
+    throw new FatalDiagnosticError(
+        ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
+        `No suitable injection token for parameter '${param.name || index}' of class '${clazz.name!.text}'. Found: ${param.typeNode!.getText()}`);
+  }
+}
+
+export function toR3Reference(
+    valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
+    typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
+  const value = refEmitter.emit(valueRef, valueContext, ImportMode.UseExistingImport);
+  const type = refEmitter.emit(typeRef, typeContext, ImportMode.ForceNewImport);
   if (value === null || type === null) {
-    throw new Error(`Could not refer to ${ts.SyntaxKind[ref.node.kind]}`);
+    throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
   return {value, type};
 }
 
 export function isAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
+}
+
+export function isAngularCoreReference(reference: Reference, symbolName: string) {
+  return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
 }
 
 /**
@@ -170,26 +229,26 @@ export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost)
 export function forwardRefResolver(
     ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
     args: ts.Expression[]): ts.Expression|null {
-  if (!(ref instanceof AbsoluteReference) || ref.moduleName !== '@angular/core' ||
-      ref.symbolName !== 'forwardRef' || args.length !== 1) {
+  if (!isAngularCoreReference(ref, 'forwardRef') || args.length !== 1) {
     return null;
   }
   return expandForwardRef(args[0]);
 }
 
-export function extractDirectiveGuards(node: ts.Declaration, reflector: ReflectionHost): {
-  ngTemplateGuards: string[],
-  hasNgTemplateContextGuard: boolean,
-} {
-  const methods = nodeStaticMethodNames(node, reflector);
-  const ngTemplateGuards = methods.filter(method => method.startsWith('ngTemplateGuard_'))
-                               .map(method => method.split('_', 2)[1]);
-  const hasNgTemplateContextGuard = methods.some(name => name === 'ngTemplateContextGuard');
-  return {hasNgTemplateContextGuard, ngTemplateGuards};
-}
-
-function nodeStaticMethodNames(node: ts.Declaration, reflector: ReflectionHost): string[] {
-  return reflector.getMembersOfClass(node)
-      .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
-      .map(member => member.name);
+/**
+ * Combines an array of resolver functions into a one.
+ * @param resolvers Resolvers to be combined.
+ */
+export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
+  return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
+          args: ts.Expression[]): ts.Expression |
+      null => {
+    for (const resolver of resolvers) {
+      const resolved = resolver(ref, args);
+      if (resolved !== null) {
+        return resolved;
+      }
+    }
+    return null;
+  };
 }

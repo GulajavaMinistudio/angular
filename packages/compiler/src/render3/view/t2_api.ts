@@ -44,7 +44,7 @@ export interface DirectiveMeta {
    *
    * Goes from property names to field names.
    */
-  inputs: {[property: string]: string};
+  inputs: {[property: string]: string | [string, string]};
 
   /**
    * Set of outputs which this directive claims.
@@ -58,7 +58,7 @@ export interface DirectiveMeta {
    *
    * Null otherwise
    */
-  exportAs: string|null;
+  exportAs: string[]|null;
 }
 
 /**
@@ -136,4 +136,9 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Get a list of all the directives used by the target.
    */
   getUsedDirectives(): DirectiveT[];
+
+  /**
+   * Get a list of all the pipes used by the target.
+   */
+  getUsedPipes(): string[];
 }

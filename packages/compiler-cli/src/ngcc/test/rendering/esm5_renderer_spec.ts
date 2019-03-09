@@ -5,30 +5,39 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import {dirname} from 'canonical-path';
 import MagicString from 'magic-string';
-import {makeProgram} from '../helpers/utils';
-import {Analyzer} from '../../src/analyzer';
+import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../ngtsc/path';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
+import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {Esm5FileParser} from '../../src/parsing/esm5_parser';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
+import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
 
 function setup(file: {name: string, contents: string}) {
-  const program = makeProgram(file);
-  const host = new Esm5ReflectionHost(false, program.getTypeChecker());
-  const parser = new Esm5FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
-  const renderer = new Esm5Renderer(host, false, null);
-  return {analyzer, host, parser, program, renderer};
-}
-
-function analyze(parser: Esm5FileParser, analyzer: Analyzer, file: ts.SourceFile) {
-  const parsedFiles = parser.parseFile(file);
-  return parsedFiles.map(file => analyzer.analyzeFile(file))[0];
+  const dir = dirname(file.name);
+  const bundle = makeTestEntryPointBundle('esm5', [file]);
+  const typeChecker = bundle.src.program.getTypeChecker();
+  const host = new Esm5ReflectionHost(false, typeChecker);
+  const referencesRegistry = new NgccReferencesRegistry(host);
+  const decorationAnalyses =
+      new DecorationAnalyzer(
+          bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, host,
+          referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
+          .analyzeProgram();
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
+  const renderer = new Esm5Renderer(host, false, bundle, dir, dir);
+  return {
+    host,
+    program: bundle.src.program,
+    sourceFile: bundle.src.file, renderer, decorationAnalyses, switchMarkerAnalyses
+  };
 }
 
 const PROGRAM = {
-  name: 'some/file.js',
+  name: '/some/file.js',
   contents: `
 /* A copyright notice */
 import {Directive} from '@angular/core';
@@ -38,6 +47,9 @@ var A = (function() {
     { type: Directive, args: [{ selector: '[a]' }] },
     { type: OtherA }
   ];
+  A.prototype.ngDoCheck = function() {
+    //
+  };
   return A;
 }());
 
@@ -58,24 +70,33 @@ var C = (function() {
   return C;
 }());
 
-var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
-var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;
-function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+function NoIife() {}
+
+var BadIife = (function() {
+  function BadIife() {}
+  BadIife.decorators = [
+    { type: Directive, args: [{ selector: '[c]' }] },
+  ];
+}());
+
+var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
+var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
+function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
   const compilerFactory = injector.get(CompilerFactory);
   const compiler = compilerFactory.createCompiler([options]);
   return compiler.compileModuleAsync(moduleType);
 }
 
-function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
   ngDevMode && assertNgModuleType(moduleType);
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
 // Some other content
-export {A, B, C};`
+export {A, B, C, NoIife, BadIife};`
 };
 
 const PROGRAM_DECORATE_HELPER = {
-  name: 'some/file.js',
+  name: '/some/file.js',
   contents: `
 import * as tslib_1 from "tslib";
 /* A copyright notice */
@@ -131,15 +152,44 @@ describe('Esm5Renderer', () => {
     it('should insert the given imports at the start of the source file', () => {
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addImports(
-          output, [{name: '@angular/core', as: 'i0'}, {name: '@angular/common', as: 'i1'}]);
+      renderer.addImports(output, [
+        {specifier: '@angular/core', qualifier: 'i0', isDefault: false},
+        {specifier: '@angular/common', qualifier: 'i1', isDefault: false}
+      ]);
       expect(output.toString()).toContain(`import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 
 /* A copyright notice */`);
     });
+
+    it('should insert a default import at the start of the source file', () => {
+      const {renderer} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addImports(output, [
+        {specifier: 'test', qualifier: 'i0', isDefault: true},
+      ]);
+      expect(output.toString()).toContain(`import i0 from 'test';`);
+    });
   });
 
+  describe('addExports', () => {
+    it('should insert the given exports at the end of the source file', () => {
+      const {renderer} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
+        {from: '/some/a.js', identifier: 'ComponentA1'},
+        {from: '/some/a.js', identifier: 'ComponentA2'},
+        {from: '/some/foo/b.js', identifier: 'ComponentB'},
+        {from: PROGRAM.name, identifier: 'TopLevelComponent'},
+      ]);
+      expect(output.toString()).toContain(`
+export {A, B, C, NoIife, BadIife};
+export {ComponentA1} from './a';
+export {ComponentA2} from './a';
+export {ComponentB} from './foo/b';
+export {TopLevelComponent};`);
+    });
+  });
 
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
@@ -160,52 +210,85 @@ var A = (function() {`);
 
   describe('rewriteSwitchableDeclarations', () => {
     it('should switch marked declaration initializers', () => {
-      const {renderer, program} = setup(PROGRAM);
+      const {renderer, program, sourceFile, switchMarkerAnalyses} = setup(PROGRAM);
       const file = program.getSourceFile('some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
       const output = new MagicString(PROGRAM.contents);
-      renderer.rewriteSwitchableDeclarations(output, file);
+      renderer.rewriteSwitchableDeclarations(
+          output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
       expect(output.toString())
-          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
+          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
       expect(output.toString())
-          .toContain(`var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;`);
+          .toContain(`var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
       expect(output.toString())
-          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;`);
+          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
     });
   });
 
   describe('addDefinitions', () => {
-    it('should insert the definitions directly after the class declaration', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM);
-      const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
-      const output = new MagicString(PROGRAM.contents);
-      renderer.addDefinitions(output, analyzedFile.analyzedClasses[0], 'SOME DEFINITION TEXT');
-      expect(output.toString()).toContain(`
-  function A() {}
+    it('should insert the definitions directly before the return statement of the class IIFE',
+       () => {
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+         const output = new MagicString(PROGRAM.contents);
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
+         expect(output.toString()).toContain(`
+  A.prototype.ngDoCheck = function() {
+    //
+  };
 SOME DEFINITION TEXT
-  A.decorators = [
+  return A;
 `);
-    });
+       });
 
+    it('should error if the compiledClass is not valid', () => {
+      const {renderer, host, sourceFile, program} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+
+      const badSymbolDeclaration =
+          getDeclaration(program, sourceFile.fileName, 'A', ts.isVariableDeclaration);
+      const badSymbol: any = {name: 'BadSymbol', declaration: badSymbolDeclaration};
+      const hostSpy = spyOn(host, 'getClassSymbol').and.returnValue(null);
+      expect(() => renderer.addDefinitions(output, badSymbol, 'SOME DEFINITION TEXT'))
+          .toThrowError('Compiled class does not have a valid symbol: BadSymbol in /some/file.js');
+
+
+      const noIifeDeclaration =
+          getDeclaration(program, sourceFile.fileName, 'NoIife', ts.isFunctionDeclaration);
+      const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
+      hostSpy.and.returnValue({valueDeclaration: noIifeDeclaration});
+      expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
+          .toThrowError(
+              'Compiled class declaration is not inside an IIFE: NoIife in /some/file.js');
+
+      const badIifeWrapper: any =
+          getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
+      const badIifeDeclaration =
+          badIifeWrapper.initializer.expression.expression.body.statements[0];
+      const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
+      hostSpy.and.returnValue({valueDeclaration: badIifeDeclaration});
+      expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
+          .toThrowError(
+              'Compiled class wrapper IIFE does not have a return statement: BadIife in /some/file.js');
+    });
   });
 
 
   describe('removeDecorators', () => {
 
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM);
-      const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+      const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      const analyzedClass = analyzedFile.analyzedClasses[0];
-      const decorator = analyzedClass.decorators[0];
+      const compiledClass =
+          decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+      const decorator = compiledClass.decorators[0];
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
@@ -219,11 +302,11 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM);
-         const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
          const output = new MagicString(PROGRAM.contents);
-         const analyzedClass = analyzedFile.analyzedClasses[1];
-         const decorator = analyzedClass.decorators[0];
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
+         const decorator = compiledClass.decorators[0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -238,18 +321,20 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM);
-         const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
          const output = new MagicString(PROGRAM.contents);
-         const analyzedClass = analyzedFile.analyzedClasses[2];
-         const decorator = analyzedClass.decorators[0];
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
+         const decorator = compiledClass.decorators[0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
+         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
          expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
          expect(output.toString()).toContain(`{ type: OtherA }`);
          expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
          expect(output.toString()).toContain(`{ type: OtherB }`);
+         expect(output.toString()).toContain(`function C() {}\nSOME DEFINITION TEXT\n  return C;`);
          expect(output.toString()).not.toContain(`C.decorators = [
   { type: Directive, args: [{ selector: '[c]' }] },
 ];`);
@@ -259,12 +344,11 @@ SOME DEFINITION TEXT
 
   describe('[__decorate declarations]', () => {
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
-      const analyzedFile =
-          analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+      const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
       const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-      const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'A') !;
-      const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
+      const compiledClass =
+          decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+      const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
@@ -277,12 +361,11 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
-         const analyzedFile =
-             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-         const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'B') !;
-         const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
+         const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -296,12 +379,11 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (and its container if there are no other decorators left) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
-         const analyzedFile =
-             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-         const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'C') !;
-         const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
+         const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);

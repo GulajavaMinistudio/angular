@@ -61,6 +61,12 @@ BOILERPLATE_PATHS.i18n = [
   'package.json'
 ];
 
+BOILERPLATE_PATHS['service-worker'] = [
+  ...cliRelativePath,
+  'angular.json',
+  'package.json'
+];
+
 BOILERPLATE_PATHS.testing = [
   ...cliRelativePath,
   'angular.json'
@@ -72,22 +78,42 @@ BOILERPLATE_PATHS.universal = [
   'package.json'
 ];
 
+BOILERPLATE_PATHS.ivy = {
+  systemjs: [
+    'rollup-config.js',
+    'tsconfig-aot.json'
+  ],
+  cli: [
+    'src/tsconfig.app.json'
+  ]
+};
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
   /**
    * Add boilerplate files to all the examples
    */
-  add() {
+  add(ivy = false) {
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders = this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
+
+    if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
+      throw new Error(`The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
+        `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
+    }
+
+    if (ivy) {
+      // We only need the "fesm5" bundles as the CLI webpack build does not need
+      // any other formats for building and serving. Ngcc currently only updates
+      // the module typings if we specified an "es2015" format. This means that
+      // we also need to build with "fesm2015" in order to get updated typings
+      // which are needed for compilation.
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc --formats fesm2015 fesm5`);
+    }
+
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
-
-      if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
-        throw new Error(`The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
-        `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
-      }
 
       // Link the node modules - requires admin access (on Windows) because it adds symlinks
       const destinationNodeModules = path.resolve(exampleFolder, 'node_modules');
@@ -101,6 +127,13 @@ class ExampleBoilerPlate {
 
       // Copy the boilerplate common files
       BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
+
+      // Copy Ivy specific files
+      if (ivy) {
+        const ivyBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
+        const ivyBoilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, 'ivy', ivyBoilerPlateType);
+        BOILERPLATE_PATHS.ivy[ivyBoilerPlateType].forEach(filePath => this.copyFile(ivyBoilerPlateBasePath, exampleFolder, filePath));
+      }
     });
   }
 
@@ -108,13 +141,13 @@ class ExampleBoilerPlate {
    * Remove all the boilerplate files from all the examples
    */
   remove() {
-    shelljs.exec('git clean -xdfq', {cwd: EXAMPLES_BASE_PATH});
+    shelljs.exec('git clean -xdfq', { cwd: EXAMPLES_BASE_PATH });
   }
 
   main() {
     yargs
       .usage('$0 <cmd> [args]')
-      .command('add', 'add the boilerplate to each example', () => this.add())
+      .command('add', 'add the boilerplate to each example', (yrgs) => this.add(yrgs.argv.ivy))
       .command('remove', 'remove the boilerplate from each example', () => this.remove())
       .demandCommand(1, 'Please supply a command from the list above')
       .argv;
@@ -138,7 +171,7 @@ class ExampleBoilerPlate {
   }
 
   loadJsonFile(filePath) {
-    return fs.readJsonSync(filePath, {throws: false}) || {};
+    return fs.readJsonSync(filePath, { throws: false }) || {};
   }
 
   normalizePath(filePath) {

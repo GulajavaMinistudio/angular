@@ -1,8 +1,8 @@
+load("//tools:defaults.bzl", "ng_module")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
-
-load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "static",
@@ -15,7 +15,6 @@ ng_module(
             "src/static/**/*.ts",
         ],
     ),
-    module_name = "@angular/upgrade/static",
     deps = [
         "//packages/core",
         "//packages/platform-browser",

@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -21,9 +21,6 @@ const NGC_ASSETS = /\.(css|html|ngsummary\.json)$/;
 
 const BAZEL_BIN = /\b(blaze|bazel)-out\b.*?\bbin\b/;
 
-// TODO(alexeagle): probably not needed, see
-// https://github.com/bazelbuild/rules_typescript/issues/28
-const ALLOW_NON_HERMETIC_READS = true;
 // Note: We compile the content of node_modules with plain ngc command line.
 const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
@@ -52,13 +49,71 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     return false;
   }
   const {options: tsOptions, bazelOpts, files, config} = parsedOptions;
+  const angularCompilerOptions: {[k: string]: unknown} = config['angularCompilerOptions'] || {};
+
+  // Allow Bazel users to control some of the bazel options.
+  // Since TypeScript's "extends" mechanism applies only to "compilerOptions"
+  // we have to repeat some of their logic to get the user's "angularCompilerOptions".
+  if (config['extends']) {
+    // Load the user's config file
+    // Note: this doesn't handle recursive extends so only a user's top level
+    // `angularCompilerOptions` will be considered. As this code is going to be
+    // removed with Ivy, the added complication of handling recursive extends
+    // is likely not needed.
+    let userConfigFile = resolveNormalizedPath(path.dirname(project), config['extends']);
+    if (!userConfigFile.endsWith('.json')) userConfigFile += '.json';
+    const {config: userConfig, error} = ts.readConfigFile(userConfigFile, ts.sys.readFile);
+    if (error) {
+      console.error(ng.formatDiagnostics([error]));
+      return false;
+    }
+
+    // All user angularCompilerOptions values that a user has control
+    // over should be collected here
+    if (userConfig.angularCompilerOptions) {
+      angularCompilerOptions.diagnostics =
+          angularCompilerOptions.diagnostics || userConfig.angularCompilerOptions.diagnostics;
+      angularCompilerOptions.trace =
+          angularCompilerOptions.trace || userConfig.angularCompilerOptions.trace;
+
+      angularCompilerOptions.disableExpressionLowering =
+          angularCompilerOptions.disableExpressionLowering ||
+          userConfig.angularCompilerOptions.disableExpressionLowering;
+      angularCompilerOptions.disableTypeScriptVersionCheck =
+          angularCompilerOptions.disableTypeScriptVersionCheck ||
+          userConfig.angularCompilerOptions.disableTypeScriptVersionCheck;
+
+      angularCompilerOptions.i18nOutLocale =
+          angularCompilerOptions.i18nOutLocale || userConfig.angularCompilerOptions.i18nOutLocale;
+      angularCompilerOptions.i18nOutFormat =
+          angularCompilerOptions.i18nOutFormat || userConfig.angularCompilerOptions.i18nOutFormat;
+      angularCompilerOptions.i18nOutFile =
+          angularCompilerOptions.i18nOutFile || userConfig.angularCompilerOptions.i18nOutFile;
+
+      angularCompilerOptions.i18nInFormat =
+          angularCompilerOptions.i18nInFormat || userConfig.angularCompilerOptions.i18nInFormat;
+      angularCompilerOptions.i18nInLocale =
+          angularCompilerOptions.i18nInLocale || userConfig.angularCompilerOptions.i18nInLocale;
+      angularCompilerOptions.i18nInFile =
+          angularCompilerOptions.i18nInFile || userConfig.angularCompilerOptions.i18nInFile;
+
+      angularCompilerOptions.i18nInMissingTranslations =
+          angularCompilerOptions.i18nInMissingTranslations ||
+          userConfig.angularCompilerOptions.i18nInMissingTranslations;
+      angularCompilerOptions.i18nUseExternalIds = angularCompilerOptions.i18nUseExternalIds ||
+          userConfig.angularCompilerOptions.i18nUseExternalIds;
+
+      angularCompilerOptions.preserveWhitespaces = angularCompilerOptions.preserveWhitespaces ||
+          userConfig.angularCompilerOptions.preserveWhitespaces;
+    }
+  }
+
   const expectedOuts = config['angularCompilerOptions']['expectedOut'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
   const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
-    allowNonHermeticReads: ALLOW_NON_HERMETIC_READS,
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
     compilerOpts,
     tsHost,
@@ -84,9 +139,8 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
-                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
-  allowNonHermeticReads: boolean,
+export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
+                         inputs, expectedOuts, gatherDiagnostics}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
@@ -104,7 +158,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
+    fileLoader = new CachedFileLoader(fileCache);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
     const inputKeys = Object.keys(inputs);
@@ -186,8 +240,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
-      generatedFileModuleResolver);
+      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
 
   // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
   if (isInIvyMode) {
@@ -205,21 +258,27 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   };
   const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
   bazelHost.shouldNameModule = (fileName: string) => {
+    const flatModuleOutPath =
+        path.posix.join(bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts');
+
     // The bundle index file is synthesized in bundle_index_host so it's not in the
     // compilationTargetSrc.
     // However we still want to give it an AMD module name for devmode.
     // We can't easily tell which file is the synthetic one, so we build up the path we expect
-    // it to have
-    // and compare against that.
-    if (fileName ===
-        path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
+    // it to have and compare against that.
+    if (fileName === path.posix.join(compilerOpts.baseUrl, flatModuleOutPath)) return true;
+
+    // Also handle the case the target is in an external repository.
+    // Pull the workspace name from the target which is formatted as `@wksp//package:target`
+    // if it the target is from an external workspace. If the target is from the local
+    // workspace then it will be formatted as `//package:target`.
+    const targetWorkspace = bazelOpts.target.split('/')[0].replace(/^@/, '');
+
+    if (targetWorkspace &&
+        fileName ===
+            path.posix.join(compilerOpts.baseUrl, 'external', targetWorkspace, flatModuleOutPath))
       return true;
-    // Also handle the case when angular is built from source as an external repository
-    if (fileName ===
-        path.join(
-            compilerOpts.baseUrl, 'external/angular', bazelOpts.package,
-            compilerOpts.flatModuleOutFile + '.ts'))
-      return true;
+
     return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
   };
 
@@ -291,10 +350,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
           program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
-            afterTs: [
-              ...(customTransformers.after || []),
-              fixUmdModuleDeclarations((sf: ts.SourceFile) => bazelHost.amdModuleName(sf)),
-            ],
+            afterTs: customTransformers.after,
+            afterDeclarations: customTransformers.afterDeclarations,
           });
 
   if (!gatherDiagnostics) {

@@ -7,16 +7,17 @@
  */
 
 import {AnimationBuilder, animate, state, style, transition, trigger} from '@angular/animations';
-import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
+import {PlatformLocation, isPlatformServer} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -56,6 +57,24 @@ function getMetaRenderHook(doc: any) {
   };
 }
 
+function getAsyncTitleRenderHook(doc: any) {
+  return () => {
+    // Async set the title as part of the render hook.
+    return new Promise(resolve => {
+      setTimeout(() => {
+        doc.title = 'AsyncRenderHook';
+        resolve();
+      });
+    });
+  };
+}
+
+function asyncRejectRenderHook() {
+  return () => {
+    return new Promise((_resolve, reject) => { setTimeout(() => { reject('reject'); }); });
+  };
+}
+
 @NgModule({
   bootstrap: [MyServerApp],
   declarations: [MyServerApp],
@@ -80,6 +99,39 @@ class RenderHookModule {
 class MultiRenderHookModule {
 }
 
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {
+      provide: BEFORE_APP_SERIALIZED,
+      useFactory: getAsyncTitleRenderHook,
+      multi: true,
+      deps: [DOCUMENT]
+    },
+  ]
+})
+class AsyncRenderHookModule {
+}
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getMetaRenderHook, multi: true, deps: [DOCUMENT]},
+    {
+      provide: BEFORE_APP_SERIALIZED,
+      useFactory: getAsyncTitleRenderHook,
+      multi: true,
+      deps: [DOCUMENT]
+    },
+    {provide: BEFORE_APP_SERIALIZED, useFactory: asyncRejectRenderHook, multi: true},
+  ]
+})
+class AsyncMultiRenderHookModule {
+}
+
 @Component({selector: 'app', template: `Works too!`})
 class MyServerApp2 {
 }
@@ -98,7 +150,7 @@ class TitleApp {
 class TitleAppModule {
 }
 
-@Component({selector: 'app', template: '{{text}}<h1 [innerText]="h1"></h1>'})
+@Component({selector: 'app', template: '{{text}}<h1 [textContent]="h1"></h1>'})
 class MyAsyncServerApp {
   text = '';
   h1 = '';
@@ -273,6 +325,19 @@ class MyHostComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
 })
 class FalseAttributesModule {
+}
+
+@Component({selector: 'app', template: '<div [innerText]="foo"></div>'})
+class InnerTextComponent {
+  foo = 'Some text';
+}
+
+@NgModule({
+  declarations: [InnerTextComponent],
+  bootstrap: [InnerTextComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'inner-text'})]
+})
+class InnerTextModule {
 }
 
 @Component({selector: 'app', template: '<input [name]="name">'})
@@ -527,14 +592,18 @@ class HiddenModule {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine">fine</h1></app></body></html>';
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
         doc = '<html><head></head><body><app></app></body></html>';
         called = false;
-        (global as any)['window'] = undefined;
-        (global as any)['document'] = undefined;
+        // We use `window` and `document` directly in some parts of render3 for ivy
+        // Only set it to undefined for legacy
+        if (!ivyEnabled) {
+          (global as any)['window'] = undefined;
+          (global as any)['document'] = undefined;
+        }
       });
       afterEach(() => { expect(called).toBe(true); });
 
@@ -561,6 +630,15 @@ class HiddenModule {
              called = true;
            });
          }));
+
+      modifiedInIvy('Will not support binding to innerText in Ivy since domino does not')
+          .it('should support binding to innerText', async(() => {
+                renderModule(InnerTextModule, {document: doc}).then(output => {
+                  expect(output).toBe(
+                      '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER"><div innertext="Some text">Some text</div></app></body></html>');
+                  called = true;
+                });
+              }));
 
       it('using renderModuleFactory should work',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
@@ -672,6 +750,28 @@ class HiddenModule {
              called = true;
            });
          }));
+
+      it('should call async render hooks', async(() => {
+           renderModule(AsyncRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>AsyncRenderHook</title></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should call multiple async and sync render hooks', async(() => {
+           const consoleSpy = spyOn(console, 'warn');
+           renderModule(AsyncMultiRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             expect(consoleSpy).toHaveBeenCalled();
+             called = true;
+           });
+         }));
     });
 
     describe('http', () => {
@@ -682,6 +782,7 @@ class HiddenModule {
              expect(ref.injector.get(Http) instanceof Http).toBeTruthy();
            });
          }));
+
       it('can make Http requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -702,6 +803,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -721,6 +823,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('works when HttpModule is included before ServerModule', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -740,6 +843,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('works when HttpModule is included after ServerModule', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -759,6 +863,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('throws when given a relative URL', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -770,6 +875,7 @@ class HiddenModule {
            });
          }));
     });
+
     describe('HttpClient', () => {
       it('can inject HttpClient', async(() => {
            const platform = platformDynamicServer(
@@ -778,6 +884,7 @@ class HiddenModule {
              expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
            });
          }));
+
       it('can make HttpClient requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -793,6 +900,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -809,6 +917,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('can use HttpInterceptor that injects HttpClient', () => {
         const platform =
             platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);

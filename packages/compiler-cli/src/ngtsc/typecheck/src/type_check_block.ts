@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Reference} from '../../metadata';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {ImportManager, translateExpression} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
 import {astToTypescript} from './expression';
+
 
 
 /**
@@ -28,9 +29,9 @@ import {astToTypescript} from './expression';
  * @param importManager an `ImportManager` for the file into which the TCB will be written.
  */
 export function generateTypeCheckBlock(
-    node: ts.ClassDeclaration, meta: TypeCheckBlockMetadata,
-    importManager: ImportManager): ts.FunctionDeclaration {
-  const tcb = new Context(meta.boundTarget, node.getSourceFile(), importManager);
+    node: ts.ClassDeclaration, meta: TypeCheckBlockMetadata, importManager: ImportManager,
+    refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
+  const tcb = new Context(meta.boundTarget, node.getSourceFile(), importManager, refEmitter);
   const scope = new Scope(tcb);
   tcbProcessNodes(meta.boundTarget.target.template !, tcb, scope);
 
@@ -59,7 +60,8 @@ class Context {
 
   constructor(
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      private sourceFile: ts.SourceFile, private importManager: ImportManager) {}
+      private sourceFile: ts.SourceFile, private importManager: ImportManager,
+      private refEmitter: ReferenceEmitter) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -75,7 +77,7 @@ class Context {
    * This may involve importing the node into the file if it's not declared there already.
    */
   reference(ref: Reference<ts.Node>): ts.Expression {
-    const ngExpr = ref.toExpression(this.sourceFile);
+    const ngExpr = this.refEmitter.emit(ref, this.sourceFile);
     if (ngExpr === null) {
       throw new Error(`Unreachable reference: ${ref.node}`);
     }
@@ -429,7 +431,10 @@ function tcbProcessTemplateDeclaration(tmpl: TmplAstTemplate, tcb: Context, scop
       // any template guards, and generate them if needed.
       dir.ngTemplateGuards.forEach(inputName => {
         // For each template guard function on the directive, look for a binding to that input.
-        const boundInput = tmpl.inputs.find(i => i.name === inputName);
+        const boundInput = tmpl.inputs.find(i => i.name === inputName) ||
+            tmpl.templateAttrs.find(
+                (i: TmplAstTextAttribute | TmplAstBoundAttribute): i is TmplAstBoundAttribute =>
+                    i instanceof TmplAstBoundAttribute && i.name === inputName);
         if (boundInput !== undefined) {
           // If there is such a binding, generate an expression for it.
           const expr = tcbExpression(boundInput.value, tcb, scope);
@@ -518,22 +523,33 @@ function tcbGetInputBindingExpressions(
   // is desired. Invert `dir.inputs` into `propMatch` to create this map.
   const propMatch = new Map<string, string>();
   const inputs = dir.inputs;
-  Object.keys(inputs).forEach(key => propMatch.set(inputs[key], key));
-
-  // Add a binding expression to the map for each input of the directive that has a
-  // matching binding.
-  el.inputs.filter(input => propMatch.has(input.name)).forEach(input => {
-    // Produce an expression representing the value of the binding.
-    const expr = tcbExpression(input.value, tcb, scope);
-
-    // Call the callback.
-    bindings.push({
-      property: input.name,
-      field: propMatch.get(input.name) !,
-      expression: expr,
-    });
+  Object.keys(inputs).forEach(key => {
+    Array.isArray(inputs[key]) ? propMatch.set(inputs[key][0], key) :
+                                 propMatch.set(inputs[key] as string, key);
   });
+
+  el.inputs.forEach(processAttribute);
+  if (el instanceof TmplAstTemplate) {
+    el.templateAttrs.forEach(processAttribute);
+  }
   return bindings;
+
+  /**
+   * Add a binding expression to the map for each input/template attribute of the directive that has
+   * a matching binding.
+   */
+  function processAttribute(attr: TmplAstBoundAttribute | TmplAstTextAttribute): void {
+    if (attr instanceof TmplAstBoundAttribute && propMatch.has(attr.name)) {
+      // Produce an expression representing the value of the binding.
+      const expr = tcbExpression(attr.value, tcb, scope);
+      // Call the callback.
+      bindings.push({
+        property: attr.name,
+        field: propMatch.get(attr.name) !,
+        expression: expr,
+      });
+    }
+  }
 }
 
 /**
@@ -629,6 +645,7 @@ function tcbResolve(ast: AST, tcb: Context, scope: Scope): ts.Expression|null {
   } else if (ast instanceof ImplicitReceiver) {
     // AST instances representing variables and references look very similar to property reads from
     // the component context: both have the shape PropertyRead(ImplicitReceiver, 'propertyName').
+    //
     // `tcbExpression` will first try to `tcbResolve` the outer PropertyRead. If this works, it's
     // because the `BoundTarget` found an expression target for the whole expression, and therefore
     // `tcbExpression` will never attempt to `tcbResolve` the ImplicitReceiver of that PropertyRead.
@@ -658,8 +675,8 @@ function tcbResolveVariable(binding: TmplAstVariable, tcb: Context, scope: Scope
   if (tmpl === null) {
     throw new Error(`Expected TmplAstVariable to be mapped to a TmplAstTemplate`);
   }
-  // Look for a context variable for the template. This should've been declared before anything
-  // that could reference the template's variables.
+  // Look for a context variable for the template. This should've been declared before anything that
+  // could reference the template's variables.
   const ctx = scope.getTemplateCtx(tmpl);
   if (ctx === null) {
     throw new Error('Expected template context to exist.');

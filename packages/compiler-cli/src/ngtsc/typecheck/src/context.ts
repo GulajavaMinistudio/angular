@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3TargetBinder, SelectorMatcher, TmplAstNode} from '@angular/compiler';
+import {BoundTarget} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {NoopImportRewriter, ReferenceEmitter} from '../../imports';
 import {ImportManager} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCtorMetadata} from './api';
 import {generateTypeCheckBlock} from './type_check_block';
 import {generateTypeCtor} from './type_constructor';
+
 
 
 /**
@@ -24,6 +26,8 @@ import {generateTypeCtor} from './type_constructor';
  * checking code.
  */
 export class TypeCheckContext {
+  constructor(private refEmitter: ReferenceEmitter) {}
+
   /**
    * A `Set` of classes which will be used to generate type constructors.
    */
@@ -43,21 +47,12 @@ export class TypeCheckContext {
    * @param template AST nodes of the template being recorded.
    * @param matcher `SelectorMatcher` which tracks directives that are in scope for this template.
    */
-  addTemplate(
-      node: ts.ClassDeclaration, template: TmplAstNode[],
-      matcher: SelectorMatcher<TypeCheckableDirectiveMeta>): void {
+  addTemplate(node: ts.ClassDeclaration, boundTarget: BoundTarget<TypeCheckableDirectiveMeta>):
+      void {
     // Only write TCBs for named classes.
     if (node.name === undefined) {
       throw new Error(`Assertion: class must be named`);
     }
-
-    // Bind the template, which will:
-    //   - Extract the metadata needed to generate type check blocks.
-    //   - Perform directive matching, which informs the context which directives are used in the
-    //     template. This allows generation of type constructors for only those directives which
-    //     are actually used by the templates.
-    const binder = new R3TargetBinder(matcher);
-    const boundTarget = binder.bind({template});
 
     // Get all of the directives used in the template and record type constructors for all of them.
     boundTarget.getUsedDirectives().forEach(dir => {
@@ -117,7 +112,7 @@ export class TypeCheckContext {
 
     // Imports may need to be added to the file to support type-checking of directives used in the
     // template within it.
-    const importManager = new ImportManager(false, '_i');
+    const importManager = new ImportManager(new NoopImportRewriter(), '_i');
 
     // Each Op has a splitPoint index into the text where it needs to be inserted. Split the
     // original source text into chunks at these split points, where code will be inserted between
@@ -134,13 +129,19 @@ export class TypeCheckContext {
     // Process each operation and use the printer to generate source code for it, inserting it into
     // the source code in between the original chunks.
     ops.forEach((op, idx) => {
-      const text = op.execute(importManager, sf, printer);
+      const text = op.execute(importManager, sf, this.refEmitter, printer);
       code += text + textParts[idx + 1];
     });
 
     // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName, null)
-                      .map(i => `import * as ${i.as} from '${i.name}';`)
+    let imports = importManager.getAllImports(sf.fileName)
+                      .map(i => {
+                        if (!i.isDefault) {
+                          return `import * as ${i.qualifier} from '${i.specifier}';`;
+                        } else {
+                          return `import ${i.qualifier} from '${i.specifier}';`;
+                        }
+                      })
                       .join('\n');
     code = imports + '\n' + code;
 
@@ -180,7 +181,8 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(im: ImportManager, sf: ts.SourceFile, printer: ts.Printer): string;
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
+      string;
 }
 
 /**
@@ -194,8 +196,9 @@ class TcbOp implements Op {
    */
   get splitPoint(): number { return this.node.end + 1; }
 
-  execute(im: ImportManager, sf: ts.SourceFile, printer: ts.Printer): string {
-    const tcb = generateTypeCheckBlock(this.node, this.meta, im);
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
+      string {
+    const tcb = generateTypeCheckBlock(this.node, this.meta, im, refEmitter);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
 }
@@ -211,7 +214,8 @@ class TypeCtorOp implements Op {
    */
   get splitPoint(): number { return this.node.end - 1; }
 
-  execute(im: ImportManager, sf: ts.SourceFile, printer: ts.Printer): string {
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
+      string {
     const tcb = generateTypeCtor(this.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }

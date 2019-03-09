@@ -5,24 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
-import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
+import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe, setComponentScope} from './definition';
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
-import {PublicFeature} from './features/public_feature';
+import {ProvidersFeature} from './features/providers_feature';
 import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
+import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2, injectComponentFactoryResolver} from './component_ref';
-export {directiveInject, getFactoryOf, getInheritedFactory, injectAttribute, injectRenderer2} from './di';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
+export {getFactoryOf, getInheritedFactory} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
+
+
 // clang-format off
 export {
-
-  NO_CHANGE,
-
+  allocHostVars,
   bind,
   interpolation1,
   interpolation2,
@@ -45,30 +45,27 @@ export {
   elementClassProp,
   elementEnd,
   elementProperty,
+  componentHostSyntheticProperty,
+  componentHostSyntheticListener,
   elementStart,
 
   elementContainerStart,
   elementContainerEnd,
-
   elementStyling,
+  elementHostAttrs,
   elementStylingMap,
   elementStyleProp,
   elementStylingApply,
 
-  getCurrentView,
-  restoreView,
+  flushHooksUpTo,
 
   listener,
   store,
   load,
-  loadDirective,
 
   namespaceHTML,
   namespaceMathML,
   namespaceSVG,
-
-  enableBindings,
-  disableBindings,
 
   projection,
   projectionDef,
@@ -84,30 +81,39 @@ export {
   detectChanges,
   markDirty,
   tick,
+
+  directiveInject,
+  injectAttribute,
+
+  getCurrentView
 } from './instructions';
 
 export {
+  restoreView,
+
+  enableBindings,
+  disableBindings,
+} from './state';
+
+export {
+  i18n,
+  i18nAttributes,
+  i18nExp,
+  i18nStart,
+  i18nEnd,
   i18nApply,
-  i18nMapping,
-  i18nInterpolation1,
-  i18nInterpolation2,
-  i18nInterpolation3,
-  i18nInterpolation4,
-  i18nInterpolation5,
-  i18nInterpolation6,
-  i18nInterpolation7,
-  i18nInterpolation8,
-  i18nInterpolationV,
-  i18nExpMapping,
-  I18nInstruction,
-  I18nExpInstruction
+  i18nPostprocess
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
-    AttributeMarker
+  AttributeMarker
 } from './interfaces/node';
+
+export {
+  setClassMetadata,
+} from './metadata';
 
 export {
   pipe,
@@ -119,14 +125,14 @@ export {
 } from './pipe';
 
 export {
-  QueryList,
-  query,
   queryRefresh,
+  viewQuery,
+  staticViewQuery,
+  loadViewQuery,
+  contentQuery,
+  loadContentQuery,
+  staticContentQuery
 } from './query';
-export  {
-  registerContentQuery,
-  loadQueryList,
-} from './instructions';
 
 export {
   pureFunction0,
@@ -143,6 +149,7 @@ export {
 
 export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
+export {resolveWindow, resolveDocument, resolveBody} from './util/misc_utils';
 
 // clang-format on
 
@@ -158,7 +165,7 @@ export {
   DirectiveType,
   NgOnChangesFeature,
   InheritDefinitionFeature,
-  PublicFeature,
+  ProvidersFeature,
   PipeDef,
   PipeDefWithMeta,
   LifecycleHooksFeature,
@@ -168,7 +175,12 @@ export {
   defineBase,
   definePipe,
   getHostElement,
+  getComponent,
+  getDirectives,
   getRenderedText,
   renderComponent,
+  setComponentScope,
   whenRendered,
 };
+
+export {NO_CHANGE} from './tokens';

@@ -10,9 +10,12 @@ import {PlayState, Player} from '../../../src/render3/interfaces/player';
 export class MockPlayer implements Player {
   parent: Player|null = null;
 
+  data: any;
   log: string[] = [];
   state: PlayState = PlayState.Pending;
   private _listeners: {[state: string]: (() => any)[]} = {};
+
+  constructor(public value?: any) {}
 
   play(): void {
     if (this.state === PlayState.Running) return;

@@ -1,7 +1,7 @@
 # Hierarchical Dependency Injectors
 
 The Angular dependency injection system is _hierarchical_.
-There is a tree of injectors that parallel an app's component tree.
+There is a tree of injectors that parallels an app's component tree.
 You can reconfigure the injectors at any level of that component tree.
 
 This guide explores this system and how to use it to your advantage.
@@ -23,9 +23,9 @@ When you specify providers in the `@Injectable()` decorator of the service itsel
 
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
 
-You're likely to inject `UserService` in many places throughout the app and will want to inject the same service instance every time. Providing `UserService` through the `root` injector is a good choice, and is the default that the CLI uses when you generate a service for your app.
+You're likely to inject `UserService` in many places throughout the app and will want to inject the same service instance every time. Providing `UserService` through the `root` injector is a good choice, and is the default that the [Angular CLI](cli) uses when you generate a service for your app.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 <header>Platform injector</header>
 
 When you use `providedIn:'root'`, you are configuring the root injector for the _app_, which is the injector for `AppModule`.
@@ -42,7 +42,7 @@ Learn more about dependency resolution through the injector hierarchy:
 
 *NgModule-level* providers can be specified with `@NgModule()` `providers` metadata option, or in the `@Injectable()` `providedIn` option (with some module other than the root `AppModule`).
 
-Use the `@NgModule()` `provides` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app. 
+Use the `@NgModule()` `providers` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app. 
 
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
 
@@ -75,7 +75,7 @@ When an injectable class provides its own service to the `root` injector, the se
 
 The following example configures a provider for `HeroService` using the `@Injectable()` decorator on the class.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  title="src/app/heroes/heroes.service.ts" linenums="false"> </code-example> 
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  header="src/app/heroes/heroes.service.ts" linenums="false"> </code-example> 
 
 This configuration tells Angular that the app's root injector is responsible for creating an 
 instance of `HeroService` by invoking its constructor,
@@ -92,7 +92,7 @@ Instead of specifying the `root` injector, you can set `providedIn` to a specifi
 For example, in the following excerpt, the `@Injectable()` decorator configures a provider
 that is available in any injector that includes the `HeroModule`.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  title="src/app/heroes/hero.service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  header="src/app/heroes/hero.service.ts" linenums="false"> </code-example>
 
 This is generally no different from configuring the injector of the NgModule itself,
 except that the service is tree-shakable if the NgModule doesn't use it.
@@ -117,7 +117,7 @@ Here is an example of the case where the component router configuration includes
 a non-default [location strategy](guide/router#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
 
-<code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)" linenums="false">
 
 </code-example>
 
@@ -132,7 +132,7 @@ by configuring the provider at the component level using the `@Component` metada
 
 The following example is a revised `HeroesComponent` that specifies `HeroService` in its `providers` array. `HeroService` can provide heroes to instances of this component, or to any child component instances. 
 
-<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" title="src/app/heroes/heroes.component.ts" linenums="false">
+<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" linenums="false">
 </code-example>
 
 ### Element injectors
@@ -207,7 +207,7 @@ that would make the `VillainsService` available everywhere in the application, i
 Instead, you can provide the `VillainsService` in the `providers` metadata of the `VillainsListComponent` like this:
 
 
-<code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" title="src/app/villains-list.component.ts (metadata)" region="metadata">
+<code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" header="src/app/villains-list.component.ts (metadata)" region="metadata">
 
 </code-example>
 
@@ -250,14 +250,14 @@ It caches a single `HeroTaxReturn`, tracks changes to that return, and can save 
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 
 
-<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts" title="src/app/hero-tax-return.service.ts">
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.service.ts" header="src/app/hero-tax-return.service.ts">
 
 </code-example>
 
 Here is the `HeroTaxReturnComponent` that makes use of it.
 
 
-<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" title="src/app/hero-tax-return.component.ts">
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" header="src/app/hero-tax-return.component.ts">
 
 </code-example>
 
@@ -273,7 +273,7 @@ Every component would share the same service instance, and each component would 
 To prevent this, we configure the component-level injector of `HeroTaxReturnComponent` to provide the service, using the  `providers` property in the component metadata.
 
 
-<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" linenums="false" title="src/app/hero-tax-return.component.ts (providers)" region="providers">
+<code-example path="hierarchical-dependency-injection/src/app/hero-tax-return.component.ts" linenums="false" header="src/app/hero-tax-return.component.ts (providers)" region="providers">
 
 </code-example>
 
