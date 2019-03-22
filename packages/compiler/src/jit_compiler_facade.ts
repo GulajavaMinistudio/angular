@@ -38,6 +38,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const res = compilePipeFromMetadata({
       name: facade.name,
       type: new WrappedNodeExpr(facade.type),
+      typeArgumentCount: facade.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(facade.deps),
       pipeName: facade.pipeName,
       pure: facade.pure,
@@ -88,6 +89,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       imports: facade.imports.map(wrapReference),
       exports: facade.exports.map(wrapReference),
       emitInline: true,
+      containsForwardDecls: false,
       schemas: facade.schemas ? facade.schemas.map(wrapReference) : null,
     };
     const res = compileNgModule(meta);
@@ -132,7 +134,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
           ...convertDirectiveFacadeToMetadata(facade),
           selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
           template,
-          viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
           wrapDirectivesAndPipesInClosure: false,
           styles: facade.styles || [],
           encapsulation: facade.encapsulation as any,
@@ -234,6 +235,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),
     providers: facade.providers != null ? new WrappedNodeExpr(facade.providers) : null,
+    viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
   };
 }
 

@@ -10,9 +10,9 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ModuleResolver, ReferenceEmitter} from '../../imports';
+import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ResourceLoader} from '../src/api';
@@ -55,8 +55,8 @@ describe('ComponentDecoratorHandler', () => {
 
     const handler = new ComponentDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, false, new NoopResourceLoader(), [''], false,
-        true, moduleResolver, cycleAnalyzer, refEmitter);
-    const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
+        true, moduleResolver, cycleAnalyzer, refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
+    const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', isNamedClassDeclaration);
     const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {
       return fail('Failed to recognize @Component');

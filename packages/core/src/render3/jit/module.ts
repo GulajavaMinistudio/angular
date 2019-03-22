@@ -19,7 +19,7 @@ import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../d
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
-import {renderStringify} from '../util/misc_utils';
+import {maybeUnwrapFn, renderStringify} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';
 
@@ -156,14 +156,17 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
   moduleType = resolveForwardRef(moduleType);
   const ngModuleDef = getNgModuleDef(moduleType, true);
   const errors: string[] = [];
-  ngModuleDef.declarations.forEach(verifyDeclarationsHaveDefinitions);
+  const declarations = maybeUnwrapFn(ngModuleDef.declarations);
+  const imports = maybeUnwrapFn(ngModuleDef.imports);
+  const exports = maybeUnwrapFn(ngModuleDef.exports);
+  declarations.forEach(verifyDeclarationsHaveDefinitions);
   const combinedDeclarations: Type<any>[] = [
-    ...ngModuleDef.declarations.map(resolveForwardRef),  //
-    ...flatten(ngModuleDef.imports.map(computeCombinedExports), resolveForwardRef),
+    ...declarations.map(resolveForwardRef),  //
+    ...flatten(imports.map(computeCombinedExports), resolveForwardRef),
   ];
-  ngModuleDef.exports.forEach(verifyExportsAreDeclaredOrReExported);
-  ngModuleDef.declarations.forEach(verifyDeclarationIsUnique);
-  ngModuleDef.declarations.forEach(verifyComponentEntryComponentsIsPartOfNgModule);
+  exports.forEach(verifyExportsAreDeclaredOrReExported);
+  declarations.forEach(verifyDeclarationIsUnique);
+  declarations.forEach(verifyComponentEntryComponentsIsPartOfNgModule);
 
   const ngModule = getAnnotation<NgModule>(moduleType, 'NgModule');
   if (ngModule) {
@@ -297,15 +300,14 @@ export function resetCompiledComponents(): void {
 }
 
 /**
- * Computes the combined declarations of explicit declarations, as well as declarations inherited
- * by
+ * Computes the combined declarations of explicit declarations, as well as declarations inherited by
  * traversing the exports of imported modules.
  * @param type
  */
 function computeCombinedExports(type: Type<any>): Type<any>[] {
   type = resolveForwardRef(type);
   const ngModuleDef = getNgModuleDef(type, true);
-  return [...flatten(ngModuleDef.exports.map((type) => {
+  return [...flatten(maybeUnwrapFn(ngModuleDef.exports).map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
       verifySemanticsOfNgModuleDef(type as any as NgModuleType);
@@ -355,6 +357,12 @@ export function patchComponentDefWithScope<C>(
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
   componentDef.schemas = transitiveScopes.schemas;
+
+  // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
+  // may face a problem where previously compiled defs available to a given Component/Directive
+  // are cached in TView and may become stale (in case any of these defs gets recompiled). In
+  // order to avoid this problem, we force fresh TView to be created.
+  componentDef.template.ngPrivateData = undefined;
 }
 
 /**
@@ -388,7 +396,7 @@ export function transitiveScopesFor<T>(
     },
   };
 
-  def.declarations.forEach(declared => {
+  maybeUnwrapFn(def.declarations).forEach(declared => {
     const declaredWithDefs = declared as Type<any>& { ngPipeDef?: any; };
 
     if (getPipeDef(declaredWithDefs)) {
@@ -401,7 +409,7 @@ export function transitiveScopesFor<T>(
     }
   });
 
-  def.imports.forEach(<I>(imported: Type<I>) => {
+  maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
     const importedType = imported as Type<I>& {
       // If imported is an @NgModule:
       ngModuleDef?: NgModuleDef<I>;
@@ -422,7 +430,7 @@ export function transitiveScopesFor<T>(
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });
 
-  def.exports.forEach(<E>(exported: Type<E>) => {
+  maybeUnwrapFn(def.exports).forEach(<E>(exported: Type<E>) => {
     const exportedType = exported as Type<E>& {
       // Components, Directives, NgModules, and Pipes can all be exported.
       ngComponentDef?: any;

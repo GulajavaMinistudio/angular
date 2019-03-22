@@ -426,9 +426,6 @@
     "name": "renderInitialStyles"
   },
   {
-    "name": "renderInitialStylingValues"
-  },
-  {
     "name": "renderStringify"
   },
   {
@@ -436,6 +433,9 @@
   },
   {
     "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "setActiveHost"
   },
   {
     "name": "setBindingRoot"

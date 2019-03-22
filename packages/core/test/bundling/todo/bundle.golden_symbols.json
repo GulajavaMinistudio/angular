@@ -573,6 +573,9 @@
     "name": "elementClassProp"
   },
   {
+    "name": "elementClassPropInternal"
+  },
+  {
     "name": "elementCreate"
   },
   {
@@ -592,6 +595,9 @@
   },
   {
     "name": "elementStylingApply"
+  },
+  {
+    "name": "elementStylingApplyInternal"
   },
   {
     "name": "enterView"
@@ -1179,9 +1185,6 @@
     "name": "renderInitialStyles"
   },
   {
-    "name": "renderInitialStylingValues"
-  },
-  {
     "name": "renderStringify"
   },
   {
@@ -1216,6 +1219,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "setActiveHost"
   },
   {
     "name": "setBindingRoot"
@@ -1264,6 +1270,9 @@
   },
   {
     "name": "setIsParent"
+  },
+  {
+    "name": "setNodeStylingTemplate"
   },
   {
     "name": "setPlayerBuilder"

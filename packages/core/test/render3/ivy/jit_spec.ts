@@ -158,6 +158,9 @@ ivyEnabled && describe('render3 jit', () => {
 
     const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
     expect(moduleDef).toBeDefined();
+    if (!Array.isArray(moduleDef.declarations)) {
+      return fail('Expected an array');
+    }
     expect(moduleDef.declarations.length).toBe(1);
     expect(moduleDef.declarations[0]).toBe(Cmp);
   });
@@ -344,16 +347,6 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-  });
-
-  it('should not pick up view queries from directives', () => {
-    @Directive({selector: '[test]'})
-    class TestDirective {
-      @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
-    }
-
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.viewQuery).toBeNull();
   });
 
   it('should compile ViewChild query on a component', () => {

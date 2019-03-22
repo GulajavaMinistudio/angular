@@ -286,7 +286,6 @@ def jasmine_node_test(deps = [], **kwargs):
         deps = deps,
         # Pass-thru --define=compile=foo as an environment variable
         configuration_env_vars = ["compile"],
-        jasmine = "@npm//jasmine",
         **kwargs
     )
 

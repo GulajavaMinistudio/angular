@@ -7,6 +7,7 @@
  */
 
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
+import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 import {CssSelectorList} from './projection';
 
@@ -138,7 +139,9 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   type: Type<T>;
 
   /** Function that resolves providers and publishes them into the DI system. */
-  providersResolver: (<U extends T>(def: DirectiveDef<U>) => void)|null;
+  providersResolver:
+      (<U extends T>(def: DirectiveDef<U>, processProvidersFn?: ProcessProvidersFunction) =>
+           void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   readonly selectors: CssSelectorList;
@@ -157,6 +160,13 @@ export interface DirectiveDef<T> extends BaseDef<T> {
    * Function to create and refresh content queries associated with a given directive.
    */
   contentQueries: ContentQueriesFunction<T>|null;
+
+  /**
+   * Query-related instructions for a directive. Note that while directives don't have a
+   * view and as such view queries won't necessarily do anything, there might be
+   * components that extend the directive.
+   */
+  viewQuery: ViewQueriesFunction<T>|null;
 
   /**
    * Refreshes host bindings on the associated directive.

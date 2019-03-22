@@ -18,7 +18,7 @@ import {Renderer2} from '../render/api';
 import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {NodeInjector, getParentInjectorLocation} from './di';
-import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions';
+import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/all';
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
@@ -349,7 +349,9 @@ export function createViewRef(
     const componentIndex = hostTNode.directiveStart;
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, context, componentIndex);
-  } else if (hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container) {
+  } else if (
+      hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
+      hostTNode.type === TNodeType.ElementContainer) {
     const hostComponentView = findComponentView(hostView);
     return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
   }

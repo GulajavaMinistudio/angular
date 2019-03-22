@@ -606,9 +606,6 @@
     "name": "renderInitialStyles"
   },
   {
-    "name": "renderInitialStylingValues"
-  },
-  {
     "name": "renderStringify"
   },
   {
@@ -625,6 +622,9 @@
   },
   {
     "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "setActiveHost"
   },
   {
     "name": "setBindingRoot"
@@ -658,6 +658,9 @@
   },
   {
     "name": "setIsParent"
+  },
+  {
+    "name": "setNodeStylingTemplate"
   },
   {
     "name": "setPreviousOrParentTNode"

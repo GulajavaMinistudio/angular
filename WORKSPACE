@@ -15,13 +15,12 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "5c86b055c57e15bf32d9009a15bcd6d8e190c41b1ff2fb18037b75e0012e4e7c",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.26.0/rules_nodejs-0.26.0.tar.gz"],
+    sha256 = "fb87ed5965cef93188af9a7287511639403f4b0da418961ce6defb9dcf658f51",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.27.7/rules_nodejs-0.27.7.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
-load("@build_bazel_rules_nodejs//:package.bzl", "check_rules_nodejs_version")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "check_rules_nodejs_version", "node_repositories", "yarn_install")
 
 # Bazel version must be at least v0.21.0 because:
 #   - 0.21.0 Using --incompatible_strict_action_env flag fixes cache when running `yarn bazel`
@@ -49,6 +48,14 @@ node_repositories(
     node_version = "10.9.0",
     package_json = ["//:package.json"],
     preserve_symlinks = True,
+    # yarn 1.13.0 under Bazel has a regression on Windows that causes build errors on rebuilds:
+    # ```
+    # ERROR: Source forest creation failed: C:/.../fyuc5c3n/execroot/angular/external (Directory not empty)
+    # ```
+    # See https://github.com/angular/angular/pull/29431 for more information.
+    # It possible that versions of yarn past 1.13.0 do not have this issue, however, before
+    # advancing this version we need to test manually on Windows that the above error does not
+    # happen as the issue is not caught by CI.
     yarn_version = "1.12.1",
 )
 

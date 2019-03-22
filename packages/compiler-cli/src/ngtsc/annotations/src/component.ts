@@ -12,9 +12,9 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry, ScopeDirective, extractDirectiveGuards} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
@@ -23,7 +23,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, unwrapExpression} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -45,7 +45,7 @@ export class ComponentDecoratorHandler implements
       private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter) {}
+      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private boundTemplateCache = new Map<ts.Declaration, BoundTarget<ScopeDirective>>();
@@ -60,7 +60,7 @@ export class ComponentDecoratorHandler implements
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
@@ -75,7 +75,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
+  preanalyze(node: ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
     // In preanalyze, resource URLs associated with the component are asynchronously preloaded via
     // the resourceLoader. This is the only time async operations are allowed for a component.
     // These resources are:
@@ -127,7 +127,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
+  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
     const containingFile = node.getSourceFile().fileName;
     const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
@@ -135,7 +135,7 @@ export class ComponentDecoratorHandler implements
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.isCore,
+        node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
@@ -145,7 +145,7 @@ export class ComponentDecoratorHandler implements
     }
 
     // Next, read the `@Component`-specific fields.
-    const {decoratedElements, decorator: component, metadata} = directiveResult;
+    const {decorator: component, metadata} = directiveResult;
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
@@ -213,7 +213,7 @@ export class ComponentDecoratorHandler implements
       const ref = new Reference(node);
       this.scopeRegistry.registerDirective({
         ref,
-        name: node.name !.text,
+        name: node.name.text,
         selector: metadata.selector,
         exportAs: metadata.exportAs,
         inputs: metadata.inputs,
@@ -221,22 +221,6 @@ export class ComponentDecoratorHandler implements
         queries: metadata.queries.map(query => query.propertyName),
         isComponent: true, ...extractDirectiveGuards(node, this.reflector),
       });
-    }
-
-    // Construct the list of view queries.
-    const coreModule = this.isCore ? undefined : '@angular/core';
-    const viewChildFromFields = queriesFromFields(
-        filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), this.reflector,
-        this.evaluator);
-    const viewChildrenFromFields = queriesFromFields(
-        filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), this.reflector,
-        this.evaluator);
-    const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
-
-    if (component.has('queries')) {
-      const queriesFromDecorator = extractQueriesFromDecorator(
-          component.get('queries') !, this.reflector, this.evaluator, this.isCore);
-      viewQueries.push(...queriesFromDecorator.view);
     }
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
@@ -288,7 +272,6 @@ export class ComponentDecoratorHandler implements
         meta: {
           ...metadata,
           template,
-          viewQueries,
           encapsulation,
           interpolation: template.interpolation,
           styles: styles || [],
@@ -302,7 +285,8 @@ export class ComponentDecoratorHandler implements
           viewProviders,
           i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath
         },
-        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
+        metadataStmt: generateSetClassMetadataCall(
+            node, this.reflector, this.defaultImportRecorder, this.isCore),
         parsedTemplate: template.nodes,
       },
       typeCheck: true,
@@ -313,7 +297,7 @@ export class ComponentDecoratorHandler implements
     return output;
   }
 
-  typeCheck(ctx: TypeCheckContext, node: ts.Declaration, meta: ComponentHandlerData): void {
+  typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
     if (!ts.isClassDeclaration(node)) {
       return;
     }
@@ -328,7 +312,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  resolve(node: ts.ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
+  resolve(node: ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
@@ -361,9 +345,9 @@ export class ComponentDecoratorHandler implements
       if (!cycleDetected) {
         const wrapDirectivesAndPipesInClosure =
             directives.some(
-                dir => isExpressionForwardReference(dir.expression, node.name !, context)) ||
+                dir => isExpressionForwardReference(dir.expression, node.name, context)) ||
             Array.from(pipes.values())
-                .some(pipe => isExpressionForwardReference(pipe, node.name !, context));
+                .some(pipe => isExpressionForwardReference(pipe, node.name, context));
         metadata.directives = directives;
         metadata.pipes = pipes;
         metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
@@ -390,7 +374,7 @@ export class ComponentDecoratorHandler implements
     return {};
   }
 
-  compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
+  compile(node: ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
       CompileResult {
     const res = compileComponentFromMetadata(analysis.meta, pool, makeBindingParser());
 
@@ -613,20 +597,6 @@ function getTemplateRange(templateExpr: ts.Expression) {
     startCol: character,
     endPos: templateExpr.getEnd() - 1,
   };
-}
-
-function isExpressionForwardReference(
-    expr: Expression, context: ts.Node, contextSource: ts.SourceFile): boolean {
-  if (isWrappedTsNodeExpr(expr)) {
-    const node = ts.getOriginalNode(expr.node);
-    return node.getSourceFile() === contextSource && context.pos < node.pos;
-  } else {
-    return false;
-  }
-}
-
-function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
-  return expr instanceof WrappedNodeExpr;
 }
 
 function sourceMapUrl(resourceUrl: string): string {

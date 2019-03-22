@@ -11,7 +11,7 @@ import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 import {attachPatchData} from './context_discovery';
-import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
+import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions/all';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
@@ -626,16 +626,6 @@ export function i18nEnd(): void {
   i18nEndFirstPass(tView);
 }
 
-function findLastNode(node: TNode): TNode {
-  while (node.next) {
-    node = node.next;
-  }
-  if (node.child) {
-    return findLastNode(node.child);
-  }
-  return node;
-}
-
 /**
  * See `i18nEnd` above.
  */
@@ -651,10 +641,8 @@ function i18nEndFirstPass(tView: TView) {
 
   // Find the last node that was added before `i18nEnd`
   let lastCreatedNode = getPreviousOrParentTNode();
-  if (lastCreatedNode.child) {
-    lastCreatedNode = findLastNode(lastCreatedNode.child);
-  }
 
+  // Read the instructions to insert/move/remove DOM elements
   const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
 
   // Remove deleted nodes

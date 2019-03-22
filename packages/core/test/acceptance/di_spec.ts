@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, Inject, LOCALE_ID, Optional, Pipe, PipeTransform, SkipSelf, ViewChild} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, Directive, Inject, LOCALE_ID, Optional, Pipe, PipeTransform, SkipSelf, ViewChild} from '@angular/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 
@@ -38,6 +38,28 @@ describe('di', () => {
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
       expect((pipeInstance !.cdr as ViewRef<MyApp>).context).toBe(fixture.componentInstance);
+    });
+
+    it('should inject host component ChangeDetectorRef into directives on ng-container', () => {
+      let dirInstance: MyDirective;
+
+      @Directive({selector: '[getCDR]'})
+      class MyDirective {
+        constructor(public cdr: ChangeDetectorRef) { dirInstance = this; }
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `<ng-container getCDR>Visible</ng-container>`,
+      })
+      class MyApp {
+        constructor(public cdr: ChangeDetectorRef) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyDirective]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      expect((dirInstance !.cdr as ViewRef<MyApp>).context).toBe(fixture.componentInstance);
     });
   });
 
@@ -129,5 +151,64 @@ describe('di', () => {
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
     expect(fixture.componentInstance.myDir.localeId).toBe('en-GB');
+  });
+
+  describe('@Attribute', () => {
+
+    it('should be able to inject different kinds of attributes', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('class') public className: string,
+            @Attribute('style') public inlineStyles: string,
+            @Attribute('other-attr') public otherAttr: string) {}
+      }
+
+      @Component({
+        template:
+            '<div dir style="margin: 1px; color: red;" class="hello there" other-attr="value"></div>'
+      })
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.otherAttr).toBe('value');
+      expect(directive.className).toBe('hello there');
+      expect(directive.inlineStyles).toBe('margin: 1px; color: red;');
+
+    });
+
+    it('should not inject attributes with namespace', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('exist') public exist: string,
+            @Attribute('svg:exist') public namespacedExist: string,
+            @Attribute('other') public other: string) {}
+      }
+
+      @Component({
+        template: '<div dir exist="existValue" svg:exist="testExistValue" other="otherValue"></div>'
+      })
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.exist).toBe('existValue');
+      expect(directive.namespacedExist).toBeNull();
+      expect(directive.other).toBe('otherValue');
+    });
   });
 });
