@@ -21,7 +21,7 @@ import {makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderer extends Renderer {
   constructor(host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(host, isCore, bundle, '/src', '/dist');
+    super(host, isCore, bundle, '/src');
   }
   addImports(output: MagicString, imports: {specifier: string, qualifier: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
@@ -107,7 +107,7 @@ describe('Renderer', () => {
 
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'file': '/dist/file.js',
+    'file': 'file.js',
     'sources': ['/src/file.js'],
     'sourcesContent': [INPUT_PROGRAM.contents],
     'names': [],
@@ -119,7 +119,7 @@ describe('Renderer', () => {
     'sources': ['/src/file.ts'],
     'names': [],
     'mappings': ';;;;;;;;;;AAAA',
-    'file': '/dist/file.js',
+    'file': 'file.js',
     'sourcesContent': [INPUT_PROGRAM.contents]
   });
 
@@ -131,10 +131,10 @@ describe('Renderer', () => {
          const result = renderer.renderProgram(
              decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
              moduleWithProvidersAnalyses);
-         expect(result[0].path).toEqual('/dist/file.js');
+         expect(result[0].path).toEqual('/src/file.js');
          expect(result[0].contents)
-             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/dist/file.js.map'));
-         expect(result[1].path).toEqual('/dist/file.js.map');
+             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
+         expect(result[1].path).toEqual('/src/file.js.map');
          expect(result[1].contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
        });
 
@@ -154,6 +154,7 @@ describe('Renderer', () => {
 A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵtext(0);
     } if (rf & 2) {
+        ɵngcc0.ɵselect(0);
         ɵngcc0.ɵtextBinding(0, ɵngcc0.ɵinterpolation1("", ctx.person.name, ""));
     } }, encapsulation: 2 });`);
     });
@@ -236,7 +237,7 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                moduleWithProvidersAnalyses);
-           expect(result[0].path).toEqual('/dist/file.js');
+           expect(result[0].path).toEqual('/src/file.js');
            expect(result[0].contents)
                .toEqual(RENDERED_CONTENTS + '\n' + MERGED_OUTPUT_PROGRAM_MAP.toComment());
            expect(result[1]).toBeUndefined();
@@ -256,10 +257,10 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                moduleWithProvidersAnalyses);
-           expect(result[0].path).toEqual('/dist/file.js');
+           expect(result[0].path).toEqual('/src/file.js');
            expect(result[0].contents)
-               .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/dist/file.js.map'));
-           expect(result[1].path).toEqual('/dist/file.js.map');
+               .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
+           expect(result[1].path).toEqual('/src/file.js.map');
            expect(result[1].contents).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toJSON());
          });
     });
