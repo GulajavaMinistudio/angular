@@ -538,8 +538,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(attr);
+        } else {
+          outputAttrs.push(attr);
         }
-        outputAttrs.push(attr);
       }
     }
 
@@ -565,8 +566,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(input);
+        } else {
+          allOtherInputs.push(input);
         }
-        allOtherInputs.push(input);
       }
     });
 
@@ -579,7 +581,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     // add attributes for directive and projection matching purposes
-    attributes.push(...this.prepareNonRenderAttrs(allOtherInputs, element.outputs, stylingBuilder));
+    attributes.push(...this.prepareNonRenderAttrs(
+        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -1141,7 +1144,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    *   CLASSES, class1, class2,
    *   STYLES, style1, value1, style2, value2,
    *   BINDINGS, name1, name2, name3,
-   *   TEMPLATE, name4, name5, ...]
+   *   TEMPLATE, name4, name5, name6,
+   *   I18N, name7, name8, ...]
    * ```
    *
    * Note that this function will fully ignore all synthetic (@foo) attribute values
@@ -1149,7 +1153,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    */
   private prepareNonRenderAttrs(
       inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
-      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
+      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
+      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
 
@@ -1201,6 +1206,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (templateAttrs.length) {
       attrExprs.push(o.literal(core.AttributeMarker.Template));
       templateAttrs.forEach(attr => addAttrExpr(attr.name));
+    }
+
+    if (i18nAttrs.length) {
+      attrExprs.push(o.literal(core.AttributeMarker.I18n));
+      i18nAttrs.forEach(attr => addAttrExpr(attr.name));
     }
 
     return attrExprs;
