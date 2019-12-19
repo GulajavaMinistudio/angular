@@ -11,8 +11,8 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
-import {MetadataReader, MetadataRegistry} from '../../metadata';
-import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {PartialEvaluator, ResolvedValue, ResolvedValueArray} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
@@ -20,9 +20,10 @@ import {FactoryTracker} from '../../shims';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
+import {getProviderDiagnostics} from './diagnostics';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getReferenceOriginForDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -35,6 +36,8 @@ export interface NgModuleAnalysis {
   exports: Reference<ClassDeclaration>[];
   id: Expression|null;
   factorySymbolName: string;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  providers: ts.Expression|null;
 }
 
 export interface NgModuleResolution { injectorImports: Expression[]; }
@@ -54,7 +57,8 @@ export class NgModuleDecoratorHandler implements
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
       private factoryTracker: FactoryTracker|null,
       private defaultImportRecorder: DefaultImportRecorder,
-      private annotateForClosureCompiler: boolean, private localeId?: string) {}
+      private annotateForClosureCompiler: boolean,
+      private injectableRegistry: InjectableClassRegistry, private localeId?: string) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
@@ -119,7 +123,7 @@ export class NgModuleDecoratorHandler implements
       // Look through the declarations to make sure they're all a part of the current compilation.
       for (const ref of declarationRefs) {
         if (ref.node.getSourceFile().isDeclarationFile) {
-          const errorNode: ts.Expression = getReferenceOriginForDiagnostics(ref, rawDeclarations);
+          const errorNode: ts.Expression = ref.getOriginForDiagnostics(rawDeclarations);
 
           diagnostics.push(makeDiagnostic(
               ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
@@ -220,10 +224,14 @@ export class NgModuleDecoratorHandler implements
         declarations.some(isForwardReference) || imports.some(isForwardReference) ||
         exports.some(isForwardReference);
 
+    const type = wrapTypeReference(this.reflector, node);
+    const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node));
+    const adjacentType = new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node));
+
     const ngModuleDef: R3NgModuleMetadata = {
-      type: new WrappedNodeExpr(node.name),
-      internalType: new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node)),
-      adjacentType: new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node)),
+      type,
+      internalType,
+      adjacentType,
       bootstrap,
       declarations,
       exports,
@@ -236,7 +244,7 @@ export class NgModuleDecoratorHandler implements
     };
 
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
-    const providers = rawProviders !== null ?
+    const wrapperProviders = rawProviders !== null ?
         new WrappedNodeExpr(
             this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
                                               rawProviders) :
@@ -256,11 +264,11 @@ export class NgModuleDecoratorHandler implements
 
     const ngInjectorDef: R3InjectorMetadata = {
       name,
-      type: new WrappedNodeExpr(node.name),
-      internalType: new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node)),
+      type,
+      internalType,
       deps: getValidConstructorDependencies(
           node, this.reflector, this.defaultImportRecorder, this.isCore),
-      providers,
+      providers: wrapperProviders,
       imports: injectorImports,
     };
 
@@ -273,6 +281,10 @@ export class NgModuleDecoratorHandler implements
         declarations: declarationRefs, rawDeclarations,
         imports: importRefs,
         exports: exportRefs,
+        providers: rawProviders,
+        providersRequiringFactory: rawProviders ?
+            resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
+            null,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
@@ -297,6 +309,8 @@ export class NgModuleDecoratorHandler implements
     if (this.factoryTracker !== null) {
       this.factoryTracker.track(node.getSourceFile(), analysis.factorySymbolName);
     }
+
+    this.injectableRegistry.registerInjectable(node);
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>):
@@ -309,29 +323,17 @@ export class NgModuleDecoratorHandler implements
       diagnostics.push(...scopeDiagnostics);
     }
 
+    if (analysis.providersRequiringFactory !== null) {
+      const providerDiagnostics = getProviderDiagnostics(
+          analysis.providersRequiringFactory, analysis.providers !, this.injectableRegistry);
+      diagnostics.push(...providerDiagnostics);
+    }
+
     const data: NgModuleResolution = {
       injectorImports: [],
     };
 
-    for (const decl of analysis.declarations) {
-      if (this.metaReader.getDirectiveMetadata(decl) === null &&
-          this.metaReader.getPipeMetadata(decl) === null) {
-        // This declaration is neither a directive(or component) nor a pipe, so produce a diagnostic
-        // for it.
-
-        // Locate the error on the 'declarations' field of the NgModule decorator to start.
-        const errorNode: ts.Expression =
-            getReferenceOriginForDiagnostics(decl, analysis.rawDeclarations !);
-        diagnostics.push(makeDiagnostic(
-            ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
-            `The class '${decl.node.name.text}' is listed in the declarations of the NgModule '${node.name.text}', but is not a directive, a component, or a pipe.
-
-Either remove it from the NgModule's declarations, or add an appropriate Angular decorator.`,
-            [{node: decl.node.name, messageText: `'${decl.node.name.text}' is declared here.`}]));
-      }
-    }
-
-    if (scope !== null) {
+    if (scope !== null && scope !== 'error') {
       // Using the scope information, extend the injector's imports using the modules that are
       // specified as module exports.
       const context = getSourceFile(node);
@@ -356,7 +358,7 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
       return {diagnostics};
     }
 
-    if (scope === null || scope.reexports === null) {
+    if (scope === null || scope === 'error' || scope.reexports === null) {
       return {data};
     } else {
       return {
@@ -384,9 +386,10 @@ Either remove it from the NgModule's declarations, or add an appropriate Angular
     for (const decl of analysis.declarations) {
       if (this.scopeRegistry.getRequiresRemoteScope(decl.node)) {
         const scope = this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as typeof node);
-        if (scope === null) {
+        if (scope === null || scope === 'error') {
           continue;
         }
+
         const directives = scope.compilation.directives.map(
             directive => this.refEmitter.emit(directive.ref, context));
         const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));

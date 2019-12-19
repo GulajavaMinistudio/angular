@@ -379,33 +379,6 @@ export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.E
 }
 
 /**
- * Given a 'container' expression and a `Reference` extracted from that container, produce a
- * `ts.Expression` to use in a diagnostic which best indicates the position within the container
- * expression that generated the `Reference`.
- *
- * For example, given a `Reference` to the class 'Bar' and the containing expression:
- * `[Foo, Bar, Baz]`, this function would attempt to return the `ts.Identifier` for `Bar` within the
- * array. This could be used to produce a nice diagnostic context:
- *
- * ```text
- * [Foo, Bar, Baz]
- *       ~~~
- * ```
- *
- * If no specific node can be found, then the `fallback` expression is used, which defaults to the
- * entire containing expression.
- */
-export function getReferenceOriginForDiagnostics(
-    ref: Reference, container: ts.Expression, fallback: ts.Expression = container): ts.Expression {
-  const id = ref.getIdentityInExpression(container);
-  if (id !== null) {
-    return id;
-  }
-
-  return fallback;
-}
-
-/**
  * Create a `ts.Diagnostic` which indicates the given class is part of the declarations of two or
  * more NgModules.
  *
@@ -421,8 +394,7 @@ export function makeDuplicateDeclarationError(
     }
     // Try to find the reference to the declaration within the declarations array, to hang the
     // error there. If it can't be found, fall back on using the NgModule's name.
-    const contextNode =
-        getReferenceOriginForDiagnostics(decl.ref, decl.rawDeclarations, decl.ngModule.name);
+    const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
     context.push({
       node: contextNode,
       messageText:
@@ -434,4 +406,63 @@ export function makeDuplicateDeclarationError(
   return makeDiagnostic(
       ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
       `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
+}
+
+/**
+ * Resolves the given `rawProviders` into `ClassDeclarations` and returns
+ * a set containing those that are known to require a factory definition.
+ * @param rawProviders Expression that declared the providers array in the source.
+ */
+export function resolveProvidersRequiringFactory(
+    rawProviders: ts.Expression, reflector: ReflectionHost,
+    evaluator: PartialEvaluator): Set<Reference<ClassDeclaration>> {
+  const providers = new Set<Reference<ClassDeclaration>>();
+  const resolvedProviders = evaluator.evaluate(rawProviders);
+
+  if (!Array.isArray(resolvedProviders)) {
+    return providers;
+  }
+
+  resolvedProviders.forEach(function processProviders(provider) {
+    let tokenClass: Reference|null = null;
+
+    if (Array.isArray(provider)) {
+      // If we ran into an array, recurse into it until we've resolve all the classes.
+      provider.forEach(processProviders);
+    } else if (provider instanceof Reference) {
+      tokenClass = provider;
+    } else if (provider instanceof Map && provider.has('useClass') && !provider.has('deps')) {
+      const useExisting = provider.get('useClass') !;
+      if (useExisting instanceof Reference) {
+        tokenClass = useExisting;
+      }
+    }
+
+    if (tokenClass !== null && reflector.isClass(tokenClass.node)) {
+      const constructorParameters = reflector.getConstructorParameters(tokenClass.node);
+
+      // Note that we only want to capture providers with a non-trivial constructor,
+      // because they're the ones that might be using DI and need to be decorated.
+      if (constructorParameters !== null && constructorParameters.length > 0) {
+        providers.add(tokenClass as Reference<ClassDeclaration>);
+      }
+    }
+  });
+
+  return providers;
+}
+
+/**
+ * Create an R3Reference for a class.
+ *
+ * The `value` is the exported declaration of the class from its source file.
+ * The `type` is an expression that would be used by ngcc in the typings (.d.ts) files.
+ */
+export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclaration): R3Reference {
+  const dtsClass = reflector.getDtsDeclaration(clazz);
+  const value = new WrappedNodeExpr(clazz.name);
+  const type = dtsClass !== null && isNamedClassDeclaration(dtsClass) ?
+      new WrappedNodeExpr(dtsClass.name) :
+      value;
+  return {value, type};
 }

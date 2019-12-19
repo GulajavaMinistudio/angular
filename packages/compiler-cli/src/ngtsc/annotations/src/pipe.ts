@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {MetadataRegistry} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -19,7 +19,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression, wrapTypeReference} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -30,7 +30,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
+      private defaultImportRecorder: DefaultImportRecorder,
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = PipeDecoratorHandler.name;
@@ -53,8 +54,9 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   analyze(clazz: ClassDeclaration, decorator: Readonly<Decorator>):
       AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
-    const type = new WrappedNodeExpr(clazz.name);
+    const type = wrapTypeReference(this.reflector, clazz);
     const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
+
     if (decorator.args === null) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
@@ -114,6 +116,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
     const ref = new Reference(node);
     this.metaRegistry.registerPipeMetadata({ref, name: analysis.meta.pipeName});
+
+    this.injectableRegistry.registerInjectable(node);
   }
 
   resolve(node: ClassDeclaration): ResolveResult<unknown> {
