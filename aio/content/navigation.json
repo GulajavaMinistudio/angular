@@ -136,6 +136,11 @@
               "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
+              "url": "guide/content-projection",
+              "title": "Content Projection",
+              "tooltip": "Learn how to create reusable components using Angular's content projection feature."
+            },
+            {
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
@@ -658,6 +663,11 @@
               "url": "guide/ivy-compatibility",
               "title": "Ivy Compatibility Guide",
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
+            },
+            {
+              "url": "guide/migration-legacy-message-id",
+              "title": "Migration: Legacy Localization IDs",
+              "tooltip": "Learn how to migrate legacy IDs for localization to new, more stable ones."
             }
           ]
         },

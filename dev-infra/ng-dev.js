@@ -2113,6 +2113,9 @@ function builder$2(yargs) {
         conflicts: ['file'],
         description: 'The key of the environment variable for the path of the commit message file.',
         coerce: (arg) => {
+            if (arg === undefined) {
+                return arg;
+            }
             const file = process.env[arg];
             if (!file) {
                 throw new Error(`Provided environment variable "${arg}" was not found.`);
@@ -5210,6 +5213,21 @@ const ReleaseBuildCommandModule = {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
+ * Spawns a given command with the specified arguments inside an interactive shell. All process
+ * stdin, stdout and stderr output is printed to the current console.
+ *
+ * @returns a Promise resolving on success, and rejecting on command failure with the status code.
+ */
+function spawnInteractiveCommand(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'inherit' }));
+        childProcess.on('exit', function (status) { return status === 0 ? resolve() : reject(status); });
+    });
+}
+/**
  * Spawns a given command with the specified arguments inside a shell. All process stdout
  * output is captured and returned as resolution on completion. Depending on the chosen
  * output mode, stdout/stderr output is also printed to the console, or only on error.
@@ -5223,7 +5241,7 @@ function spawnWithDebugOutput(command, args, options) {
         var commandText = command + " " + args.join(' ');
         var outputMode = options.mode;
         debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: ['inherit', 'pipe', 'pipe'] }));
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'pipe' }));
         var logOutput = '';
         var stdout = '';
         var stderr = '';
@@ -5321,7 +5339,7 @@ function npmIsLoggedIn(registryUrl) {
 }
 /**
  * Log into NPM at a provided registry.
- * @throws With the process log output if the login fails.
+ * @throws With the `npm login` status code if the login failed.
  */
 function npmLogin(registryUrl) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -5332,7 +5350,9 @@ function npmLogin(registryUrl) {
         if (registryUrl !== undefined) {
             args.splice(1, 0, '--registry', registryUrl);
         }
-        yield spawnWithDebugOutput('npm', args);
+        // The login command prompts for username, password and other profile information. Hence
+        // the process needs to be interactive (i.e. respecting current TTYs stdin).
+        yield spawnInteractiveCommand('npm', args);
     });
 }
 /**
@@ -6497,16 +6517,17 @@ class CutStableAction extends ReleaseAction {
             // If a new major version is published and becomes the "latest" release-train, we need
             // to set the LTS npm dist tag for the previous latest release-train (the current patch).
             if (isNewMajor) {
-                const previousPatchVersion = this.active.latest.version;
-                const ltsTagForPatch = getLtsNpmDistTagOfMajor(previousPatchVersion.major);
+                const previousPatch = this.active.latest;
+                const ltsTagForPatch = getLtsNpmDistTagOfMajor(previousPatch.version.major);
                 // Instead of directly setting the NPM dist tags, we invoke the ng-dev command for
                 // setting the NPM dist tag to the specified version. We do this because release NPM
                 // packages could be different in the previous patch branch, and we want to set the
                 // LTS tag for all packages part of the last major. It would not be possible to set the
                 // NPM dist tag for new packages part of the released major, nor would it be acceptable
                 // to skip the LTS tag for packages which are no longer part of the new major.
+                yield this.checkoutUpstreamBranch(previousPatch.branchName);
                 yield invokeYarnInstallCommand(this.projectDir);
-                yield invokeSetNpmDistCommand(ltsTagForPatch, previousPatchVersion);
+                yield invokeSetNpmDistCommand(ltsTagForPatch, previousPatch.version);
             }
             yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
         });
@@ -6751,16 +6772,16 @@ class ReleaseTool {
         });
     }
     /**
-     * Verifies the current environment contains /usr/bin/python which points to the Python3
-     * interpreter.  python is required by our tooling in bazel as it contains scripts setting
-     * `#! /usr/bin/env python`.
-     *
+     * Verifies that Python can be resolved within scripts and points to a compatible version. Python
+     * is required in Bazel actions as there can be tools (such as `skydoc`) that rely on it.
      * @returns a boolean indicating success or failure.
      */
     _verifyEnvironmentHasPython3Symlink() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             try {
-                const pyVersion = yield spawnWithDebugOutput('/usr/bin/python', ['--version'], { mode: 'silent' });
+                // Note: We do not rely on `/usr/bin/env` but rather access the `env` binary directly as it
+                // should be part of the shell's `$PATH`. This is necessary for compatibility with Windows.
+                const pyVersion = yield spawnWithDebugOutput('env', ['python', '--version'], { mode: 'silent' });
                 const version = pyVersion.stdout.trim() || pyVersion.stderr.trim();
                 if (version.startsWith('Python 3.')) {
                     debug(`Local python version: ${version}`);

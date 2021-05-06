@@ -30,12 +30,12 @@ To install Angular on your local system, you need the following:
 {@a nodejs}
 
 * **Node.js**
-  
-  Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
+
+  Angular requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
 
   <div class="alert is-helpful">
 
-  For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/@angular/cli/package.json) file.
+  For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/browse/@angular/core/package.json) file.
 
   </div>
 
@@ -84,13 +84,6 @@ To create a new workspace and initial starter app:
 The Angular CLI installs the necessary Angular npm packages and other dependencies. This can take a few minutes.
 
 The CLI creates a new workspace and a simple Welcome app, ready to run.
-
-<div class="alert is-helpful">
-
-You also have the option to use Angular's strict mode, which can help you write better, more maintainable code.
-For more information, see [Strict mode](/guide/strict-mode).
-
-</div>
 
 {@a serve}
 
