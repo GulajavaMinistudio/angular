@@ -6,16 +6,10 @@
     "name": "ANIMATION_MODULE_TYPE"
   },
   {
-    "name": "APPLICATION_MODULE_PROVIDERS"
-  },
-  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
     "name": "APP_ID"
-  },
-  {
-    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -123,9 +117,6 @@
     "name": "CommonModule"
   },
   {
-    "name": "Compiler"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -151,9 +142,6 @@
   },
   {
     "name": "DASH_CASE_REGEXP"
-  },
-  {
-    "name": "DEFAULT_CURRENCY_CODE"
   },
   {
     "name": "DEFAULT_NOOP_PREVIOUS_NODE"
@@ -235,9 +223,6 @@
   },
   {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -345,9 +330,6 @@
     "name": "NgLocalization"
   },
   {
-    "name": "NgModuleFactory2"
-  },
-  {
     "name": "NgModuleRef"
   },
   {
@@ -376,9 +358,6 @@
   },
   {
     "name": "Observable"
-  },
-  {
-    "name": "Optional"
   },
   {
     "name": "PARAM_REGEX"
@@ -420,9 +399,6 @@
     "name": "RuntimeError"
   },
   {
-    "name": "SCHEDULER"
-  },
-  {
     "name": "SELF_TOKEN_REGEX"
   },
   {
@@ -450,9 +426,6 @@
     "name": "SimpleOuterSubscriber"
   },
   {
-    "name": "SkipSelf"
-  },
-  {
     "name": "SpecialCasedStyles"
   },
   {
@@ -478,6 +451,9 @@
   },
   {
     "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "TRACKED_LVIEWS"
   },
   {
     "name": "TRANSITION_ID"
@@ -624,9 +600,6 @@
     "name": "applyView"
   },
   {
-    "name": "attachInjectFlag"
-  },
-  {
     "name": "attachPatchData"
   },
   {
@@ -673,6 +646,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "compileNgModuleFactory"
   },
   {
     "name": "computeStaticStyling"
@@ -972,6 +948,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1114,9 +1093,6 @@
   },
   {
     "name": "makeLambdaFromStates"
-  },
-  {
-    "name": "makeParamDecorator"
   },
   {
     "name": "makeRecord"
@@ -1375,6 +1351,9 @@
   },
   {
     "name": "u"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapRNode"

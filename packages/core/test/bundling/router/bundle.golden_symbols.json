@@ -6,9 +6,6 @@
     "name": "ANALYZE_FOR_ENTRY_COMPONENTS"
   },
   {
-    "name": "APPLICATION_MODULE_PROVIDERS"
-  },
-  {
     "name": "APP_BASE_HREF"
   },
   {
@@ -16,9 +13,6 @@
   },
   {
     "name": "APP_ID"
-  },
-  {
-    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -136,9 +130,6 @@
   },
   {
     "name": "DATA_URL_PATTERN"
-  },
-  {
-    "name": "DEFAULT_CURRENCY_CODE"
   },
   {
     "name": "DEFAULT_SERIALIZER"
@@ -585,9 +576,6 @@
     "name": "SAFE_URL_PATTERN"
   },
   {
-    "name": "SCHEDULER"
-  },
-  {
     "name": "SEGMENT_RE"
   },
   {
@@ -658,6 +646,9 @@
   },
   {
     "name": "TQuery_"
+  },
+  {
+    "name": "TRACKED_LVIEWS"
   },
   {
     "name": "TRANSITION_ID"
@@ -1368,6 +1359,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1897,6 +1891,9 @@
   },
   {
     "name": "u"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapElementRef"

@@ -3,16 +3,10 @@
     "name": "ALLOW_MULTIPLE_PLATFORMS"
   },
   {
-    "name": "APPLICATION_MODULE_PROVIDERS"
-  },
-  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
     "name": "APP_ID"
-  },
-  {
-    "name": "APP_ID_RANDOM_PROVIDER"
   },
   {
     "name": "APP_INITIALIZER"
@@ -87,9 +81,6 @@
     "name": "CommonModule"
   },
   {
-    "name": "Compiler"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -115,9 +106,6 @@
   },
   {
     "name": "ControlContainer"
-  },
-  {
-    "name": "DEFAULT_CURRENCY_CODE"
   },
   {
     "name": "DEFAULT_VALUE_ACCESSOR"
@@ -214,9 +202,6 @@
   },
   {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -438,9 +423,6 @@
     "name": "RuntimeError"
   },
   {
-    "name": "SCHEDULER"
-  },
-  {
     "name": "SERVER_TRANSITION_PROVIDERS"
   },
   {
@@ -481,6 +463,9 @@
   },
   {
     "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "TRACKED_LVIEWS"
   },
   {
     "name": "TRANSITION_ID"
@@ -1065,6 +1050,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1534,6 +1522,9 @@
   },
   {
     "name": "u"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapRNode"
