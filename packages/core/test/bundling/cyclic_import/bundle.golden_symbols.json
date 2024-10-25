@@ -165,6 +165,9 @@
     "name": "EnvironmentInjector"
   },
   {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -403,6 +406,9 @@
   },
   {
     "name": "SimpleChange"
+  },
+  {
+    "name": "StandaloneService"
   },
   {
     "name": "Subject"
@@ -861,9 +867,6 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {
@@ -1071,6 +1074,9 @@
     "name": "markViewForRefresh"
   },
   {
+    "name": "markedFeatures"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -1189,6 +1195,9 @@
   },
   {
     "name": "runEffectsInView"
+  },
+  {
+    "name": "runInInjectionContext"
   },
   {
     "name": "saveNameToExportMap"

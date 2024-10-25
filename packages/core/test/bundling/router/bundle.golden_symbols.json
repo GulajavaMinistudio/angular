@@ -1434,9 +1434,6 @@
     "name": "getOrCreateViewRefs"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOutlet"
   },
   {
@@ -2242,9 +2239,6 @@
   },
   {
     "name": "ɵɵNgOnChangesFeature"
-  },
-  {
-    "name": "ɵɵStandaloneFeature"
   },
   {
     "name": "ɵɵattribute"

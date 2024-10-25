@@ -225,6 +225,9 @@
     "name": "EnvironmentInjector"
   },
   {
+    "name": "EnvironmentNgModuleRefAdapter"
+  },
+  {
     "name": "ErrorHandler"
   },
   {
@@ -568,6 +571,9 @@
   },
   {
     "name": "SkipSelf"
+  },
+  {
+    "name": "StandaloneService"
   },
   {
     "name": "StatusChangeEvent"
@@ -1218,9 +1224,6 @@
     "name": "getOrCreateViewRefs"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {
@@ -1771,6 +1774,9 @@
   },
   {
     "name": "runEffectsInView"
+  },
+  {
+    "name": "runInInjectionContext"
   },
   {
     "name": "saveNameToExportMap"

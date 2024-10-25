@@ -768,9 +768,6 @@
     "name": "getOrCreateTNode"
   },
   {
-    "name": "getOriginalError"
-  },
-  {
     "name": "getOwnDefinition"
   },
   {
@@ -1047,6 +1044,9 @@
     "name": "runEffectsInView"
   },
   {
+    "name": "runInInjectionContext"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
@@ -1144,9 +1144,6 @@
   },
   {
     "name": "writeToDirectiveInput"
-  },
-  {
-    "name": "ɵɵStandaloneFeature"
   },
   {
     "name": "ɵɵdefineComponent"
