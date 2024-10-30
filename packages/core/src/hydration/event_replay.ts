@@ -32,28 +32,24 @@ import {BLOCK_ELEMENT_MAP, EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED
 import {
   sharedStashFunction,
   sharedMapFunction,
-  BLOCKNAME_ATTRIBUTE,
+  DEFER_BLOCK_SSR_ID_ATTRIBUTE,
   EventContractDetails,
   JSACTION_EVENT_CONTRACT,
   removeListenersFromBlocks,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './blocks';
+import {hydrateFromBlockName, findFirstHydratedParentDeferBlock} from './blocks';
 import {DeferBlock, DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
 import {triggerAndWaitForCompletion} from '../defer/instructions';
 import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
 import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {DeferBlockRegistry} from '../defer/registry';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
  */
 const appsWithEventReplay = new WeakSet<ApplicationRef>();
-
-/**
- * A set of in progress hydrating blocks
- */
-let hydratingBlocks = new Set<string>();
 
 /**
  * A list of block events that need to be replayed
@@ -94,6 +90,9 @@ export function withEventReplay(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const injector = inject(Injector);
+        // We have to check for the appRef here due to the possibility of multiple apps
+        // being present on the same page. We only want to enable event replay for the
+        // apps that actually want it.
         const appRef = injector.get(ApplicationRef);
         if (!appsWithEventReplay.has(appRef)) {
           const jsActionMap = inject(BLOCK_ELEMENT_MAP);
@@ -118,6 +117,9 @@ export function withEventReplay(): Provider[] {
               return;
             }
 
+            // We have to check for the appRef here due to the possibility of multiple apps
+            // being present on the same page. We only want to enable event replay for the
+            // apps that actually want it.
             if (!appsWithEventReplay.has(appRef)) {
               appsWithEventReplay.add(appRef);
               appRef.onDestroy(() => appsWithEventReplay.delete(appRef));
@@ -226,7 +228,8 @@ export function invokeRegisteredReplayListeners(
   event: Event,
   currentTarget: Element | null,
 ) {
-  const blockName = (currentTarget && currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
+  const blockName =
+    (currentTarget && currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)) ?? '';
   if (/d\d+/.test(blockName)) {
     hydrateAndInvokeBlockListeners(blockName, injector, event, currentTarget!);
   } else if (event.eventPhase === EventPhase.REPLAY) {
@@ -241,30 +244,16 @@ async function hydrateAndInvokeBlockListeners(
   currentTarget: Element,
 ) {
   blockEventQueue.push({event, currentTarget});
-  if (!hydratingBlocks.has(blockName)) {
-    hydratingBlocks.add(blockName);
-    await triggerBlockHydration(injector, blockName, fetchAndRenderDeferBlock);
-    hydratingBlocks.delete(blockName);
-  }
-}
-
-export async function fetchAndRenderDeferBlock(deferBlock: DeferBlock): Promise<DeferBlock> {
-  await triggerAndWaitForCompletion(deferBlock);
-  return deferBlock;
-}
-
-async function triggerBlockHydration(
-  injector: Injector,
-  blockName: string,
-  onTriggerFn: (deferBlock: any) => void,
-) {
-  // grab the list of dehydrated blocks and queue them up
-  const {dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, injector);
-  for (let block of dehydratedBlocks) {
-    hydratingBlocks.add(block);
-  }
-  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(injector, blockName, onTriggerFn);
+  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(
+    injector,
+    blockName,
+    fetchAndRenderDeferBlock,
+  );
   if (deferBlock !== null) {
+    // TODO(incremental-hydration): extract this work into a post
+    // hydration cleanup function
+    const deferBlockRegistry = injector.get(DeferBlockRegistry);
+    deferBlockRegistry.hydrating.delete(blockName);
     hydratedBlocks.add(blockName);
     const appRef = injector.get(ApplicationRef);
     await appRef.whenStable();
@@ -273,13 +262,18 @@ async function triggerBlockHydration(
   }
 }
 
+export async function fetchAndRenderDeferBlock(deferBlock: DeferBlock): Promise<DeferBlock> {
+  await triggerAndWaitForCompletion(deferBlock);
+  return deferBlock;
+}
+
 function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector) {
   // clone the queue
   const queue = [...blockEventQueue];
   // empty it
   blockEventQueue = [];
   for (let {event, currentTarget} of queue) {
-    const blockName = currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)!;
+    const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
     if (hydratedBlocks.has(blockName)) {
       invokeListeners(event, currentTarget);
     } else {
