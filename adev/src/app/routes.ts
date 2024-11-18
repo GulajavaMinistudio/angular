@@ -123,6 +123,14 @@ const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 
 const REDIRECT_ROUTES: Route[] = [
   {
+    path: 'guide/defer',
+    redirectTo: 'guide/templates/defer',
+  },
+  {
+    path: 'guide/components/importing',
+    redirectTo: 'guide/components/anatomy-of-components#using-components',
+  },
+  {
     path: 'guide/templates/attribute-binding',
     redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
   },
@@ -161,6 +169,26 @@ const REDIRECT_ROUTES: Route[] = [
   {
     path: 'guide/templates/template-statements',
     redirectTo: 'guide/templates/event-listeners',
+  },
+  {
+    path: 'guide/signals/rxjs-interop',
+    redirectTo: 'ecosystem/rxjs-interop',
+  },
+  {
+    path: 'guide/components/output-function',
+    redirectTo: 'guide/components/outputs',
+  },
+  {
+    path: 'guide/signals/queries',
+    redirectTo: 'guide/components/queries',
+  },
+  {
+    path: 'guide/signals/model',
+    redirectTo: 'guide/signals/inputs',
+  },
+  {
+    path: 'guide/signals/inputs',
+    redirectTo: 'guide/components/inputs',
   },
   {
     path: 'guide',

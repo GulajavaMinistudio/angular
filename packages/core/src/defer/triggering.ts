@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {afterNextRender} from '../render3/after_render/hooks';
 import {Injector} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {cleanupContracts} from '../event_delegation_utils';
 import {cleanupDeferBlock} from '../hydration/cleanup';
+import {BlockSummary, ElementTrigger, NUM_ROOT_NODES} from '../hydration/interfaces';
 import {
   assertSsrIdDefined,
   getParentBlockHydrationQueue,
@@ -31,6 +32,8 @@ import {
   invokeTriggerCleanupFns,
   storeTriggerCleanupFn,
 } from './cleanup';
+import {onViewport} from './dom_triggers';
+import {onIdle} from './idle_scheduler';
 import {
   DeferBlockBehavior,
   DeferBlockState,
@@ -44,7 +47,7 @@ import {
   TDeferBlockDetails,
   TriggerType,
 } from './interfaces';
-import {DEHYDRATED_BLOCK_REGISTRY} from './registry';
+import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
 import {
   DEFER_BLOCK_CONFIG,
   DEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
@@ -52,6 +55,7 @@ import {
   renderDeferStateAfterResourceLoading,
   renderPlaceholder,
 } from './rendering';
+import {onTimer} from './timer_scheduler';
 import {
   addDepsToRegistry,
   assertDeferredDependenciesLoaded,
@@ -351,12 +355,43 @@ export async function triggerHydrationFromBlockName(
  * Triggers the resource loading for a defer block and passes back a promise
  * to handle cleanup on completion
  */
-export function triggerAndWaitForCompletion(deferBlock: DehydratedDeferBlock): Promise<void> {
-  const lDetails = getLDeferBlockDetails(deferBlock.lView, deferBlock.tNode);
-  const promise = new Promise<void>((resolve) => {
-    onDeferBlockCompletion(lDetails, resolve);
+export function triggerAndWaitForCompletion(
+  dehydratedBlockId: string,
+  dehydratedBlockRegistry: DehydratedBlockRegistry,
+  injector: Injector,
+): Promise<void> {
+  // TODO(incremental-hydration): This is a temporary fix to resolve control flow
+  // cases where nested defer blocks are inside control flow. We wait for each nested
+  // defer block to load and render before triggering the next one in a sequence. This is
+  // needed to ensure that corresponding LViews & LContainers are available for a block
+  // before we trigger it. We need to investigate how to get rid of the `afterNextRender`
+  // calls (in the nearest future) and do loading of all dependencies of nested defer blocks
+  // in parallel (later).
+
+  let resolve: VoidFunction;
+  const promise = new Promise<void>((resolveFn) => {
+    resolve = resolveFn;
   });
-  triggerDeferBlock(deferBlock.lView, deferBlock.tNode);
+
+  afterNextRender(
+    () => {
+      const deferBlock = dehydratedBlockRegistry.get(dehydratedBlockId);
+      // Since we trigger hydration for nested defer blocks in a sequence (parent -> child),
+      // there is a chance that a defer block may not be present at hydration time. For example,
+      // when a nested block was in an `@if` condition, which has changed.
+      // TODO(incremental-hydration): add tests to verify the behavior mentioned above.
+      if (deferBlock !== null) {
+        const {tNode, lView} = deferBlock;
+        const lDetails = getLDeferBlockDetails(lView, tNode);
+        onDeferBlockCompletion(lDetails, resolve);
+        triggerDeferBlock(lView, tNode);
+        // TODO(incremental-hydration): handle the cleanup for cases when
+        // defer block is no longer present during hydration (e.g. `@if` condition
+        // has changed during hydration/rendering).
+      }
+    },
+    {injector},
+  );
   return promise;
 }
 
@@ -398,12 +433,9 @@ async function triggerBlockTreeHydrationByName(
 
   // Step 3: hydrate each block in the queue. It will be in descending order from the top down.
   for (const dehydratedBlockId of hydrationQueue) {
-    // The registry will have the item in the queue after each loop.
-    const deferBlock = dehydratedBlockRegistry.get(dehydratedBlockId)!;
-
     // Step 4: Run the actual trigger function to fetch dependencies.
     // Triggering a block adds any of its child defer blocks to the registry.
-    await triggerAndWaitForCompletion(deferBlock);
+    await triggerAndWaitForCompletion(dehydratedBlockId, dehydratedBlockRegistry, injector);
   }
 
   const hydratedBlocks = new Set<string>(hydrationQueue);
@@ -411,10 +443,6 @@ async function triggerBlockTreeHydrationByName(
   // The last item in the queue was the original target block;
   const hydratedBlockId = hydrationQueue.slice(-1)[0];
   const hydratedBlock = dehydratedBlockRegistry.get(hydratedBlockId)!;
-
-  if (dehydratedBlockRegistry.size === 0) {
-    cleanupContracts(injector);
-  }
 
   return {deferBlock: hydratedBlock, hydratedBlocks};
 }
@@ -498,4 +526,94 @@ export function getHydrateTriggers(
  */
 export function getPrefetchTriggers(tDetails: TDeferBlockDetails): Set<DeferBlockTrigger> {
   return (tDetails.prefetchTriggers ??= new Set());
+}
+
+/**
+ * Loops through all defer block summaries and ensures all the blocks triggers are
+ * properly initialized
+ */
+export function processAndInitTriggers(
+  injector: Injector,
+  blockData: Map<string, BlockSummary>,
+  nodes: Map<string, Comment>,
+) {
+  const idleElements: ElementTrigger[] = [];
+  const timerElements: ElementTrigger[] = [];
+  const viewportElements: ElementTrigger[] = [];
+  const immediateElements: ElementTrigger[] = [];
+  for (let [blockId, blockSummary] of blockData) {
+    const commentNode = nodes.get(blockId);
+    if (commentNode !== undefined) {
+      const numRootNodes = blockSummary.data[NUM_ROOT_NODES];
+      let currentNode: Comment | HTMLElement = commentNode;
+      for (let i = 0; i < numRootNodes; i++) {
+        currentNode = currentNode.previousSibling as HTMLElement;
+        if (currentNode.nodeType !== Node.ELEMENT_NODE) {
+          continue;
+        }
+        const elementTrigger: ElementTrigger = {el: currentNode, blockName: blockId};
+        // hydrate
+        if (blockSummary.hydrate.idle) {
+          idleElements.push(elementTrigger);
+        }
+        if (blockSummary.hydrate.immediate) {
+          immediateElements.push(elementTrigger);
+        }
+        if (blockSummary.hydrate.timer !== null) {
+          elementTrigger.delay = blockSummary.hydrate.timer;
+          timerElements.push(elementTrigger);
+        }
+        if (blockSummary.hydrate.viewport) {
+          viewportElements.push(elementTrigger);
+        }
+      }
+    }
+  }
+
+  setIdleTriggers(injector, idleElements);
+  setImmediateTriggers(injector, immediateElements);
+  setViewportTriggers(injector, viewportElements);
+  setTimerTriggers(injector, timerElements);
+}
+
+async function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  for (const elementTrigger of elementTriggers) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const cleanupFn = onIdle(onInvoke, injector);
+    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+  }
+}
+
+async function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  if (elementTriggers.length > 0) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    for (let elementTrigger of elementTriggers) {
+      const cleanupFn = onViewport(
+        elementTrigger.el,
+        async () => {
+          await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+        },
+        injector,
+      );
+      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    }
+  }
+}
+
+async function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  for (const elementTrigger of elementTriggers) {
+    const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
+    const onInvoke = async () =>
+      await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const timerFn = onTimer(elementTrigger.delay!);
+    const cleanupFn = timerFn(onInvoke, injector);
+    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+  }
+}
+
+async function setImmediateTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
+  for (const elementTrigger of elementTriggers) {
+    await triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+  }
 }

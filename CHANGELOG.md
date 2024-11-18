@@ -1,3 +1,53 @@
+<a name="19.0.0-rc.3"></a>
+# 19.0.0-rc.3 (2024-11-15)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2be161d015](https://github.com/angular/angular/commit/2be161d015ce6bab0142b6e6c34a8ede6341f627) | fix | fix `:host` parsing in pseudo-selectors ([#58681](https://github.com/angular/angular/pull/58681)) |
+| [806a61b5a6](https://github.com/angular/angular/commit/806a61b5a619d98c0226ba6a566b1562f6e16e5a) | fix | fix multiline selectors ([#58681](https://github.com/angular/angular/pull/58681)) |
+| [e5d3abb298](https://github.com/angular/angular/commit/e5d3abb29842412f82a67562aceff245d493ec53) | fix | resolve `:host:host-context(.foo)` ([#58681](https://github.com/angular/angular/pull/58681)) |
+| [80f56954ce](https://github.com/angular/angular/commit/80f56954cecf763e36bdcfbbd592a82d693eeef7) | fix | transform chained pseudo-selectors ([#58681](https://github.com/angular/angular/pull/58681)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e6514b9f3d](https://github.com/angular/angular/commit/e6514b9f3dc1e2bdaa12d7096251769dc6c3e262) | fix | do not migrate next calls in template if not an EventEmitter ([#58631](https://github.com/angular/angular/pull/58631)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="19.0.0-rc.2"></a>
+# 19.0.0-rc.2 (2024-11-14)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [560282aa9b](https://github.com/angular/angular/commit/560282aa9b3204ad8311017905beed63072c7303) | fix | control flow nodes with root at the end projected incorrectly ([#58607](https://github.com/angular/angular/pull/58607)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [791ee323dc](https://github.com/angular/angular/commit/791ee323dc5e9ba60b385048f42ff5c5ded7a8c0) | fix | correct extraction of generics from type aliases ([#58548](https://github.com/angular/angular/pull/58548)) |
+| [9bbb01c85e](https://github.com/angular/angular/commit/9bbb01c85e763b0457456a2393a834db15008671) | fix | report individual diagnostics for unused imports ([#58589](https://github.com/angular/angular/pull/58589)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [71ee81af2c](https://github.com/angular/angular/commit/71ee81af2c4c5854a54cf94a48d5829da41878a7) | fix | clean up event contract once hydration is done ([#58174](https://github.com/angular/angular/pull/58174)) |
+| [5fe57d4fbb](https://github.com/angular/angular/commit/5fe57d4fbb578c35a8e8ef037ae8c19c8a0e901c) | fix | fixes issues with control flow and incremental hydration ([#58644](https://github.com/angular/angular/pull/58644)) |
+| [51933ef5a6](https://github.com/angular/angular/commit/51933ef5a6ce62df37945fa22e87e3868288e318) | fix | prevent errors on contract cleanup ([#58614](https://github.com/angular/angular/pull/58614)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b84ed2b628](https://github.com/angular/angular/commit/b84ed2b6288d101661abdc880c45b52398bc1022) | fix | include the output migration in the defaults of the signal migration ([#58635](https://github.com/angular/angular/pull/58635)) |
+| [e26797b38e](https://github.com/angular/angular/commit/e26797b38efe0ac813601c10581f34b7591954c1) | fix | replace removed NgModules in tests with their exports ([#58627](https://github.com/angular/angular/pull/58627)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="18.2.12"></a>
+# 18.2.12 (2024-11-14)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c38160853](https://github.com/angular/angular/commit/4c3816085363614497eecf6b722a91e15e1b2051) | fix | correct extraction of generics from type aliases ([#58548](https://github.com/angular/angular/pull/58548)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-rc.1"></a>
 # 19.0.0-rc.1 (2024-11-06)
 ### compiler

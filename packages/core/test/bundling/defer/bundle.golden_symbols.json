@@ -1593,9 +1593,6 @@
     "name": "init_image_performance_warning"
   },
   {
-    "name": "init_incremental"
-  },
-  {
     "name": "init_inert_body"
   },
   {
@@ -1888,6 +1885,9 @@
   },
   {
     "name": "init_platform_ref"
+  },
+  {
+    "name": "init_platform_tokens"
   },
   {
     "name": "init_profiler"
