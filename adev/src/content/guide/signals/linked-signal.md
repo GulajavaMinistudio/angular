@@ -1,4 +1,4 @@
-# `linkedSignal`
+# Dependent state with `linkedSignal`
 
 IMPORTANT: `linkedSignal` is [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
 
@@ -45,7 +45,7 @@ const shippingOptions = signal(['Ground', 'Air', 'Sea']);
 const selectedOption = linkedSignal(() => shippingOptions()[0]);
 console.log(selectedOption()); // 'Ground'
 
-selectedOption.set(shippingOptions[2]);
+selectedOption.set(shippingOptions()[2]);
 console.log(selectedOption()); // 'Sea'
 
 shippingOptions.set(['Email', 'Will Call', 'Postal service']);
@@ -63,13 +63,13 @@ In the example above, `selectedOption` always updates back to the first option w
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
   
-  selectedOption = linkedSignal({
+  selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
     // `selectedOption` is set to the `computation` result whenever this `source` changes.
-    source: shippingOptions,
+    source: this.shippingOptions,
     computation: (newOptions, previous) => {
       // If the newOptions contain the previously selected option, preserve that selection.
       // Otherwise, default to the first option.
-      return newOptions.find(opt => opt.id === previous?.value) ?? newOptions[0];
+      return newOptions.find(opt => opt.id === previous?.value?.id) ?? newOptions[0];
     } 
   });
 

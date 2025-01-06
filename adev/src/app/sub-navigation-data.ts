@@ -90,12 +90,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/signals/overview',
           },
           {
-            label: 'linkedSignal',
+            label: 'Dependent state with linkedSignal',
             path: 'guide/signals/linked-signal',
             contentPath: 'guide/signals/linked-signal',
           },
           {
-            label: 'Resource',
+            label: 'Async reactivity with resources',
             path: 'guide/signals/resource',
             contentPath: 'guide/signals/resource',
           },
@@ -1443,6 +1443,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Signal inputs',
         path: 'reference/migrations/signal-inputs',
         contentPath: 'reference/migrations/signal-inputs',
+      },
+      {
+        label: 'Outputs',
+        path: 'reference/migrations/outputs',
+        contentPath: 'reference/migrations/outputs',
       },
       {
         label: 'Signal queries',

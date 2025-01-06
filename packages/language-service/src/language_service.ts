@@ -385,7 +385,7 @@ export class LanguageService {
    * Related context: https://github.com/angular/vscode-ng-language-service/pull/2050#discussion_r1673079263
    */
   hasCodeFixesForErrorCode(errorCode: number): boolean {
-    return this.codeFixes.codeActionMetas.some((m) => m.errorCodes.includes(errorCode));
+    return this.codeFixes.hasFixForCode(errorCode);
   }
 
   getCodeFixesAtPosition(
@@ -404,17 +404,13 @@ export class LanguageService {
           return [];
         }
 
-        const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
-        if (templateInfo === undefined) {
-          return [];
-        }
         const diags = this.getSemanticDiagnostics(fileName);
         if (diags.length === 0) {
           return [];
         }
         return this.codeFixes.getCodeFixesAtPosition(
           fileName,
-          templateInfo,
+          getTemplateInfoAtPosition(fileName, start, compiler) ?? null,
           compiler,
           start,
           end,

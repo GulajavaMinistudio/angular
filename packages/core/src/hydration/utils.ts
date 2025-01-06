@@ -135,7 +135,6 @@ export function retrieveHydrationInfoImpl(
   const remainingNgh = isRootView ? componentViewNgh : rootNgh;
 
   let data: SerializedView = {};
-  let nghDeferData: {[key: string]: SerializedDeferBlock} | undefined;
   // An element might have an empty `ngh` attribute value (e.g. `<comp ngh="" />`),
   // which means that no special annotations are required. Do not attempt to read
   // from the TransferState in this case.
@@ -143,8 +142,6 @@ export function retrieveHydrationInfoImpl(
     const transferState = injector.get(TransferState, null, {optional: true});
     if (transferState !== null) {
       const nghData = transferState.get(NGH_DATA_KEY, []);
-
-      nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
       // The nghAttrValue is always a number referencing an index
       // in the hydration TransferState data.
@@ -342,6 +339,14 @@ export function markRNodeAsSkippedByHydration(node: RNode) {
   }
   patchHydrationInfo(node, {status: HydrationStatus.Skipped});
   ngDevMode.componentsSkippedHydration++;
+}
+
+export function countBlocksSkippedByHydration(injector: Injector) {
+  const transferState = injector.get(TransferState);
+  const nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
+  if (ngDevMode) {
+    ngDevMode.deferBlocksWithIncrementalHydration = Object.keys(nghDeferData).length;
+  }
 }
 
 export function markRNodeAsHavingHydrationMismatch(
@@ -554,31 +559,41 @@ export function convertHydrateTriggersToJsAction(
  * Builds a queue of blocks that need to be hydrated, looking up the
  * tree to the topmost defer block that exists in the tree that hasn't
  * been hydrated, but exists in the registry. This queue is in top down
- * heirarchical order as a list of defer block ids.
+ * hierarchical order as a list of defer block ids.
  * Note: This is utilizing serialized information to navigate up the tree
  */
-export function getParentBlockHydrationQueue(deferBlockId: string, injector: Injector) {
+export function getParentBlockHydrationQueue(
+  deferBlockId: string,
+  injector: Injector,
+): {parentBlockPromise: Promise<void> | null; hydrationQueue: string[]} {
   const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
   const transferState = injector.get(TransferState);
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
   let isTopMostDeferBlock = false;
   let currentBlockId: string | null = deferBlockId;
-  const deferBlockQueue: string[] = [];
+  let parentBlockPromise: Promise<void> | null = null;
+  const hydrationQueue: string[] = [];
 
   while (!isTopMostDeferBlock && currentBlockId) {
     ngDevMode &&
       assertEqual(
-        deferBlockQueue.indexOf(currentBlockId),
+        hydrationQueue.indexOf(currentBlockId),
         -1,
         'Internal error: defer block hierarchy has a cycle.',
       );
 
-    deferBlockQueue.unshift(currentBlockId);
     isTopMostDeferBlock = dehydratedBlockRegistry.has(currentBlockId);
+    const hydratingParentBlock = dehydratedBlockRegistry.hydrating.get(currentBlockId);
+    if (parentBlockPromise === null && hydratingParentBlock != null) {
+      // TODO: add an ngDevMode asset that `hydratingParentBlock.promise` exists and is of type Promise.
+      parentBlockPromise = hydratingParentBlock.promise;
+      break;
+    }
+    hydrationQueue.unshift(currentBlockId);
     currentBlockId = deferBlockParents[currentBlockId][DEFER_PARENT_BLOCK_ID];
   }
-  return deferBlockQueue;
+  return {parentBlockPromise, hydrationQueue};
 }
 
 function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {

@@ -46,14 +46,14 @@ import {RendererFactory} from './interfaces/renderer';
  * Replaces the metadata of a component type and re-renders all live instances of the component.
  * @param type Class whose metadata will be replaced.
  * @param applyMetadata Callback that will apply a new set of metadata on the `type` when invoked.
- * @param environment Core runtime environment to use when applying the HMR update.
+ * @param environment Syntehtic namespace imports that need to be passed along to the callback.
  * @param locals Local symbols from the source location that have to be exposed to the callback.
  * @codeGenApi
  */
 export function ɵɵreplaceMetadata(
   type: Type<unknown>,
-  applyMetadata: (...args: [Type<unknown>, Record<string, unknown>, ...unknown[]]) => void,
-  environment: Record<string, unknown>,
+  applyMetadata: (...args: [Type<unknown>, unknown[], ...unknown[]]) => void,
+  namespaces: unknown[],
   locals: unknown[],
 ) {
   ngDevMode && assertComponentDef(type);
@@ -64,7 +64,7 @@ export function ɵɵreplaceMetadata(
   // can be functions for embedded views, the variables for the constant pool and `setClassMetadata`
   // calls. The callback allows us to keep them isolate from the rest of the app and to invoke
   // them at the right time.
-  applyMetadata.apply(null, [type, environment, ...locals]);
+  applyMetadata.apply(null, [type, namespaces, ...locals]);
 
   // If a `tView` hasn't been created yet, it means that this component hasn't been instantianted
   // before. In this case there's nothing left for us to do aside from patching it in.
@@ -123,9 +123,9 @@ function recreateMatchingLViews(def: ComponentDef<unknown>, rootLView: LView): v
  * @param def A ComponentDef instance.
  */
 function clearRendererCache(factory: RendererFactory, def: ComponentDef<unknown>) {
-  // Cast to `any` to read a private field.
+  // Cast to read a private field.
   // NOTE: This must be kept synchronized with the renderer factory implementation in platform-browser.
-  (factory as any).rendererByCompId?.remove(def.id);
+  (factory as {rendererByCompId?: Map<string, unknown>}).rendererByCompId?.delete(def.id);
 }
 
 /**

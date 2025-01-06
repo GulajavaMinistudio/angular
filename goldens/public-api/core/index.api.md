@@ -134,6 +134,7 @@ export class ApplicationModule {
 
 // @public
 export class ApplicationRef {
+    constructor();
     attachView(viewRef: ViewRef): void;
     bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     // @deprecated
@@ -1139,6 +1140,16 @@ export function linkedSignal<S, D>(options: {
 }): WritableSignal<D>;
 
 // @public
+export interface ListenerOptions {
+    // (undocumented)
+    capture?: boolean;
+    // (undocumented)
+    once?: boolean;
+    // (undocumented)
+    passive?: boolean;
+}
+
+// @public
 export const LOCALE_ID: InjectionToken<string>;
 
 // @public
@@ -1523,7 +1534,7 @@ export abstract class Renderer2 {
     abstract destroy(): void;
     destroyNode: ((node: any) => void) | null;
     abstract insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean): void;
-    abstract listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean | void): () => void;
+    abstract listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean | void, options?: ListenerOptions): () => void;
     abstract nextSibling(node: any): any;
     abstract parentNode(node: any): any;
     abstract removeAttribute(el: any, name: string, namespace?: string | null): void;

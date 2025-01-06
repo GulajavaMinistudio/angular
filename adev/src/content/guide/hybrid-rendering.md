@@ -263,8 +263,7 @@ export class MyComponent {
 }
 ```
 
-IMPORTANT: The above tokens will be `null` in the following scenarios:<br><br>
-
+IMPORTANT: The above tokens will be `null` in the following scenarios:
 - During the build processes.
 - When the application is rendered in the browser (client-side rendering).
 - When performing static site generation (SSG).
@@ -302,7 +301,7 @@ import express from 'express';
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-app.get('*', (req, res, next) =>
+app.use('*', (req, res, next) => {
   angularApp
     .handle(req)
     .then(response => {
@@ -319,4 +318,4 @@ app.get('*', (req, res, next) =>
  * The request handler used by the Angular CLI (dev-server and during build).
  */
 export const reqHandler = createNodeRequestHandler(app);
-```v
+```
