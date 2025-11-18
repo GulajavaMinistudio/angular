@@ -14,18 +14,18 @@ import {
   linkedSignal,
   assertInInjectionContext,
   signal,
-  ResourceStatus,
   computed,
-  Resource,
-  WritableSignal,
   ResourceStreamItem,
   type ValueEqualityFn,
+  ɵRuntimeError,
+  ɵRuntimeErrorCode,
+  ɵencapsulateResourceError as encapsulateResourceError,
 } from '@angular/core';
-import {Subscription} from 'rxjs';
+import type {Subscription} from 'rxjs';
 
 import {HttpRequest} from './request';
 import {HttpClient} from './client';
-import {HttpErrorResponse, HttpEventType, HttpProgressEvent, HttpResponseBase} from './response';
+import {HttpErrorResponse, HttpEventType, HttpProgressEvent} from './response';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
 import {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './resource_api';
@@ -230,7 +230,9 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
     request: RawRequestType,
     options?: HttpResourceOptions<TResult, TRaw>,
   ): HttpResourceRef<TResult> {
-    options?.injector || assertInInjectionContext(httpResource);
+    if (ngDevMode && !options?.injector) {
+      assertInInjectionContext(httpResource);
+    }
     const injector = options?.injector ?? inject(Injector);
     return new HttpResourceImpl(
       injector,
@@ -276,9 +278,19 @@ function normalizeRequest(
       params,
       reportProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
+      keepalive: unwrappedRequest.keepalive,
+      cache: unwrappedRequest.cache as RequestCache,
+      priority: unwrappedRequest.priority as RequestPriority,
+      mode: unwrappedRequest.mode as RequestMode,
+      redirect: unwrappedRequest.redirect as RequestRedirect,
       responseType,
       context: unwrappedRequest.context,
       transferCache: unwrappedRequest.transferCache,
+      credentials: unwrappedRequest.credentials as RequestCredentials,
+      referrer: unwrappedRequest.referrer,
+      referrerPolicy: unwrappedRequest.referrerPolicy as ReferrerPolicy,
+      integrity: unwrappedRequest.integrity,
+      timeout: unwrappedRequest.timeout,
     },
   );
 }
@@ -343,7 +355,7 @@ class HttpResourceImpl<T>
                 try {
                   send({value: parse ? parse(event.body) : (event.body as T)});
                 } catch (error) {
-                  send({error});
+                  send({error: encapsulateResourceError(error)});
                 }
                 break;
               case HttpEventType.DownloadProgress:
@@ -358,10 +370,16 @@ class HttpResourceImpl<T>
             }
 
             send({error});
+            abortSignal.removeEventListener('abort', onAbort);
           },
           complete: () => {
             if (resolve) {
-              send({error: new Error('Resource completed before producing a value')});
+              send({
+                error: new ɵRuntimeError(
+                  ɵRuntimeErrorCode.RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE,
+                  ngDevMode && 'Resource completed before producing a value',
+                ),
+              });
             }
             abortSignal.removeEventListener('abort', onAbort);
           },
@@ -374,6 +392,14 @@ class HttpResourceImpl<T>
       injector,
     );
     this.client = injector.get(HttpClient);
+  }
+
+  override set(value: T): void {
+    super.set(value);
+
+    this._headers.set(undefined);
+    this._progress.set(undefined);
+    this._statusCode.set(undefined);
   }
 
   // This is a type only override of the method

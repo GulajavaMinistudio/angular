@@ -89,6 +89,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * @see [MDN: Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
  * @see [MDN: Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API)
  * @see [MDN: Web Push API Notifications best practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+ * @see [Push notifications guide](ecosystem/service-workers/push-notifications)
  *
  * @publicApi
  */
@@ -109,12 +110,52 @@ export class SwPush {
    * object that also includes the `title` of the [Notification][Mozilla Notification] object.
    *
    * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+   *
+   * @see [Notification click handling](ecosystem/service-workers/push-notifications#notification-click-handling)
+   *
    */
   readonly notificationClicks: Observable<{
     action: string;
     notification: NotificationOptions & {
       title: string;
     };
+  }>;
+
+  /**
+   * Emits the payloads of notifications that were closed, along with the action (if any)
+   * associated with the close event. If no action was used, the `action` property contains
+   * an empty string `''`.
+   *
+   * Note that the `notification` property does **not** contain a
+   * [Notification][Mozilla Notification] object but rather a
+   * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+   * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+   *
+   * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+   */
+  readonly notificationCloses: Observable<{
+    action: string;
+    notification: NotificationOptions & {
+      title: string;
+    };
+  }>;
+
+  /**
+   * Emits updates to the push subscription, including both the previous (`oldSubscription`)
+   * and current (`newSubscription`) values. Either subscription may be `null`, depending on
+   * the context:
+   *
+   * - `oldSubscription` is `null` if no previous subscription existed.
+   * - `newSubscription` is `null` if the subscription was invalidated and not replaced.
+   *
+   * This stream allows clients to react to automatic changes in push subscriptions,
+   * such as those triggered by browser expiration or key rotation.
+   *
+   * [Push API]: https://w3c.github.io/push-api
+   */
+  readonly pushSubscriptionChanges: Observable<{
+    oldSubscription: PushSubscription | null;
+    newSubscription: PushSubscription | null;
   }>;
 
   /**
@@ -139,6 +180,8 @@ export class SwPush {
     if (!sw.isEnabled) {
       this.messages = NEVER;
       this.notificationClicks = NEVER;
+      this.notificationCloses = NEVER;
+      this.pushSubscriptionChanges = NEVER;
       this.subscription = NEVER;
       return;
     }
@@ -147,6 +190,14 @@ export class SwPush {
 
     this.notificationClicks = this.sw
       .eventsOfType('NOTIFICATION_CLICK')
+      .pipe(map((message: any) => message.data));
+
+    this.notificationCloses = this.sw
+      .eventsOfType('NOTIFICATION_CLOSE')
+      .pipe(map((message: any) => message.data));
+
+    this.pushSubscriptionChanges = this.sw
+      .eventsOfType('PUSH_SUBSCRIPTION_CHANGE')
       .pipe(map((message: any) => message.data));
 
     this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));

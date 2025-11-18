@@ -59,11 +59,9 @@ describe('DocViewer', () => {
 
   const exampleContentWithCodeSnippet = `
     <div class="docs-code" path="forms/src/app/actor.ts" header="src/app/actor.ts">
-      <pre class="docs-mini-scroll-track">
         <code>
           <div class="hljs-ln-line"></div>
         </code>
-      </pre>
     </div>
   `;
 
@@ -111,7 +109,10 @@ describe('DocViewer', () => {
     expect(exampleViewer).not.toBeNull();
     expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.SNIPPET);
 
-    const checkIcon = fixture.debugElement.query(By.directive(IconComponent));
+    const copySourceCodeButton = fixture.debugElement.query(By.directive(CopySourceCodeButton));
+    expect(copySourceCodeButton).not.toBeNull();
+
+    const checkIcon = copySourceCodeButton.query(By.directive(IconComponent));
     expect((checkIcon.nativeElement as HTMLElement).classList).toContain(
       `material-symbols-outlined`,
     );

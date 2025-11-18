@@ -9,7 +9,7 @@
 import {untracked} from '../render3/reactivity/untracked';
 import {computed} from '../render3/reactivity/computed';
 import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
-import {Signal} from '../render3/reactivity/api';
+import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {effect, EffectRef} from '../render3/reactivity/effect';
 import {
   ResourceOptions,
@@ -22,8 +22,6 @@ import {
   ResourceStreamItem,
   ResourceLoaderParams,
 } from './api';
-
-import {ValueEqualityFn} from '../../primitives/signals';
 
 import {Injector} from '../di/injector';
 import {assertInInjectionContext} from '../di/contextual';
@@ -40,6 +38,8 @@ import {DestroyRef} from '../linker/destroy_ref';
  * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
  * request object becomes available, which could prematurely abort mutations.
  *
+ * @see [Async reactivity with resources](guide/signals/resource)
+ *
  * @experimental 19.0
  */
 export function resource<T, R>(
@@ -55,10 +55,14 @@ export function resource<T, R>(
  * request object becomes available, which could prematurely abort mutations.
  *
  * @experimental 19.0
+ * @see [Async reactivity with resources](guide/signals/resource)
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
-  options?.injector || assertInInjectionContext(resource);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(resource);
+  }
+
   const oldNameForParams = (
     options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
   ).request;
@@ -98,7 +102,8 @@ type WrappedRequest = {request: unknown; reload: number};
 abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
-  abstract readonly error: Signal<unknown>;
+  abstract readonly error: Signal<Error | undefined>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -110,14 +115,27 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
 
   abstract set(value: T): void;
 
+  private readonly isError = computed(() => this.status() === 'error');
+
   update(updateFn: (value: T) => T): void {
     this.set(updateFn(untracked(this.value)));
   }
 
   readonly isLoading = computed(() => this.status() === 'loading' || this.status() === 'reloading');
 
-  hasValue(): this is ResourceRef<Exclude<T, undefined>> {
+  // Use a computed here to avoid triggering reactive consumers if the value changes while staying
+  // either defined or undefined.
+  private readonly isValueDefined = computed(() => {
+    // Check if it's in an error state first to prevent the error from bubbling up.
+    if (this.isError()) {
+      return false;
+    }
+
     return this.value() !== undefined;
+  });
+
+  hasValue(): this is ResourceRef<Exclude<T, undefined>> {
+    return this.isValueDefined();
   }
 
   asReadonly(): Resource<T> {
@@ -146,11 +164,12 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   private pendingController: AbortController | undefined;
   private resolvePendingTask: (() => void) | undefined = undefined;
   private destroyed = false;
+  private unregisterOnDestroy: () => void;
 
   constructor(
     request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
-    private readonly defaultValue: T,
+    defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
   ) {
@@ -160,7 +179,21 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       computed(
         () => {
           const streamValue = this.state().stream?.();
-          return streamValue && isResolved(streamValue) ? streamValue.value : this.defaultValue;
+
+          if (!streamValue) {
+            return defaultValue;
+          }
+
+          // Prevents `hasValue()` from throwing an error when a reload happened in the error state
+          if (this.state().status === 'loading' && this.error()) {
+            return defaultValue;
+          }
+
+          if (!isResolved(streamValue)) {
+            throw new ResourceValueError(this.error()!);
+          }
+
+          return streamValue.value;
         },
         {equal},
       ),
@@ -210,7 +243,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.pendingTasks = injector.get(PendingTasks);
 
     // Cancel any pending request when the resource itself is destroyed.
-    injector.get(DestroyRef).onDestroy(() => this.destroy());
+    this.unregisterOnDestroy = injector.get(DestroyRef).onDestroy(() => this.destroy());
   }
 
   override readonly status = computed(() => projectStatusOfState(this.state()));
@@ -228,11 +261,17 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       return;
     }
 
-    const current = untracked(this.value);
+    const error = untracked(this.error);
     const state = untracked(this.state);
 
-    if (state.status === 'local' && (this.equal ? this.equal(current, value) : current === value)) {
-      return;
+    if (!error) {
+      const current = untracked(this.value);
+      if (
+        state.status === 'local' &&
+        (this.equal ? this.equal(current, value) : current === value)
+      ) {
+        return;
+      }
     }
 
     // Enter Local state with the user-defined value.
@@ -262,6 +301,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
   destroy(): void {
     this.destroyed = true;
+    this.unregisterOnDestroy();
     this.effectRef.destroy();
     this.abortInProgressLoad();
 
@@ -343,7 +383,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         extRequest,
         status: 'resolved',
         previousStatus: 'error',
-        stream: signal({error: err}),
+        stream: signal({error: encapsulateResourceError(err)}),
       });
     } finally {
       // Resolve the pending task now that the resource has a value.
@@ -378,7 +418,7 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
     try {
       return signal({value: await options.loader(params)});
     } catch (err) {
-      return signal({error: err});
+      return signal({error: encapsulateResourceError(err)});
     }
   };
 }
@@ -397,7 +437,7 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
     case 'loading':
       return state.extRequest.reload === 0 ? 'loading' : 'reloading';
     case 'resolved':
-      return isResolved(untracked(state.stream!)) ? 'resolved' : 'error';
+      return isResolved(state.stream!()) ? 'resolved' : 'error';
     default:
       return state.status;
   }
@@ -405,4 +445,34 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
 
 function isResolved<T>(state: ResourceStreamItem<T>): state is {value: T} {
   return (state as {error: unknown}).error === undefined;
+}
+
+export function encapsulateResourceError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new ResourceWrappedError(error);
+}
+
+class ResourceValueError extends Error {
+  constructor(error: Error) {
+    super(
+      ngDevMode
+        ? `Resource is currently in an error state (see Error.cause for details): ${error.message}`
+        : error.message,
+      {cause: error},
+    );
+  }
+}
+
+class ResourceWrappedError extends Error {
+  constructor(error: unknown) {
+    super(
+      ngDevMode
+        ? `Resource returned an error that's not an Error instance: ${String(error)}. Check this error's .cause for the actual error.`
+        : String(error),
+      {cause: error},
+    );
+  }
 }

@@ -7,7 +7,7 @@
  */
 
 import {setProfiler, profiler} from '../../src/render3/profiler';
-import {ProfilerEvent} from '../../src/render3/profiler_types';
+import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
 import {TestBed} from '../../testing';
 
 import {
@@ -25,10 +25,16 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   ViewChild,
 } from '../../src/core';
 
 describe('profiler', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   class TestProfiler {
     profile() {}
   }
