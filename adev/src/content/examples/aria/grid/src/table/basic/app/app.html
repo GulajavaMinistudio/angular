@@ -1,6 +1,4 @@
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
-
-<table ngGrid>
+<table ngGrid class="basic-data-table">
   <thead>
     <tr ngGridRow>
       <th ngGridCell>
@@ -21,7 +19,7 @@
           (click)="sortTaskById()"
         >
           ID
-          <span aria-hidden="true" class="material-symbols-outlined">
+          <span aria-hidden="true" class="material-symbols-outlined" translate="no">
             {{sortAscending ? 'arrow_upward' : 'arrow_downward'}}
           </span>
         </button>
@@ -68,7 +66,7 @@
             class="material-symbols-outlined assignee-edit-button"
             (click)="onClickEdit(widget, task, assigneeInput)"
             [class.hidden]="widget.isActivated()"
-          >
+           translate="no">
             edit
           </button>
         </div>

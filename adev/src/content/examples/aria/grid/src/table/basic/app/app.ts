@@ -66,7 +66,7 @@ export class App {
       taskId: 105,
       summary: 'Explore Grid possibilities',
       priority: 'High',
-      assignee: 'YOU',
+      assignee: '[Your Name Here]',
     },
   ]);
 

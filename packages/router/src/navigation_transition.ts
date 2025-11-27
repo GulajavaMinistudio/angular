@@ -80,7 +80,6 @@ import {UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-import {getClosestRouteInjector} from './utils/config';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 
 /**
@@ -103,7 +102,7 @@ export interface UrlCreationOptions {
    * For example, consider the following route configuration where the parent route
    * has two children.
    *
-   * ```
+   * ```ts
    * [{
    *   path: 'parent',
    *   component: ParentComponent,
@@ -139,7 +138,7 @@ export interface UrlCreationOptions {
   /**
    * Sets query parameters to the URL.
    *
-   * ```
+   * ```ts
    * // Navigate to /results?page=1
    * router.navigate(['/results'], { queryParams: { page: 1 } });
    * ```
@@ -149,7 +148,7 @@ export interface UrlCreationOptions {
   /**
    * Sets the hash fragment for the URL.
    *
-   * ```
+   * ```ts
    * // Navigate to /results#top
    * router.navigate(['/results'], { fragment: 'top' });
    * ```
@@ -163,13 +162,13 @@ export interface UrlCreationOptions {
    * * `merge` : Merge new with current parameters.
    *
    * The "preserve" option discards any new query params:
-   * ```
+   * ```ts
    * // from /view1?page=1 to/view2?page=1
    * router.navigate(['/view2'], { queryParams: { page: 2 },  queryParamsHandling: "preserve"
    * });
    * ```
    * The "merge" option appends new query params to the params from the current URL:
-   * ```
+   * ```ts
    * // from /view1?page=1 to/view2?page=1&otherKey=2
    * router.navigate(['/view2'], { queryParams: { otherKey: 2 },  queryParamsHandling: "merge"
    * });
@@ -183,7 +182,7 @@ export interface UrlCreationOptions {
   /**
    * When true, preserves the URL fragment for the next navigation
    *
-   * ```
+   * ```ts
    * // Preserve fragment from /results#top to /view#top
    * router.navigate(['/view'], { preserveFragment: true });
    * ```
@@ -572,7 +571,10 @@ export class NavigationTransitions {
                 restoredState,
               );
               this.events.next(navStart);
-              const targetSnapshot = createEmptyState(this.rootComponentType).snapshot;
+              const targetSnapshot = createEmptyState(
+                this.rootComponentType,
+                this.environmentInjector,
+              ).snapshot;
 
               this.currentTransition = overallTransitionState = {
                 ...t,
@@ -628,7 +630,7 @@ export class NavigationTransitions {
             return overallTransitionState;
           }),
 
-          checkGuards(this.environmentInjector, (evt: Event) => this.events.next(evt)),
+          checkGuards((evt: Event) => this.events.next(evt)),
 
           switchMap((t) => {
             overallTransitionState.guardsResult = t.guardsResult;
@@ -669,7 +671,7 @@ export class NavigationTransitions {
 
             let dataResolved = false;
             return of(t).pipe(
-              resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
+              resolveData(this.paramsInheritanceStrategy),
               tap({
                 next: () => {
                   dataResolved = true;
@@ -703,7 +705,7 @@ export class NavigationTransitions {
               if (route.routeConfig?._loadedComponent) {
                 route.component = route.routeConfig?._loadedComponent;
               } else if (route.routeConfig?.loadComponent) {
-                const injector = getClosestRouteInjector(route) ?? this.environmentInjector;
+                const injector = route._environmentInjector;
                 loaders.push(
                   this.configLoader
                     .loadComponent(injector, route.routeConfig)

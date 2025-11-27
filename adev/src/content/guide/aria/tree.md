@@ -1,20 +1,20 @@
 <docs-decorative-header title="Tree">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="Tree ARIA pattern"/>
+  <docs-pill href="/api/aria/tree/Tree" title="Tree API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A tree displays hierarchical data where items can expand to reveal children or collapse to hide them. Users navigate with arrow keys, expand and collapse nodes, and optionally select items for navigation or data selection scenarios.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.html"/>
-  <docs-code header="app.css" path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.css"/>
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts">
+  <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts"/>
+  <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.html"/>
+  <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.css"/>
 </docs-code-multifile>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/tree" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -53,10 +53,15 @@ Trees work well for displaying hierarchical data where users need to navigate th
 
 Use a tree for navigation where clicking items triggers actions rather than selecting them.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-nav/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Set `[nav]="true"` to enable navigation mode. This uses `aria-current` to indicate the current page instead of selection.
 
@@ -64,10 +69,22 @@ Set `[nav]="true"` to enable navigation mode. This uses `aria-current` to indica
 
 Enable single selection for scenarios where users choose one item from the tree.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-single-select/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-single-select/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-single-select/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Leave `[multi]="false"` (the default) for single selection. Users press Space to select the focused item.
 
@@ -75,10 +92,22 @@ Leave `[multi]="false"` (the default) for single selection. Users press Space to
 
 Allow users to select multiple items from the tree.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-multi-select/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-multi-select/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-multi-select/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Set `[multi]="true"` on the tree. Users select items individually with Space or select ranges with Shift+Arrow keys.
 
@@ -86,10 +115,22 @@ Set `[multi]="true"` on the tree. Users select items individually with Space or 
 
 When selection follows focus, the focused item is automatically selected. This simplifies interaction for navigation scenarios.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-single-select-follow-focus/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-single-select-follow-focus/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-single-select-follow-focus/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Set `[selectionMode]="'follow'"` on the tree. Selection automatically updates as users navigate with arrow keys.
 
@@ -97,16 +138,24 @@ Set `[selectionMode]="'follow'"` on the tree. Selection automatically updates as
 
 Disable specific tree nodes to prevent interaction. Control whether disabled items can receive focus.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-disabled-focusable/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-disabled-focusable/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-disabled-focusable/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 When `[softDisabled]="true"` on the tree, disabled items can receive focus but cannot be activated or selected. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
-
-## Showcase
-
-TBD
 
 ## APIs
 
@@ -179,63 +228,3 @@ This directive has no inputs, outputs, or methods. It serves as a container to o
   </ul>
 </li>
 ```
-
-## Styling
-
-Angular automatically applies attributes to tree elements that you can use in your CSS selectors.
-
-The tree receives the `ng-tree` attribute:
-
-```css
-[ng-tree] {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-```
-
-Tree items receive the `ng-tree-item` attribute with `data-active` when focused and `aria-selected` when selected:
-
-```css
-[ng-tree-item] {
-  padding: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-[ng-tree-item][data-active] {
-  outline: 2px solid var(--focus-color);
-}
-
-[ng-tree-item][aria-selected="true"] {
-  background: var(--selected-background);
-  font-weight: 600;
-}
-```
-
-Tree groups receive the `ng-tree-group` attribute for indenting child items:
-
-```css
-[ng-tree-group] {
-  padding-left: 1.5rem;
-  list-style: none;
-}
-```
-
-Style expandable items using the `aria-expanded` attribute:
-
-```css
-/* Expand/collapse indicator */
-[ng-tree-item][aria-expanded]::before {
-  content: '▶';
-  transition: transform 0.2s;
-}
-
-[ng-tree-item][aria-expanded="true"]::before {
-  transform: rotate(90deg);
-}
-```
-
-TIP: Use `[aria-expanded]` to determine if an item is expandable and style its expand/collapse indicator accordingly.

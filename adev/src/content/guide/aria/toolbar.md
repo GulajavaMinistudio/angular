@@ -1,6 +1,11 @@
 <docs-decorative-header title="Toolbar">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>
+  <docs-pill href="/api/aria/toolbar/Toolbar" title="Toolbar API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A container for grouping related controls and actions with keyboard navigation, commonly used for text formatting, toolbars, and command panels.
@@ -128,7 +133,7 @@ In the examples above, the alignment buttons are wrapped in `ngToolbarWidgetGrou
 
 The `multi` input controls whether multiple widgets within a group can be selected simultaneously:
 
-<docs-code language="html" highlight="[15]">
+```html {highlight: [15]}
 <!-- Single selection (radio group) -->
 <div
   ngToolbarWidgetGroup
@@ -150,7 +155,7 @@ The `multi` input controls whether multiple widgets within a group can be select
   <button ngToolbarWidget value="italic">Italic</button>
   <button ngToolbarWidget value="underline">Underline</button>
 </div>
-</docs-code>
+```
 
 ### Disabled widgets
 
@@ -217,10 +222,6 @@ Toolbars automatically support right-to-left languages. Wrap the toolbar in a co
   </docs-tab>
 </docs-tab-group>
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Toolbar Directive
@@ -269,3 +270,8 @@ The `ngToolbarWidgetGroup` directive groups related widgets together.
 ### Related components
 
 Toolbar can contain various widget types including buttons, trees, and comboboxes. See individual component documentation for specific widget implementations.
+
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>
+  <docs-pill href="/api/aria/toolbar/Toolbar" title="Toolbar API Reference"/>
+</docs-pill-row>

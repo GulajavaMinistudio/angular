@@ -1,20 +1,20 @@
 <docs-decorative-header title="Grid">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="Grid ARIA pattern"/>
+  <docs-pill href="/api?query=grid#angular_aria_grid" title="Grid API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A grid enables users to navigate two-dimensional data or interactive elements using directional arrow keys, Home, End, and Page Up/Down. Grids work for data tables, calendars, spreadsheets, and layout patterns that group related interactive elements.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/grid-table/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/grid/src/grid-table/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/grid/src/grid-table/app/app.html"/>
-  <docs-code header="app.css" path="adev/src/content/examples/aria/grid/src/grid-table/app/app.css"/>
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.ts">
+  <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.ts"/>
+  <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.html"/>
+  <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.css"/>
 </docs-code-multifile>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/grid" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -59,6 +59,13 @@ Use a grid for interactive tables where users need to navigate between cells usi
       <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
 </docs-tab-group>
 
 Apply the `ngGrid` directive to the table element, `ngGridRow` to each row, and `ngGridCell` to each cell.
@@ -75,6 +82,20 @@ Calendars are a common use case for grids. This example shows a month view where
       <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
 </docs-tab-group>
 
 Users can activate a date by pressing Enter or Space when focused on a cell.
@@ -89,6 +110,20 @@ Use a layout grid to group interactive elements and reduce tab stops. This examp
       <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.ts"/>
       <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.html"/>
       <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -121,10 +156,6 @@ Enable selection with `[enableSelection]="true"` and configure how focus and sel
 
 - `roving`: Focus moves to cells using `tabindex` (better for simple grids)
 - `activedescendant`: Focus stays on grid container, `aria-activedescendant` indicates active cell (better for virtual scrolling)
-
-## Showcase
-
-TBD
 
 ## APIs
 
@@ -181,54 +212,3 @@ Represents an individual cell within a grid row.
 | Property | Type              | Description                          |
 | -------- | ----------------- | ------------------------------------ |
 | `active` | `Signal<boolean>` | Whether the cell currently has focus |
-
-## Styling
-
-Angular automatically applies attributes to grid elements that you can use in your CSS selectors.
-
-The grid receives the `ng-grid` attribute:
-
-```css
-[ng-grid] {
-  border-collapse: collapse;
-  width: 100%;
-}
-```
-
-Rows receive the `ng-grid-row` attribute:
-
-```css
-[ng-grid-row] {
-  border-bottom: 1px solid #ddd;
-}
-```
-
-Cells receive the `ng-grid-cell` attribute and a `data-active` attribute when focused:
-
-```css
-[ng-grid-cell] {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-}
-
-[ng-grid-cell][data-active] {
-  outline: 2px solid var(--focus-color);
-  outline-offset: -2px;
-}
-
-[ng-grid-cell][aria-selected="true"] {
-  background: var(--selected-background);
-}
-```
-
-Style column and row headers based on their role:
-
-```css
-[ng-grid-cell][role="columnheader"],
-[ng-grid-cell][role="rowheader"] {
-  font-weight: 600;
-  background: var(--header-background);
-}
-```
-
-TIP: Use the `[data-active]` selector to style focused cells, as Angular automatically adds this attribute when a cell has focus.

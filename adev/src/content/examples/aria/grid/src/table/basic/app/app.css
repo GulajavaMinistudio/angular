@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
 :host {
   display: flex;
   justify-content: center;
@@ -24,6 +26,7 @@ input[type='checkbox'] {
 }
 
 [ngGrid] {
+  display: table;
   background-color: var(--septenary-contrast);
   border-spacing: 0;
 }
