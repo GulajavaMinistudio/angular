@@ -39,6 +39,7 @@ import {TableOfContents} from '../../table-of-contents/table-of-contents.compone
 import {DomSanitizer} from '@angular/platform-browser';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
+import {CopyLinkButton} from '../../copy-link-anchor/copy-link-anchor.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
 import {TabGroup} from '../../tab-group/tab-group.component';
 
@@ -120,6 +121,8 @@ export class DocViewer {
       // In case when content contains static code snippets, then create buttons
       // responsible for copy source code.
       this.loadCopySourceCodeButtons();
+      // Setup copy link functionality for section anchor links
+      this.loadCopyLinkAnchors(contentContainer);
       // In case when content contains tabs, create tabs component and move
       // content in a tab into tab panel.
       this.constructTabs(contentContainer);
@@ -266,13 +269,31 @@ export class DocViewer {
   private loadCopySourceCodeButtons(): void {
     const staticCodeSnippets = <Element[]>(
       Array.from(
-        this.elementRef.nativeElement.querySelectorAll('.docs-code:not([mermaid],.docs-no-copy)'),
+        this.elementRef.nativeElement.querySelectorAll(
+          '.docs-code:not([mermaid],[hideCopy],.docs-no-copy)',
+        ),
       )
     );
 
     for (let codeSnippet of staticCodeSnippets) {
       const copySourceCodeButton = this.viewContainer.createComponent(CopySourceCodeButton);
       codeSnippet.appendChild(copySourceCodeButton.location.nativeElement);
+    }
+  }
+
+  private loadCopyLinkAnchors(element: HTMLElement): void {
+    const docsAnchors = Array.from(element.querySelectorAll<HTMLAnchorElement>('a.docs-anchor'));
+
+    for (const anchor of docsAnchors) {
+      const href = anchor.getAttribute('href')!;
+      const label = anchor.textContent!;
+
+      const copyLinkButtonRef = this.viewContainer.createComponent(CopyLinkButton);
+      copyLinkButtonRef.setInput('href', href);
+      copyLinkButtonRef.setInput('label', label);
+      copyLinkButtonRef.setInput('matTooltip', `Copy link to ${label}`);
+
+      anchor.appendChild(copyLinkButtonRef.location.nativeElement);
     }
   }
 

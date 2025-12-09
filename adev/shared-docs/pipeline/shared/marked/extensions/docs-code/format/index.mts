@@ -29,22 +29,24 @@ export interface CodeToken extends Tokens.Generic {
   linenums?: boolean;
   /* The lines viewable in collapsed view */
   visibleLines?: string;
-  /* The name of the viewable region in the collapsed view */
-  visibleRegion?: string;
+  /* The name of the region to show in the code snippet */
+  region?: string;
   /* Whether we should display preview */
   preview?: boolean;
   /** Whether to hide code example by default. */
   hideCode?: boolean;
   /* The lines to display highlighting on */
   highlight?: string;
+  /** Whether to hide the copy button */
+  hideCopy?: boolean;
 
   // additional classes for the element
   classes?: string[];
 }
 
 export function formatCode(token: CodeToken, context: RendererContext): string {
-  if (token.visibleLines !== undefined && token.visibleRegion !== undefined) {
-    throw Error('Cannot define visible lines and visible region at the same time');
+  if (token.visibleLines !== undefined && token.region !== undefined) {
+    throw Error('Cannot define visible lines and region at the same time');
   }
 
   extractRegions(token);
@@ -116,7 +118,9 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   if (token.hideCode) {
     el.setAttribute('hideCode', 'true');
   }
-
+  if (token.hideCopy) {
+    el.setAttribute('hideCopy', 'true');
+  }
   const language = token.language;
 
   if (language === 'mermaid') {
