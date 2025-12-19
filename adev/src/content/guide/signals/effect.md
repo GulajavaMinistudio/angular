@@ -19,7 +19,7 @@ Effects should be the last API you reach for. Always prefer `computed()` for der
 TIP: There are no situations where effect is good, only situations where it is appropriate.
 
 - Logging signal values, either for analytics or as a debugging tool.
-- Keeping data in sync with different kind of storges `window.localStorage`, session storage, cookies etc.
+- Keeping data in sync with different kind of storages: `window.localStorage`, session storage, cookies etc.
 - Adding custom DOM behavior that can't be expressed with template syntax.
 - Performing custom rendering to a `<canvas>` element, charting library, or other third party UI library.
 
@@ -34,7 +34,9 @@ Instead, use `computed` signals to model state that depends on other state.
 By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class EffectiveCounter {
   readonly count = signal(0);
 
@@ -68,11 +70,11 @@ export class EffectiveCounterComponent {
 Angular implicitly defines two implicit behaviors for its effects depending on the context they were created in.
 
 A "View Effect" is an `effect` created in the context of a component instantiation. This includes effects created by services that are tied to component injectors.<br>
-A "Root Effect" is created in a root provided service.
+A "Root Effect" is created in the context of a root provided service instantiation.
 
 The execution of both kind of `effect` are tied to the change detection process.
 
-- "View effects" are executed _before_ there corresponding compoent is checked the change detection process.
+- "View effects" are executed _before_ there corresponding component is checked the change detection process.
 - "Root effects" are executed prior to all components being checked by the change detection process.
 
 In both cases, if at least one of the effect dependency changed during the effect execution, the effect will re-run before moving ahead on the change detection process,
@@ -114,7 +116,9 @@ The `effect` function is a general-purpose tool for running code in reaction to 
 For these situations, you can use `afterRenderEffect`. It functions like `effect`, but runs after Angular has finished rendering and committed its changes to the DOM.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class MyFancyChart {
   chartData = input.required<ChartData>();
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
@@ -125,7 +129,7 @@ export class MyFancyChart {
     afterNextRender({
       write: () => {
         this.chart = initializeChart(this.nativeElement(), this.charData());
-      }
+      },
     });
 
     // Re-run after DOM has been updated whenever `chartData` changes
@@ -136,9 +140,9 @@ export class MyFancyChart {
 }
 ```
 
-In this example `afterRenderEffect` to update a chart created by a 3rd party library.
+In this example `afterRenderEffect` is used to update a chart created by a 3rd party library.
 
-TIP: You often don't need `afterRenderEffect` to check for DOM changes. APIs like `ResizeObserver`, `MutationObserver` and `IntersectionObserver` are preferred to `effect` or afterRenderEffect when possible.
+TIP: You often don't need `afterRenderEffect` to check for DOM changes. APIs like `ResizeObserver`, `MutationObserver` and `IntersectionObserver` are preferred to `effect` or `afterRenderEffect` when possible.
 
 ### Render phases
 
@@ -161,10 +165,18 @@ You can specify the phase by passing an object with a `phase` property to `after
 
 ```ts
 afterRenderEffect({
-    earlyRead: (cleanupFn) => { /* ... */ },
-    write: (previousPhaseValue, cleanupFn) => { /* ... */ },
-    mixedReadWrite: (previousPhaseValue, cleanupFn) =>  { /* ... */ },
-    read: (previousPhaseValue, cleanupFn) =>  { /* ... */ },
+  earlyRead: (cleanupFn) => {
+    /* ... */
+  },
+  write: (previousPhaseValue, cleanupFn) => {
+    /* ... */
+  },
+  mixedReadWrite: (previousPhaseValue, cleanupFn) => {
+    /* ... */
+  },
+  read: (previousPhaseValue, cleanupFn) => {
+    /* ... */
+  },
 });
 ```
 

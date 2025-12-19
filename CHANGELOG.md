@@ -1,3 +1,203 @@
+<a name="21.1.0-next.4"></a>
+# 21.1.0-next.4 (2025-12-17)
+## Breaking Changes
+### forms
+- The shape of `SignalFormsConfig.classes` has changed
+  
+  Previously each function in the `classes` map took a `FieldState`. Now
+  it takes a `Field` directive.
+  
+  For example if you previously had:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': (state) => state.valid()
+    }
+  })
+  ```
+  
+  You would need to update to:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': ({state}) => state().valid()
+    }
+  })
+  ```
+- 
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06be8034bb](https://github.com/angular/angular/commit/06be8034bb9b9adfc07ab0d40cd87c6ae5de02de) | fix | Microtask scheduling should be used after any application synchronization |
+| [b4f584cf42](https://github.com/angular/angular/commit/b4f584cf42235c94bb8389fa55bc634e23d7b010) | fix | return `StaticProvider` for `providePlatformInitializer` |
+| [7be4ddef1c](https://github.com/angular/angular/commit/7be4ddef1ccb9a6b330b52b9bbdd174089755503) | fix | throw better errors for potential circular references |
+| [f516370c8e](https://github.com/angular/angular/commit/f516370c8e8e96806bad757d43c857ab5f2051ed) | fix | use mutable ResponseInit type for RESPONSE_INIT token |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [348f149e8b](https://github.com/angular/angular/commit/348f149e8b06d6885f54bac4cf03a9481a8b19b7) | feat | pass field directive to class config |
+| [ae0c59028a](https://github.com/angular/angular/commit/ae0c59028a2f393ea5716bf222db2c38e7a3989f) | refactor | rename field to fieldTree in FieldContext and ValidationError |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f5744a92d](https://github.com/angular/angular/commit/9f5744a92dda4219e93bf7e6236d32a93bc167e6) | fix | avoid interpolation highlighting inside @let |
+| [ce1a4769f9](https://github.com/angular/angular/commit/ce1a4769f987e96e2a1b1cbc7654ed5bac9ce91d) | fix | Prevent language service from crashing on suggestion diagnostic errors |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.0.6"></a>
+# 21.0.6 (2025-12-17)
+## Breaking Changes (affecting only experimental features)
+### forms
+- The shape of `SignalFormsConfig.classes` has changed
+  
+  Previously each function in the `classes` map took a `FieldState`. Now
+  it takes a `Field` directive.
+  
+  For example if you previously had:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': (state) => state.valid()
+    }
+  })
+  ```
+  
+  You would need to update to:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': ({state}) => state().valid()
+    }
+  })
+  ```
+  
+  (cherry picked from commit 348f149e8b06d6885f54bac4cf03a9481a8b19b7)
+- (cherry picked from commit ae0c59028a2f393ea5716bf222db2c38e7a3989f)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c8fb3631d](https://github.com/angular/angular/commit/4c8fb3631d58e22d693aba0b89243f2e9ecb0807) | fix | throw better errors for potential circular references |
+| [48492524ea](https://github.com/angular/angular/commit/48492524ea4adfa232b0daee0d955924be31ebea) | fix | use mutable ResponseInit type for RESPONSE_INIT token |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [81772b420d](https://github.com/angular/angular/commit/81772b420dcda2cbe2a8cb75e50c6da2e1ecdc68) | feat | pass field directive to class config |
+| [729b96476b](https://github.com/angular/angular/commit/729b96476b73f1670a0f7c6ab3f36be9d38ebcac) | refactor | rename field to fieldTree in FieldContext and ValidationError |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e0694df3ec](https://github.com/angular/angular/commit/e0694df3eccae3d31a4ea537dffe1db1368ef34a) | fix | avoid interpolation highlighting inside @let |
+| [5047be4bc1](https://github.com/angular/angular/commit/5047be4bc1c6f6016263703c743f8033f669f0ee) | fix | Prevent language service from crashing on suggestion diagnostic errors |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.1.0-next.3"></a>
+
+# 21.1.0-next.3 (2025-12-11)
+
+### core
+
+| Commit                                                                                            | Type | Description                                                                    |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------ |
+| [4f6014a756a](https://github.com/angular/angular/commit/4f6014a756a95ff9cb55e91deb27039b7eb079ee) | fix  | avoid false-positive deprecation when using `InjectionToken` with factory only |
+
+### forms
+
+| Commit                                                                                            | Type | Description                 |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------- |
+| [d0097f7d0c2](https://github.com/angular/angular/commit/d0097f7d0c214c5c3d715e7f1dfa3723b31f4065) | fix  | fix signal forms type error |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.0.5"></a>
+
+# 21.0.5 (2025-12-11)
+
+### core
+
+| Commit                                                                                            | Type | Description                                                                    |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------ |
+| [69d243abb74](https://github.com/angular/angular/commit/69d243abb7438c37b9ef763755f8fb7fdee165be) | fix  | avoid false-positive deprecation when using `InjectionToken` with factory only |
+
+### forms
+
+| Commit                                                                                            | Type | Description                 |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------- |
+| [4fd2b722b40](https://github.com/angular/angular/commit/4fd2b722b4054181a6e5f09a3cc657ae05541782) | fix  | fix signal forms type error |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.1.0-next.2"></a>
+
+# 21.1.0-next.2 (2025-12-10)
+
+## Deprecations
+
+### upgrade
+
+- `VERSION` from `@angular/upgrade` is deprecated. Please use the entry from `@angular/upgrade/static` instead.
+
+### compiler
+
+| Commit                                                                                            | Type | Description                       |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------- |
+| [ae1c0dc4900](https://github.com/angular/angular/commit/ae1c0dc49002665c10d4e44f530f4cb8d1e35b8d) | perf | chain query creation instructions |
+
+### compiler-cli
+
+| Commit                                                                                            | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------------------------- |
+| [8a3f3a91cf6](https://github.com/angular/angular/commit/8a3f3a91cf6919f11c1583afeb71b65488f8cba4) | fix  | expand type for native controls with a dynamic type |
+
+### forms
+
+| Commit                                                                                            | Type | Description                                                                                             |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------- |
+| [aff8b248b35](https://github.com/angular/angular/commit/aff8b248b35931cbe7d644ad2594144b75064ca6) | feat | expose element on signal forms `Field` directive                                                        |
+| [ebc5c2b083a](https://github.com/angular/angular/commit/ebc5c2b083a90fde6fced3521be434a414ef29dd) | feat | redo the signal forms metadata API                                                                      |
+| [9fe95665813](https://github.com/angular/angular/commit/9fe95665813e24544d00dcf463658067da745ac2) | fix  | add signals for dirty, hidden, and pending states in custom controls                                    |
+| [14713d09923](https://github.com/angular/angular/commit/14713d09923b5315ac7c6f20acc06fc69ff0ed79) | fix  | allow resetting with empty string                                                                       |
+| [b96f65a963f](https://github.com/angular/angular/commit/b96f65a963febab376f2a783cf4313a8b8140efe) | fix  | memoize reads of child fields in signal forms ([#65802](https://github.com/angular/angular/pull/65802)) |
+| [179b4cba67b](https://github.com/angular/angular/commit/179b4cba67b95563da27fd5f12dd2acc910a1a52) | fix  | Reuse key in parent in compat structure                                                                 |
+
+### upgrade
+
+| Commit                                                                                            | Type     | Description                |
+| ------------------------------------------------------------------------------------------------- | -------- | -------------------------- |
+| [75fe8f8af94](https://github.com/angular/angular/commit/75fe8f8af9488bae6f7068b64d44500643c5d63f) | refactor | deprecate `VERSION` export |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.0.4"></a>
+
+# 21.0.4 (2025-12-10)
+
+### compiler
+
+| Commit                                                                                            | Type | Description                       |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------- |
+| [f901cc9eb32](https://github.com/angular/angular/commit/f901cc9eb328bed74fd7f09607e54154254d4a97) | perf | chain query creation instructions |
+
+### compiler-cli
+
+| Commit                                                                                            | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------------------------- |
+| [65297c62011](https://github.com/angular/angular/commit/65297c62011ae353f8555738688a83a5fba5ea4e) | fix  | expand type for native controls with a dynamic type |
+
+### forms
+
+| Commit                                                                                            | Type | Description                                                                                             |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------- |
+| [f254ff4f2e0](https://github.com/angular/angular/commit/f254ff4f2e014064b4d6073341dec0c5a7a754bf) | feat | expose element on signal forms `Field` directive                                                        |
+| [5880fbc73c6](https://github.com/angular/angular/commit/5880fbc73c6ac42976b3ada9803965bc20d047db) | feat | redo the signal forms metadata API                                                                      |
+| [55fc677cef4](https://github.com/angular/angular/commit/55fc677cef4409302bc474ff316d392097a034e7) | fix  | add signals for dirty, hidden, and pending states in custom controls                                    |
+| [cbb10179c80](https://github.com/angular/angular/commit/cbb10179c8098f6a20b0bc365a492f14e4d2a51a) | fix  | allow resetting with empty string                                                                       |
+| [bf1c12cd932](https://github.com/angular/angular/commit/bf1c12cd932028dc4bb50914c64bbb6d882b6ec1) | fix  | memoize reads of child fields in signal forms ([#65802](https://github.com/angular/angular/pull/65802)) |
+| [6d7475582f9](https://github.com/angular/angular/commit/6d7475582f95720b4487f663d339a18a25374481) | fix  | Reuse key in parent in compat structure                                                                 |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.0-next.1"></a>
 
 # 21.1.0-next.1 (2025-12-03)

@@ -17,7 +17,6 @@ import { ValidationErrors } from '@angular/forms';
 import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
-import { ɵControl } from '@angular/core';
 import { ɵcontrolUpdate } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
 import { ɵɵcontrolCreate } from '@angular/core';
@@ -46,7 +45,7 @@ export class CompatValidationError<T = unknown> implements ValidationError {
     // (undocumented)
     readonly control: AbstractControl;
     // (undocumented)
-    readonly field: FieldTree<unknown>;
+    readonly fieldTree: FieldTree<unknown>;
     // (undocumented)
     readonly kind: string;
     // (undocumented)

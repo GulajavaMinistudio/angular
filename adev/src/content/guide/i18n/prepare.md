@@ -61,8 +61,6 @@ The attributes of HTML elements include text that should be translated along wit
 Use `i18n-{attribute_name}` with any attribute of any element and replace `{attribute_name}` with the name of the attribute.
 Use the following syntax to assign a meaning, description, and custom ID.
 
-<!--todo: replace with docs-code -->
-
 ```html
 i18n-{attribute_name}="{meaning}|{description}@@{id}"
 ```
@@ -88,45 +86,37 @@ In component code, the translation source text and the metadata are surrounded b
 
 Use the [`$localize`][ApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
+```ts
 $localize`string_to_translate`;
-</docs-code>
+```
 
 The i18n metadata is surrounded by colon \(`:`\) characters and prepends the translation source text.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-$localize`:{i18n_metadata}:string_to_translate`
-</docs-code>
+```ts
+$localize`:{i18n_metadata}:string_to_translate`;
+```
 
 ### Include interpolated text
 
 Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation) in a [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
+```ts
 $localize`string_to_translate ${variable_name}`;
-</docs-code>
+```
 
 ### Name the interpolation placeholder
 
-<docs-code language="typescript">
+```ts
 $localize`string_to_translate ${variable_name}:placeholder_name:`;
-</docs-code>
+```
 
 ### Conditional syntax for translations
 
-<docs-code language="typescript">
+```ts
 return this.show ? $localize`Show Tabs` : $localize`Hide tabs`;
-</docs-code>
+```
 
 ## i18n metadata for translation
-
-<!--todo: replace with docs-code -->
 
 ```html
 {meaning}|{description}@@{custom_id}
@@ -154,13 +144,9 @@ The following example shows the value of the `i18n` attribute.
 
 The following example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a description.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-
+```ts
 $localize`:An introduction header for this sample:Hello i18n!`;
-
-</docs-code>
+```
 
 The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
 Start the `i18n` attribute value with the _meaning_ and separate it from the _description_ with the `|` character: `{meaning}|{description}`.
@@ -177,13 +163,9 @@ The result is any text marked with `site header`, as the _meaning_ is translated
 
 The following code example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a meaning and a description.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-
+```ts
 $localize`:site header|An introduction header for this sample:Hello i18n!`;
-
-</docs-code>
+```
 
 <docs-callout title="How meanings control text extraction and merges">
 
@@ -212,10 +194,7 @@ That one translation entry is merged back into the application wherever the same
 ICU expressions help you mark alternate text in component templates to meet conditions.
 An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
-<!--todo: replace with docs-code -->
-
 ```html
-
 { component_property, icu_clause, case_statements }
 ```
 
@@ -240,7 +219,6 @@ Use the `plural` clause to mark expressions that may not be meaningful if transl
 <!--todo: replace with docs-code -->
 
 ```html
-
 { component_property, plural, pluralization_categories }
 ```
 
@@ -249,7 +227,6 @@ After the pluralization category, enter the default text \(English\) surrounded 
 <!--todo: replace with docs-code -->
 
 ```html
-
 pluralization_category { }
 ```
 
@@ -269,7 +246,6 @@ If none of the pluralization categories match, Angular uses `other` to match the
 <!--todo: replace with docs-code -->
 
 ```html
-
 other { default_quantity }
 ```
 
@@ -296,7 +272,6 @@ If you want to display the following phrase in English, where `x` is a number.
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated x minutes ago
 ```
 
@@ -305,14 +280,12 @@ And you also want to display the following phrases based on the cardinality of `
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated just now
 ```
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated one minute ago
 ```
 
@@ -340,7 +313,6 @@ The `select` clause marks choices for alternate text based on your defined strin
 <!--todo: replace with docs-code -->
 
 ```html
-
 { component_property, select, selection_categories }
 ```
 
@@ -351,7 +323,6 @@ After the selection category, enter the text \(English\) surrounded by open curl
 <!--todo: replace with docs-code -->
 
 ```html
-
 selection_category { text }
 ```
 
@@ -362,7 +333,6 @@ If none of the selection categories match, Angular uses `other` to match the sta
 <!--todo: replace with docs-code -->
 
 ```html
-
 other { default_value }
 ```
 
@@ -373,7 +343,6 @@ If you want to display the following phrase in English.
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is other
 ```
 
@@ -382,14 +351,12 @@ And you also want to display the following phrases based on the `gender` propert
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is female
 ```
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is male
 ```
 

@@ -19,8 +19,13 @@
           (click)="sortTaskById()"
         >
           ID
-          <span aria-hidden="true" class="material-symbols-outlined" translate="no">
-            {{sortAscending ? 'arrow_upward' : 'arrow_downward'}}
+          <span
+            aria-hidden="true"
+            class="material-symbols-outlined"
+            translate="no"
+            aria-hidden="true"
+          >
+            {{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}
           </span>
         </button>
       </th>
@@ -35,14 +40,14 @@
         <td ngGridCell>
           <input
             ngGridCellWidget
-            aria-label="Select row {{$index + 1}}"
+            aria-label="Select row {{ $index + 1 }}"
             type="checkbox"
             [(ngModel)]="task.selected"
           />
         </td>
-        <td ngGridCell>{{task.taskId}}</td>
-        <td ngGridCell>{{task.summary}}</td>
-        <td ngGridCell>{{task.priority}}</td>
+        <td ngGridCell>{{ task.taskId }}</td>
+        <td ngGridCell>{{ task.summary }}</td>
+        <td ngGridCell>{{ task.priority }}</td>
         <td ngGridCell class="assignee-cell">
           <div
             type="button"
@@ -53,7 +58,7 @@
             (onDeactivate)="completeEdit($event, task)"
             #widget="ngGridCellWidget"
           >
-            <span [class.hidden]="widget.isActivated()">{{task.assignee}}</span>
+            <span [class.hidden]="widget.isActivated()">{{ task.assignee }}</span>
             <input
               [class.hidden]="!widget.isActivated()"
               class="assignee-edit-input"

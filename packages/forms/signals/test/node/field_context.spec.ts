@@ -59,8 +59,8 @@ describe('Field Context', () => {
   it('field', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 5});
     testContext(cat, (ctx) => {
-      expect(ctx.field.name().value()).toEqual('pirojok-the-cat');
-      expect(ctx.field.age().value()).toEqual(5);
+      expect(ctx.fieldTree.name().value()).toEqual('pirojok-the-cat');
+      expect(ctx.fieldTree.age().value()).toEqual(5);
     });
   });
 
@@ -87,7 +87,7 @@ describe('Field Context', () => {
     );
     f().valid();
     expect(keys).toEqual([
-      'RuntimeError: the top-level field in the form has no parent',
+      jasmine.stringContaining('NG01905'), // SIGNAL_FORMS_ROOT_FIELD_NO_PARENT
       'name',
       'age',
     ]);
@@ -125,10 +125,10 @@ describe('Field Context', () => {
     );
     f().valid();
     expect(indices).toEqual([
-      'RuntimeError: the top-level field in the form has no parent',
+      jasmine.stringContaining('NG01905'), // SIGNAL_FORMS_ROOT_FIELD_NO_PARENT
       0,
       1,
-      'RuntimeError: cannot access index, parent field is not an array',
+      jasmine.stringContaining('NG01906'), // SIGNAL_FORMS_PARENT_NOT_ARRAY
     ]);
   });
 

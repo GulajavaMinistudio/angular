@@ -161,6 +161,13 @@ We also have styling for the terminal, just set the language as `shell`:
 npm install @angular/material --save
 ```
 
+You can style standard Markdown triple backticks with attributes for enhanced presentation:
+
+```ts {header:"Awesome Title", linenums, highlight="[2]", hideCopy}
+console.log('Hello, World!');
+console.log('Awesome Angular Docs!');
+```
+
 #### `<docs-code>` Attributes
 
 | Attributes     | Type                 | Details                                              |
@@ -368,7 +375,7 @@ The end!
 ## Prefer / Avoid
 
 ```ts {prefer}
-const foo= 'bar';
+const foo = 'bar';
 ```
 
 ```ts {avoid}
