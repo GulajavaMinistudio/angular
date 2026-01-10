@@ -90,21 +90,6 @@ export function createMetadataKey<TWrite>(): MetadataKey<Signal<TWrite | undefin
 export function createMetadataKey<TWrite, TAcc>(reducer: MetadataReducer<TAcc, TWrite>): MetadataKey<Signal<TAcc>, TWrite, TAcc>;
 
 // @public
-export function customError<E extends Partial<ValidationError.WithField>>(obj: WithField<E>): CustomValidationError;
-
-// @public
-export function customError<E extends Partial<ValidationError.WithField>>(obj?: E): WithoutField<CustomValidationError>;
-
-// @public
-export class CustomValidationError implements ValidationError {
-    constructor(options?: ValidationErrorOptions);
-    [key: PropertyKey]: unknown;
-    readonly fieldTree: FieldTree<unknown>;
-    readonly kind: string;
-    readonly message?: string;
-}
-
-// @public
 export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, durationOrDebouncer: number | Debouncer<TValue, TPathKind>): void;
 
 // @public
@@ -135,31 +120,6 @@ export class EmailValidationError extends _NgValidationError {
 }
 
 // @public
-export const FIELD: InjectionToken<Field<unknown>>;
-
-// @public
-export class Field<T> {
-    // (undocumented)
-    readonly [ɵCONTROL]: {
-        readonly create: typeof ɵɵcontrolCreate;
-        readonly update: typeof ɵcontrolUpdate;
-    };
-    // (undocumented)
-    readonly element: HTMLElement;
-    // (undocumented)
-    readonly field: i0.InputSignal<FieldTree<T>>;
-    protected getOrCreateNgControl(): InteropNgControl;
-    // (undocumented)
-    readonly injector: Injector;
-    // (undocumented)
-    readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<Field<any>, "[field]", never, { "field": { "alias": "field"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<Field<any>, never>;
-}
-
-// @public
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
 
 // @public
@@ -170,7 +130,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     // (undocumented)
     readonly errors: Signal<ValidationError.WithField[]>;
     readonly errorSummary: Signal<ValidationError.WithField[]>;
-    readonly fieldBindings: Signal<readonly Field<unknown>[]>;
+    readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
@@ -197,9 +157,34 @@ export function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: Sch
 export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: FormOptions): FieldTree<TModel>;
 
 // @public
+export const FORM_FIELD: InjectionToken<FormField<unknown>>;
+
+// @public
 export interface FormCheckboxControl extends FormUiControl {
     readonly checked: ModelSignal<boolean>;
     readonly value?: undefined;
+}
+
+// @public
+export class FormField<T> {
+    // (undocumented)
+    readonly [ɵCONTROL]: {
+        readonly create: typeof ɵɵcontrolCreate;
+        readonly update: typeof ɵcontrolUpdate;
+    };
+    // (undocumented)
+    readonly element: HTMLElement;
+    // (undocumented)
+    readonly formField: i0.InputSignal<FieldTree<T>>;
+    protected getOrCreateNgControl(): InteropNgControl;
+    // (undocumented)
+    readonly injector: Injector;
+    // (undocumented)
+    readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", never, { "formField": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
 }
 
 // @public
@@ -520,7 +505,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
 // @public
 export interface SignalFormsConfig {
     classes?: {
-        [className: string]: (state: Field<unknown>) => boolean;
+        [className: string]: (state: FormField<unknown>) => boolean;
     };
 }
 
@@ -588,7 +573,7 @@ export namespace ValidationError {
         readonly fieldTree?: FieldTree<unknown>;
     }
     export interface WithoutField extends ValidationError {
-        readonly field?: never;
+        readonly fieldTree?: never;
     }
 }
 

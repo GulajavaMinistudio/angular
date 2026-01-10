@@ -315,7 +315,16 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 export type RedirectFunction = (
   redirectData: Pick<
     ActivatedRouteSnapshot,
-    'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
+    | 'routeConfig'
+    | 'url'
+    | 'params'
+    | 'queryParams'
+    | 'fragment'
+    | 'data'
+    | 'outlet'
+    | 'title'
+    | 'paramMap'
+    | 'queryParamMap'
   >,
 ) => MaybeAsync<string | UrlTree>;
 
@@ -792,11 +801,17 @@ export interface Route {
    * @internal
    */
   _loadedInjector?: EnvironmentInjector;
+  /**
+   * Filled if loadChildren retruns a module factory
+   * @internal
+   */
+  _loadedNgModuleFactory?: NgModuleFactory<any>;
 }
 
 export interface LoadedRouterConfig {
   routes: Route[];
   injector: EnvironmentInjector | undefined;
+  factory?: NgModuleFactory<unknown>;
 }
 
 /**
